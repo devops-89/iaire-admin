@@ -1,0 +1,52 @@
+export enum COLORS {
+  WHITE = "#ffffff",
+  BLACK = "#000000",
+  PRIMARY_NAVY = "#0B1727",
+  ACCENT_TAN = "#D1A054",
+  NAVY_GRADIENT_START = "#0B1727",
+  NAVY_GRADIENT_END = "#16222F",
+  GLASS_BG = "rgba(255, 255, 255, 0.7)",
+  GLASS_BORDER = "rgba(255, 255, 255, 0.3)",
+  TEXT_PRIMARY = "#1A1A1A",
+  TEXT_SECONDARY = "#666666",
+  INPUT_BG = "#F3F4F6",
+  BG_LIGHT = "#f5f7fa",
+  BG_GRADIENT_END = "#c3cfe2",
+  SUCCESS = "#4CAF50",
+  ERROR = "#F44336",
+  WARNING = "#FF9800",
+  INFO = "#2196F3",
+  SECONDARY_NAVY = "#1C2B3E",
+}
+
+export enum FONT_SIZE {
+  FS28 = "28px",
+  FS18 = "18px",
+  FS16 = "16px",
+  FS14 = "14px",
+  FS12 = "12px",
+}
+
+export enum USER_ROLES {
+  ADMIN = "ADMIN",
+  USER = "USER",
+}
+
+export enum PLAN_TARGET {
+  STUDENT = "STUDENT",
+  EDUCATOR = "EDUCATOR",
+  SCHOOL = "SCHOOL",
+  BOARD = "BOARD",
+}
+
+export enum BILLING_CYCLE {
+  MONTHLY = "MONTHLY",
+  YEARLY = "YEARLY",
+}
+
+export enum PATENT_STATUS {
+  PENDING = "PENDING",
+  GRANTED = "GRANTED",
+  UNDER_REVIEW = "UNDER_REVIEW",
+  REJECTED = "REJECTED",
+}
