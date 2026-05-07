@@ -111,7 +111,7 @@ const DashboardOverview = () => {
       {/* Charts Grid */}
       <Grid container spacing={3}>
         {/* Growth Chart */}
-        <Grid item xs={12} lg={8}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <Card sx={{ p: 3, borderRadius: "20px", boxShadow: "0px 10px 20px rgba(0,0,0,0.03)" }}>
             <Typography sx={{ fontWeight: 600, mb: 3, fontFamily: poppins.style.fontFamily }}>Student & Startup Growth</Typography>
             <Box sx={{ height: 350 }}>
@@ -131,7 +131,7 @@ const DashboardOverview = () => {
         </Grid>
 
         {/* Membership Distribution */}
-        <Grid item xs={12} lg={4}>
+        <Grid size={{ xs: 12, lg: 4 }}>
           <Card sx={{ p: 3, borderRadius: "20px", boxShadow: "0px 10px 20px rgba(0,0,0,0.03)", height: "100%" }}>
             <Typography sx={{ fontWeight: 600, mb: 3, fontFamily: poppins.style.fontFamily }}>Membership Distribution</Typography>
             <Box sx={{ height: 280 }}>
@@ -164,7 +164,7 @@ const DashboardOverview = () => {
         </Grid>
 
         {/* Teacher Training Stats */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card sx={{ p: 3, borderRadius: "20px", boxShadow: "0px 10px 20px rgba(0,0,0,0.03)" }}>
             <Typography sx={{ fontWeight: 600, mb: 3, fontFamily: poppins.style.fontFamily }}>Teacher Training Statistics</Typography>
             <Box sx={{ height: 350 }}>

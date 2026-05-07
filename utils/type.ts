@@ -147,6 +147,8 @@ export interface Training {
 export interface Teacher {
   id: number;
   fullName: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   phone: string;
   profileImage: string;
@@ -171,4 +173,29 @@ export interface Board {
 
 export interface SCHEDULE_INTERVIEW_REQUEST {
   interviewScheduledAt: string;
+}
+
+export interface Batch {
+  id: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+  category: string;
+  isActive: boolean;
+  createdAt?: string;
+}
+
+export interface CREATE_BATCH_REQUEST {
+  name: string;
+  startDate: string;
+  endDate: string;
+  category: string;
+}
+
+export interface UPDATE_BATCH_REQUEST {
+  name?: string;
+  startDate?: string;
+  endDate?: string;
+  category?: string;
+  isActive?: boolean;
 }

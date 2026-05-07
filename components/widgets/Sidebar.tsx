@@ -21,6 +21,7 @@ import {
   Description,
   RocketLaunch,
   EventAvailable,
+  BatchPrediction,
 } from "@mui/icons-material";
 import { usePathname, useRouter } from "next/navigation";
 import { COLORS, FONT_SIZE } from "@/utils/enum";
@@ -32,11 +33,12 @@ const MENU_ITEMS = [
   { text: "Dashboard", icon: <Dashboard />, path: "/dashboard" },
   { text: "Board Management", icon: <School />, path: "/dashboard/schools" },
   { text: "Plan Management", icon: <CardMembership />, path: "/dashboard/plans" },
+  { text: "Training Management", icon: <EventAvailable />, path: "/dashboard/interviews" },
+  { text: "Batch Management", icon: <BatchPrediction />, path: "/dashboard/batches" },
   { text: "Country Management", icon: <Public />, path: "/dashboard/countries" },
   { text: "Research Management", icon: <Description />, path: "/dashboard/research" },
-   { text: "Patent Management", icon: <Description />, path: "/dashboard/patent" },
+  { text: "Patent Management", icon: <Description />, path: "/dashboard/patent" },
   { text: "Startup Management", icon: <RocketLaunch />, path: "/dashboard/startups" },
-  { text: "Interview Management", icon: <EventAvailable />, path: "/dashboard/interviews" },
 ];
 
 const Sidebar = () => {

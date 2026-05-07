@@ -18,10 +18,11 @@ export const useInterviews = () => {
 
   const { setSnackbar } = useSnackbar();
 
-  const fetchTeachers = async (page = 1, limit = 10) => {
+  const fetchTeachers = async (page = 1, limit = 10, status?: string) => {
     setLoading(true);
     try {
-      const response: any = await TrainingControllers.getTrainingTeachers(page, limit, "SCHOOL_APPROVED");
+      const currentStatus = status || "SCHOOL_APPROVED";
+      const response: any = await TrainingControllers.getTrainingTeachers(page, limit, currentStatus);
       if (response.data.success) {
         const sortedTeachers = (response.data.data.data || []).sort((a: any, b: any) => {
           if (a.interviewScheduledAt && !b.interviewScheduledAt) return -1;
@@ -70,8 +71,8 @@ export const useInterviews = () => {
     }
   };
 
-  const goToPage = (page: number) => {
-    fetchTeachers(page, pagination.limit);
+  const goToPage = (page: number, status?: string) => {
+    fetchTeachers(page, pagination.limit, status);
   };
 
   useEffect(() => {

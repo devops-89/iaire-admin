@@ -137,7 +137,6 @@ const Navbar = () => {
           }}
         >
           <MenuItem onClick={handleMenuClose} sx={{ fontFamily: poppins.style.fontFamily }}>Profile</MenuItem>
-          <MenuItem onClick={handleMenuClose} sx={{ fontFamily: poppins.style.fontFamily }}>Settings</MenuItem>
           <Divider />
           <MenuItem onClick={handleLogout} sx={{ color: COLORS.ERROR, fontFamily: poppins.style.fontFamily }}>Logout</MenuItem>
         </Menu>

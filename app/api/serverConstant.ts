@@ -8,4 +8,5 @@ users:`${baseURL}/users`,
   countries: `${baseURL}/countries`,
   patents: `${baseURL}/innovations/patents`,
   training: `${baseURL}/training`,
+  batches: `${baseURL}/batches`,
 }

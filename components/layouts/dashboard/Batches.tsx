@@ -22,78 +22,93 @@ import {
   Chip,
   CircularProgress,
   Skeleton,
-  Pagination,
+  Pagination as MuiPagination,
+  MenuItem,
 } from "@mui/material";
 import {
   Search,
   Add,
   Delete,
-  Public,
   Refresh,
   Edit,
+  BatchPrediction,
+  CalendarMonth,
+  Category as CategoryIcon,
 } from "@mui/icons-material";
-import { COLORS, FONT_SIZE } from "@/utils/enum";
+import { COLORS, FONT_SIZE, CATEGORY } from "@/utils/enum";
 import { poppins } from "@/utils/fonts";
-import { useCountries } from "@/hooks/common/useCountries";
+import { useBatches } from "@/hooks/common/useBatches";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 const validationSchema = Yup.object({
-  name: Yup.string().required("Country name is required"),
-  code: Yup.string().min(2, "Code must be at least 2 characters").required("Country code is required"),
-  phoneCode: Yup.string().required("Phone code is required"),
-  currencyCode: Yup.string().required("Currency code is required"),
+  name: Yup.string().required("Batch name is required"),
+  startDate: Yup.string().required("Start date is required"),
+  endDate: Yup.string().required("End date is required"),
+  category: Yup.string().oneOf(Object.values(CATEGORY)).required("Category is required"),
 });
 
 const FS = { fontFamily: poppins.style.fontFamily };
 
-const CountriesManagement = () => {
-  const { countries, loading, creating, updating, pagination, createCountry, updateCountry, deleteCountry, fetchCountries, goToPage } = useCountries();
+const BatchesManagement = () => {
+  const { batches, loading, creating, updating, pagination, createBatch, updateBatch, deleteBatch, fetchBatches, goToPage } = useBatches();
   const [search, setSearch] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState<any>(null);
-
+  const [selectedBatch, setSelectedBatch] = useState<any>(null);
 
   const formik = useFormik({
-    initialValues: { name: "", code: "", phoneCode: "", currencyCode: "" },
+    initialValues: { 
+      name: "", 
+      startDate: null, 
+      endDate: null, 
+      category: CATEGORY.RESEARCH 
+    },
     validationSchema,
     onSubmit: async (values, { resetForm }) => {
+      const payload = {
+        ...values,
+        startDate: values.startDate ? dayjs(values.startDate).toISOString() : "",
+        endDate: values.endDate ? dayjs(values.endDate).toISOString() : "",
+      };
+
       let success = false;
-      if (selectedCountry) {
-        success = await updateCountry(selectedCountry.id, values);
+      if (selectedBatch) {
+        success = await updateBatch(selectedBatch.id, payload as any);
       } else {
-        success = await createCountry(values);
+        success = await createBatch(payload as any);
       }
 
       if (success) {
         resetForm();
         setOpenDialog(false);
-        setSelectedCountry(null);
+        setSelectedBatch(null);
       }
     },
   });
 
-  const handleEdit = (country: any) => {
-    setSelectedCountry(country);
+  const handleEdit = (batch: any) => {
+    setSelectedBatch(batch);
     formik.setValues({
-      name: country.name,
-      code: country.code,
-      phoneCode: country.phoneCode,
-      currencyCode: country.currencyCode,
+      name: batch.name,
+      startDate: dayjs(batch.startDate) as any,
+      endDate: dayjs(batch.endDate) as any,
+      category: batch.category as CATEGORY,
     });
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    setSelectedCountry(null);
+    setSelectedBatch(null);
     formik.resetForm();
   };
 
-
-  const filtered = countries.filter((c) =>
-    c.name?.toLowerCase().includes(search.toLowerCase()) ||
-    c.code?.toLowerCase().includes(search.toLowerCase())
+  const filtered = batches.filter((b) =>
+    b.name?.toLowerCase().includes(search.toLowerCase()) ||
+    b.category?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -102,15 +117,15 @@ const CountriesManagement = () => {
       <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
         <Box>
           <Typography variant="h4" sx={{ ...FS, fontWeight: 700, color: COLORS.BLACK }}>
-            Country Management
+            Batch Management
           </Typography>
           <Typography variant="body1" sx={{ ...FS, color: COLORS.TEXT_SECONDARY, mt: 0.5 }}>
-            Manage all countries available on the platform.
+            Manage training batches, schedules and categories.
           </Typography>
         </Box>
         <Box sx={{ display: "flex", gap: 1.5 }}>
           <IconButton
-            onClick={() => fetchCountries(pagination.page, pagination.limit)}
+            onClick={() => fetchBatches(pagination.page, pagination.limit)}
             sx={{ border: "1px solid rgba(0,0,0,0.1)", borderRadius: "12px" }}
           >
             <Refresh />
@@ -119,7 +134,7 @@ const CountriesManagement = () => {
             variant="contained"
             startIcon={<Add />}
             onClick={() => {
-              setSelectedCountry(null);
+              setSelectedBatch(null);
               formik.resetForm();
               setOpenDialog(true);
             }}
@@ -132,20 +147,19 @@ const CountriesManagement = () => {
               "&:hover": { backgroundColor: COLORS.SECONDARY_NAVY },
             }}
           >
-            Add Country
+            Create Batch
           </Button>
-
         </Box>
       </Box>
 
       {/* Stats */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {[
-          { label: "Total Countries", value: pagination.total, color: COLORS.PRIMARY_NAVY },
-          { label: "Total Pages", value: pagination.totalPages, color: "#4CAF50" },
-          { label: "Currency Types", value: new Set(countries.map((c) => c.currencyCode)).size, color: COLORS.ACCENT_TAN },
+          { label: "Total Batches", value: pagination.total, color: COLORS.PRIMARY_NAVY, icon: <BatchPrediction /> },
+          { label: "Active Training", value: batches.filter(b => b.isActive).length, color: "#4CAF50", icon: <CalendarMonth /> },
+          { label: "Categories", value: Object.keys(CATEGORY).length, color: COLORS.ACCENT_TAN, icon: <CategoryIcon /> },
         ].map((stat, i) => (
-          <Grid size={{ xs: 12, sm: 4 }} key={i}>
+          <Grid key={i} size={{ xs: 12, sm: 4 }}>
             <Card
               sx={{
                 p: 3,
@@ -169,7 +183,7 @@ const CountriesManagement = () => {
                   color: stat.color,
                 }}
               >
-                <Public />
+                {stat.icon}
               </Box>
               <Box>
                 <Typography sx={{ ...FS, fontSize: FONT_SIZE.FS12, color: COLORS.TEXT_SECONDARY, fontWeight: 500 }}>
@@ -188,7 +202,7 @@ const CountriesManagement = () => {
       <Card sx={{ p: 0, borderRadius: "20px", boxShadow: "0px 10px 20px rgba(0,0,0,0.03)", overflow: "hidden" }}>
         <Box sx={{ p: 3, display: "flex", gap: 2, alignItems: "center" }}>
           <TextField
-            placeholder="Search countries..."
+            placeholder="Search batches..."
             size="small"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -204,19 +218,16 @@ const CountriesManagement = () => {
               },
             }}
           />
-          <Typography sx={{ ...FS, fontSize: FONT_SIZE.FS14, color: COLORS.TEXT_SECONDARY, ml: "auto" }}>
-            {pagination.total} total countries
-          </Typography>
         </Box>
 
         <TableContainer>
           <Table sx={{ minWidth: 650 }}>
             <TableHead sx={{ backgroundColor: "rgba(0,0,0,0.02)" }}>
               <TableRow>
-                {["#", "Name", "Code", "Phone Code", "Currency", "Actions"].map((h, i) => (
+                {["#", "Batch Name", "Category", "Start Date", "End Date", "Status", "Actions"].map((h, i) => (
                   <TableCell
                     key={h}
-                    align={i === 5 ? "right" : "left"}
+                    align={i === 6 ? "right" : "left"}
                     sx={{ fontWeight: 700, ...FS, fontSize: FONT_SIZE.FS14 }}
                   >
                     {h}
@@ -228,7 +239,7 @@ const CountriesManagement = () => {
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
-                    {Array.from({ length: 6 }).map((__, j) => (
+                    {Array.from({ length: 7 }).map((__, j) => (
                       <TableCell key={j}>
                         <Skeleton variant="text" />
                       </TableCell>
@@ -237,10 +248,10 @@ const CountriesManagement = () => {
                 ))
               ) : filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
-                    <Public sx={{ fontSize: 48, color: "rgba(0,0,0,0.1)", mb: 1 }} />
+                  <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
+                    <BatchPrediction sx={{ fontSize: 48, color: "rgba(0,0,0,0.1)", mb: 1 }} />
                     <Typography sx={{ ...FS, color: COLORS.TEXT_SECONDARY }}>
-                      No countries found. Add your first country.
+                      No batches found. Create your first batch.
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -259,30 +270,38 @@ const CountriesManagement = () => {
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={row.code}
+                        label={row.category}
                         size="small"
                         sx={{
                           ...FS,
                           fontWeight: 700,
-                          backgroundColor: "rgba(11,23,39,0.08)",
-                          color: COLORS.PRIMARY_NAVY,
-                          fontSize: FONT_SIZE.FS12,
+                          backgroundColor: 
+                            row.category === CATEGORY.RESEARCH ? "rgba(99, 102, 241, 0.1)" :
+                            row.category === CATEGORY.INNOVATION ? "rgba(245, 158, 11, 0.1)" : "rgba(16, 185, 129, 0.1)",
+                          color: 
+                            row.category === CATEGORY.RESEARCH ? "#6366F1" :
+                            row.category === CATEGORY.INNOVATION ? "#F59E0B" : "#10B981",
+                          fontSize: FONT_SIZE.FS11,
+                          borderRadius: "6px"
                         }}
                       />
                     </TableCell>
                     <TableCell sx={{ ...FS, color: COLORS.TEXT_SECONDARY, fontSize: FONT_SIZE.FS14 }}>
-                      {row.phoneCode}
+                      {dayjs(row.startDate).format("DD MMM, YYYY")}
+                    </TableCell>
+                    <TableCell sx={{ ...FS, color: COLORS.TEXT_SECONDARY, fontSize: FONT_SIZE.FS14 }}>
+                      {dayjs(row.endDate).format("DD MMM, YYYY")}
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={row.currencyCode}
+                        label={row.isActive ? "Active" : "Inactive"}
                         size="small"
                         sx={{
                           ...FS,
                           fontWeight: 600,
-                          backgroundColor: "rgba(209,160,84,0.12)",
-                          color: COLORS.ACCENT_TAN,
-                          fontSize: FONT_SIZE.FS12,
+                          backgroundColor: row.isActive ? "rgba(76, 175, 80, 0.12)" : "rgba(0,0,0,0.06)",
+                          color: row.isActive ? "#4CAF50" : COLORS.TEXT_SECONDARY,
+                          fontSize: FONT_SIZE.FS11,
                         }}
                       />
                     </TableCell>
@@ -296,13 +315,12 @@ const CountriesManagement = () => {
                       </IconButton>
                       <IconButton
                         size="small"
-                        onClick={() => deleteCountry(row.id)}
+                        onClick={() => deleteBatch(row.id)}
                         sx={{ color: COLORS.ERROR }}
                       >
                         <Delete fontSize="small" />
                       </IconButton>
                     </TableCell>
-
                   </TableRow>
                 ))
               )}
@@ -313,7 +331,7 @@ const CountriesManagement = () => {
         {/* Pagination */}
         {pagination.totalPages > 1 && (
           <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
-            <Pagination
+            <MuiPagination
               count={pagination.totalPages}
               page={pagination.page}
               onChange={(_, page) => goToPage(page)}
@@ -334,7 +352,7 @@ const CountriesManagement = () => {
         )}
       </Card>
 
-      {/* Create Dialog */}
+      {/* Create/Edit Dialog */}
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
@@ -345,16 +363,16 @@ const CountriesManagement = () => {
         }}
       >
         <DialogTitle sx={{ ...FS, fontWeight: 700, fontSize: 20, pb: 1 }}>
-          {selectedCountry ? "Edit Country" : "Add New Country"}
+          {selectedBatch ? "Edit Batch" : "Create New Batch"}
         </DialogTitle>
 
         <form onSubmit={formik.handleSubmit}>
           <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2.5, pt: 2 }}>
             <TextField
-              label="Country Name"
+              label="Batch Name"
               name="name"
               fullWidth
-              placeholder="e.g. South Korea"
+              placeholder="e.g. Summer Research 2024"
               value={formik.values.name}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -362,42 +380,56 @@ const CountriesManagement = () => {
               helperText={formik.touched.name && formik.errors.name}
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px", fontFamily: poppins.style.fontFamily } }}
             />
+
             <TextField
-              label="Country Code"
-              name="code"
+              select
+              label="Category"
+              name="category"
               fullWidth
-              placeholder="e.g. KR"
-              value={formik.values.code}
+              value={formik.values.category}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.code && Boolean(formik.errors.code)}
-              helperText={formik.touched.code && formik.errors.code}
+              error={formik.touched.category && Boolean(formik.errors.category)}
+              helperText={formik.touched.category && formik.errors.category}
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px", fontFamily: poppins.style.fontFamily } }}
-            />
-            <TextField
-              label="Phone Code"
-              name="phoneCode"
-              fullWidth
-              placeholder="e.g. +82"
-              value={formik.values.phoneCode}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.phoneCode && Boolean(formik.errors.phoneCode)}
-              helperText={formik.touched.phoneCode && formik.errors.phoneCode}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px", fontFamily: poppins.style.fontFamily } }}
-            />
-            <TextField
-              label="Currency Code"
-              name="currencyCode"
-              fullWidth
-              placeholder="e.g. KRW"
-              value={formik.values.currencyCode}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.currencyCode && Boolean(formik.errors.currencyCode)}
-              helperText={formik.touched.currencyCode && formik.errors.currencyCode}
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px", fontFamily: poppins.style.fontFamily } }}
-            />
+            >
+              {Object.values(CATEGORY).map((option) => (
+                <MenuItem key={option} value={option} sx={FS}>
+                  {option.charAt(0).toUpperCase() + option.slice(1).toLowerCase()}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <DatePicker
+                  label="Start Date"
+                  value={formik.values.startDate}
+                  onChange={(val) => formik.setFieldValue("startDate", val)}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      error: formik.touched.startDate && Boolean(formik.errors.startDate),
+                      helperText: formik.touched.startDate && (formik.errors.startDate as string),
+                      sx: { "& .MuiOutlinedInput-root": { borderRadius: "12px", fontFamily: poppins.style.fontFamily } }
+                    }
+                  }}
+                />
+                <DatePicker
+                  label="End Date"
+                  value={formik.values.endDate}
+                  onChange={(val) => formik.setFieldValue("endDate", val)}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      error: formik.touched.endDate && Boolean(formik.errors.endDate),
+                      helperText: formik.touched.endDate && (formik.errors.endDate as string),
+                      sx: { "& .MuiOutlinedInput-root": { borderRadius: "12px", fontFamily: poppins.style.fontFamily } }
+                    }
+                  }}
+                />
+              </Box>
+            </LocalizationProvider>
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
             <Button
@@ -410,7 +442,7 @@ const CountriesManagement = () => {
               type="submit"
               variant="contained"
               disabled={creating || updating}
-              startIcon={(creating || updating) ? <CircularProgress size={16} color="inherit" /> : (selectedCountry ? <Edit /> : <Add />)}
+              startIcon={(creating || updating) ? <CircularProgress size={16} color="inherit" /> : (selectedBatch ? <Edit /> : <Add />)}
               sx={{
                 ...FS,
                 textTransform: "none",
@@ -420,14 +452,13 @@ const CountriesManagement = () => {
                 "&:hover": { backgroundColor: COLORS.SECONDARY_NAVY },
               }}
             >
-              {creating || updating ? (selectedCountry ? "Updating..." : "Creating...") : (selectedCountry ? "Update Country" : "Create Country")}
+              {creating || updating ? (selectedBatch ? "Updating..." : "Creating...") : (selectedBatch ? "Create Batch" : "Create Batch")}
             </Button>
           </DialogActions>
-
         </form>
       </Dialog>
     </Box>
   );
 };
 
-export default CountriesManagement;
+export default BatchesManagement;
