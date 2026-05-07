@@ -97,6 +97,18 @@ batchesApi.interceptors.request.use((config) => {
   return config;
 });
 
+const boardsApi = axios.create({
+  baseURL: serverConstants.boards,
+});
+
+boardsApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export {
   userPublicApi,
   userSecuredApi,
@@ -108,4 +120,5 @@ export {
   patentsApi,
   trainingApi,
   batchesApi,
+  boardsApi,
 };

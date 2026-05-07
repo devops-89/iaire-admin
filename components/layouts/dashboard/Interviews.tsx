@@ -45,6 +45,8 @@ import {
   LocationOn,
   Info,
   Layers,
+  CheckCircle,
+  Cancel,
 } from "@mui/icons-material";
 import { COLORS, FONT_SIZE } from "@/utils/enum";
 import { poppins } from "@/utils/fonts";
@@ -65,8 +67,11 @@ const Interviews = () => {
     loading, 
     loadingDetails,
     scheduling, 
+    approving,
     pagination, 
     scheduleInterview, 
+    approveInterview,
+    rejectInterview,
     fetchTeachers,
     fetchTeacherDetails,
     goToPage 
@@ -78,6 +83,9 @@ const Interviews = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRecord, setActiveRecord] = useState<any>(null);
   const [activeStatus, setActiveStatus] = useState("SCHOOL_APPROVED");
+  const [openRejectDialog, setOpenRejectDialog] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [pendingRecord, setPendingRecord] = useState<any>(null);
 
   const STATUS_TABS = [
     { label: "Self Nominated", value: "SELF_NOMINATED" },
@@ -126,6 +134,29 @@ const Interviews = () => {
     if (success) {
       setOpenModal(false);
       setInterviewDate(null);
+    }
+  };
+
+  const handleApprove = async () => {
+    if (!activeRecord) return;
+    const id = activeRecord.id;
+    handleMenuClose();
+    await approveInterview(id, activeStatus);
+  };
+
+  const handleOpenReject = () => {
+    setPendingRecord(activeRecord); // save before menu closes and clears activeRecord
+    setOpenRejectDialog(true);
+    handleMenuClose();
+  };
+
+  const handleConfirmReject = async () => {
+    if (!pendingRecord) return;
+    const success = await rejectInterview(pendingRecord.id, activeStatus, rejectReason || undefined);
+    if (success) {
+      setOpenRejectDialog(false);
+      setRejectReason("");
+      setPendingRecord(null);
     }
   };
 
@@ -326,6 +357,24 @@ const Interviews = () => {
                       "& .MuiChip-label": { px: 1.5 }
                     }}
                   />
+                  {record.status === "REJECTED" && record.reason && (
+                    <Typography 
+                      sx={{ 
+                        ...FS, 
+                        fontSize: 10, 
+                        color: "#DC2626", 
+                        mt: 0.5, 
+                        fontStyle: "italic",
+                        maxWidth: 150,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap"
+                      }}
+                      title={record.reason}
+                    >
+                      Reason: {record.reason}
+                    </Typography>
+                  )}
                 </TableCell>
 
                 {/* Interview Info */}
@@ -399,7 +448,7 @@ const Interviews = () => {
           View Profile Details
         </MenuItem>
         <Divider sx={{ my: 0.5, borderStyle: "dashed" }} />
-        {(activeStatus === "SCHOOL_APPROVED" || activeStatus === "INTERVIEW_SCHEDULED") && (
+        {activeStatus === "SCHOOL_APPROVED" && (
           <MenuItem 
             onClick={handleOpenSchedule}
             sx={{ 
@@ -414,8 +463,47 @@ const Interviews = () => {
             }}
           >
             <CalendarMonth sx={{ fontSize: 20 }} />
-            {activeRecord?.interviewScheduledAt ? "Reschedule Interview" : "Schedule Interview"}
+            Schedule Interview
           </MenuItem>
+        )}
+        {activeStatus === "INTERVIEW_SCHEDULED" && (
+          <>
+            <Divider sx={{ my: 0.5, borderStyle: "dashed" }} />
+            <MenuItem 
+              onClick={handleApprove}
+              disabled={approving}
+              sx={{ 
+                ...FS, 
+                fontSize: 14, 
+                fontWeight: 600, 
+                py: 1.5,
+                color: "#059669",
+                display: "flex",
+                gap: 1.5,
+                "&:hover": { bgcolor: "rgba(5, 150, 105, 0.06)" }
+              }}
+            >
+              <CheckCircle sx={{ fontSize: 20 }} />
+              {approving ? "Processing..." : "Approve Teacher"}
+            </MenuItem>
+            <MenuItem 
+              onClick={handleOpenReject}
+              disabled={approving}
+              sx={{ 
+                ...FS, 
+                fontSize: 14, 
+                fontWeight: 600, 
+                py: 1.5,
+                color: COLORS.ERROR,
+                display: "flex",
+                gap: 1.5,
+                "&:hover": { bgcolor: "rgba(239, 68, 68, 0.06)" }
+              }}
+            >
+              <Cancel sx={{ fontSize: 20 }} />
+              Reject Teacher
+            </MenuItem>
+          </>
         )}
       </Menu>
 
@@ -562,6 +650,37 @@ const Interviews = () => {
                         <Chip label={teacherDetails.training.mode} size="small" sx={{ fontWeight: 800, fontSize: 9, height: 20, bgcolor: "rgba(11, 23, 39, 0.05)" }} />
                       </Box>
                     </Box>
+
+                    {/* Status & Rejection Reason */}
+                    <Box sx={{ pt: 1 }}>
+                      <Typography sx={{ ...FS, fontSize: 11, color: COLORS.TEXT_SECONDARY, mb: 0.5 }}>Nomination Status</Typography>
+                      <Chip 
+                        label={teacherDetails.status.replace('_', ' ')} 
+                        size="small" 
+                        sx={{ 
+                          fontWeight: 800, 
+                          fontSize: 10, 
+                          bgcolor: 
+                            teacherDetails.status === "IAIRE_APPROVED" ? "rgba(16, 185, 129, 0.1)" : 
+                            teacherDetails.status === "REJECTED" ? "rgba(239, 68, 68, 0.1)" : 
+                            "rgba(11, 23, 39, 0.05)",
+                          color: 
+                            teacherDetails.status === "IAIRE_APPROVED" ? "#059669" : 
+                            teacherDetails.status === "REJECTED" ? "#DC2626" : 
+                            COLORS.PRIMARY_NAVY,
+                        }} 
+                      />
+                      {teacherDetails.status === "REJECTED" && teacherDetails.reason && (
+                        <Box sx={{ mt: 2, p: 2, bgcolor: "rgba(239, 68, 68, 0.05)", borderRadius: "12px", border: "1px solid rgba(239, 68, 68, 0.1)" }}>
+                          <Typography sx={{ ...FS, fontSize: 11, color: "#DC2626", fontWeight: 700, mb: 0.5, display: "flex", alignItems: "center", gap: 0.5 }}>
+                            <Cancel sx={{ fontSize: 14 }} /> Rejection Reason
+                          </Typography>
+                          <Typography sx={{ ...FS, fontSize: 13, color: COLORS.BLACK, fontStyle: "italic" }}>
+                            "{teacherDetails.reason}"
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
                   </Stack>
                 </Grid>
               </Grid>
@@ -693,6 +812,72 @@ const Interviews = () => {
             }}
           >
             {scheduling ? <CircularProgress size={20} color="inherit" /> : (selectedTeacher?.interviewScheduledAt ? "Update Schedule" : "Confirm Schedule")}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Reject Reason Dialog */}
+      <Dialog
+        open={openRejectDialog}
+        onClose={() => { setOpenRejectDialog(false); setRejectReason(""); }}
+        maxWidth="xs"
+        fullWidth
+        slotProps={{
+          paper: { sx: { borderRadius: "20px", p: 1 } },
+          backdrop: { sx: { backdropFilter: "blur(6px)", backgroundColor: "rgba(0,0,0,0.35)" } }
+        }}
+      >
+        <DialogTitle sx={{ ...FS, fontWeight: 700, fontSize: 18, pb: 0.5, display: "flex", alignItems: "center", gap: 1.5 }}>
+          <Box sx={{ width: 36, height: 36, borderRadius: "10px", bgcolor: "rgba(239, 68, 68, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Cancel sx={{ color: COLORS.ERROR, fontSize: 20 }} />
+          </Box>
+          Reject Teacher
+        </DialogTitle>
+        <DialogContent sx={{ pt: 2 }}>
+          <Typography sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY, mb: 2.5 }}>
+            You are about to reject this teacher's nomination. Optionally provide a reason for the rejection.
+          </Typography>
+          <TextField
+            fullWidth
+            multiline
+            rows={3}
+            placeholder="Reason for rejection (optional)..."
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "12px",
+                fontFamily: poppins.style.fontFamily,
+                fontSize: 14,
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: COLORS.ERROR,
+                }
+              }
+            }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
+          <Button
+            onClick={() => { setOpenRejectDialog(false); setRejectReason(""); }}
+            sx={{ ...FS, textTransform: "none", color: COLORS.TEXT_SECONDARY, borderRadius: "10px", fontWeight: 600 }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleConfirmReject}
+            disabled={approving}
+            sx={{
+              ...FS,
+              textTransform: "none",
+              backgroundColor: COLORS.ERROR,
+              borderRadius: "10px",
+              px: 3,
+              fontWeight: 600,
+              "&:hover": { backgroundColor: "#DC2626" }
+            }}
+          >
+            {approving ? <CircularProgress size={18} color="inherit" /> : "Confirm Reject"}
           </Button>
         </DialogActions>
       </Dialog>

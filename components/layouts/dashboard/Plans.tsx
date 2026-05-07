@@ -333,8 +333,8 @@ const PlansManagement = () => {
         onClose={handleCloseDialog}
         maxWidth="md"
         fullWidth
-        PaperProps={{
-          sx: { borderRadius: "24px", p: 1 },
+        slotProps={{
+          paper: { sx: { borderRadius: "24px", p: 1 } }
         }}
       >
         <DialogTitle sx={{ ...FS, fontWeight: 800, fontSize: 24, pb: 1 }}>
@@ -343,7 +343,7 @@ const PlansManagement = () => {
         <form onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={3} sx={{ pt: 1 }}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   label="Plan Name"
                   name="name"
@@ -387,7 +387,7 @@ const PlansManagement = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <FormControl fullWidth sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}>
                   <InputLabel sx={{ ...FS }}>Billing Interval</InputLabel>
                   <Select
@@ -403,7 +403,7 @@ const PlansManagement = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <TextField
                   label="Price"
                   name="price"
@@ -438,7 +438,7 @@ const PlansManagement = () => {
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px", fontFamily: poppins.style.fontFamily } }}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", p: 2, backgroundColor: "rgba(11, 23, 39, 0.03)", borderRadius: "14px" }}>
                   <Box>
                     <Typography sx={{ ...FS, fontWeight: 600 }}>Active Status</Typography>

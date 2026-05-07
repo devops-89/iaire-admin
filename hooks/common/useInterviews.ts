@@ -9,6 +9,7 @@ export const useInterviews = () => {
   const [loading, setLoading] = useState(true);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [scheduling, setScheduling] = useState(false);
+  const [approving, setApproving] = useState(false);
   const [pagination, setPagination] = useState<Pagination>({
     page: 1,
     limit: 10,
@@ -71,6 +72,40 @@ export const useInterviews = () => {
     }
   };
 
+  const approveInterview = async (id: number, currentStatus: string) => {
+    setApproving(true);
+    try {
+      const response: any = await TrainingControllers.approveTraining(id);
+      if (response.data.success) {
+        setSnackbar("Teacher approved successfully", "success");
+        fetchTeachers(pagination.page, pagination.limit, currentStatus);
+        return true;
+      }
+    } catch (error: any) {
+      setSnackbar(error.response?.data?.message || "Failed to approve", "error");
+    } finally {
+      setApproving(false);
+    }
+    return false;
+  };
+
+  const rejectInterview = async (id: number, currentStatus: string, reason?: string) => {
+    setApproving(true);
+    try {
+      const response: any = await TrainingControllers.rejectTraining(id, reason);
+      if (response.data.success) {
+        setSnackbar("Teacher rejected", "success");
+        fetchTeachers(pagination.page, pagination.limit, currentStatus);
+        return true;
+      }
+    } catch (error: any) {
+      setSnackbar(error.response?.data?.message || "Failed to reject", "error");
+    } finally {
+      setApproving(false);
+    }
+    return false;
+  };
+
   const goToPage = (page: number, status?: string) => {
     fetchTeachers(page, pagination.limit, status);
   };
@@ -86,8 +121,11 @@ export const useInterviews = () => {
     loading,
     loadingDetails,
     scheduling,
+    approving,
     pagination,
     scheduleInterview,
+    approveInterview,
+    rejectInterview,
     fetchTeachers,
     fetchTeacherDetails,
     goToPage,

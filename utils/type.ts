@@ -129,6 +129,7 @@ export interface TrainingTeacher {
   schoolApprovedAt?: string;
   iaireApprovedAt?: string;
   interviewScheduledAt?: string;
+  reason?: string;
 }
 
 export interface Training {
@@ -198,4 +199,12 @@ export interface UPDATE_BATCH_REQUEST {
   endDate?: string;
   category?: string;
   isActive?: boolean;
+}
+
+export interface BoardAnalytics {
+  boardId: number;
+  boardName: string;
+  totalSchools: number;
+  totalTeachers: number;
+  totalStudents: number;
 }

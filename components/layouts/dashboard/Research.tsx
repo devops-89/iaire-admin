@@ -19,7 +19,7 @@ const ResearchManagement = () => {
 
       <Grid container spacing={3}>
         {/* Research Stats Area */}
-        <Grid item xs={12} md={7}>
+        <Grid size={{ xs: 12, md: 7 }}>
           <Grid container spacing={2}>
             {[
               { label: "Published Papers", value: "840+", icon: <Article />, color: COLORS.PRIMARY_NAVY },
@@ -27,7 +27,7 @@ const ResearchManagement = () => {
               { label: "Global Citations", value: "15.4k", icon: <Public />, color: "#2196F3" },
               { label: "Ongoing Projects", value: "45", icon: <Psychology />, color: "#9C27B0" },
             ].map((stat, idx) => (
-              <Grid item xs={6} key={idx}>
+              <Grid size={{ xs: 6 }} key={idx}>
                 <Card sx={{ p: 3, borderRadius: "20px", textAlign: "center", border: "1px solid rgba(0,0,0,0.03)" }}>
                   <Box sx={{ color: stat.color, mb: 1 }}>{stat.icon}</Box>
                   <Typography sx={{ fontSize: 22, fontWeight: 800 }}>{stat.value}</Typography>
@@ -39,7 +39,7 @@ const ResearchManagement = () => {
         </Grid>
 
         {/* Top Research Categories */}
-        <Grid item xs={12} md={5}>
+        <Grid size={{ xs: 12, md: 5 }}>
           <Card sx={{ p: 3, borderRadius: "24px", height: "100%", boxShadow: "0px 15px 35px rgba(0,0,0,0.04)" }}>
             <Typography sx={{ fontSize: 16, fontWeight: 700, mb: 3 }}>Trending Research Areas</Typography>
             <Stack spacing={2}>

@@ -31,4 +31,27 @@ export const TrainingControllers = {
       throw error;
     }
   },
+
+  approveTraining: async (id: number) => {
+    try {
+      const response = await trainingApi.patch(`/iaire/decision/${id}`, {
+        action: "IAIRE_APPROVED",
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  rejectTraining: async (id: number, reason?: string) => {
+    try {
+      const response = await trainingApi.patch(`/iaire/decision/${id}`, {
+        action: "REJECTED",
+        ...(reason && { reason }),
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  },
 };

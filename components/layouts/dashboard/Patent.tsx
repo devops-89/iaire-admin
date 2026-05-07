@@ -186,7 +186,7 @@ const PatentManagement = () => {
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 6 }}>
         {stats.map((item, idx) => (
-          <Grid item xs={12} sm={6} md={3} key={idx}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={idx}>
             <Card sx={{ 
               p: 3, 
               borderRadius: "24px", 
@@ -225,7 +225,8 @@ const PatentManagement = () => {
           placeholder="Search by title, number or inventors..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          InputProps={{
+          slotProps={{
+            input: {
             startAdornment: (
               <InputAdornment position="start">
                 <Search sx={{ color: COLORS.TEXT_SECONDARY }} />
@@ -385,7 +386,7 @@ const PatentManagement = () => {
         onClose={handleCloseDialog}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: { borderRadius: "24px", p: 1 } }}
+        slotProps={{ paper: { sx: { borderRadius: "24px", p: 1 } } }}
       >
         <DialogTitle sx={{ ...FS, fontWeight: 800, fontSize: 24 }}>
           {selectedPatent ? "Edit Patent Filing" : "New Patent Filing"}
@@ -393,7 +394,7 @@ const PatentManagement = () => {
         <form onSubmit={formik.handleSubmit}>
           <DialogContent>
             <Grid container spacing={3}>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   name="title"
@@ -406,7 +407,7 @@ const PatentManagement = () => {
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   fullWidth
                   name="patentNumber"
@@ -419,13 +420,13 @@ const PatentManagement = () => {
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   fullWidth
                   name="filingDate"
                   label="Filing Date"
                   type="date"
-                  InputLabelProps={{ shrink: true }}
+                  slotProps={{ inputLabel: { shrink: true } }}
                   value={formik.values.filingDate}
                   onChange={formik.handleChange}
                   error={formik.touched.filingDate && Boolean(formik.errors.filingDate)}
@@ -433,7 +434,7 @@ const PatentManagement = () => {
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   name="inventors"
@@ -446,7 +447,7 @@ const PatentManagement = () => {
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <FormControl fullWidth sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}>
                   <InputLabel>Status</InputLabel>
                   <Select
@@ -461,7 +462,7 @@ const PatentManagement = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   name="description"

@@ -30,21 +30,21 @@ const StudentsManagement = () => {
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {/* Main Stats */}
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Card sx={{ p: 4, borderRadius: "24px", bgcolor: COLORS.PRIMARY_NAVY, color: "white", position: "relative", overflow: "hidden" }}>
             <Box sx={{ position: "absolute", top: -20, right: -20, width: 150, height: 150, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.05)" }} />
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Typography sx={{ opacity: 0.7, fontSize: 14 }}>Active Students</Typography>
                 <Typography sx={{ fontSize: 36, fontWeight: 800 }}>45,200</Typography>
                 <Typography sx={{ fontSize: 12, color: "#4CAF50", mt: 1 }}>+12% this month</Typography>
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Typography sx={{ opacity: 0.7, fontSize: 14 }}>Avg. Attendance</Typography>
                 <Typography sx={{ fontSize: 36, fontWeight: 800 }}>94.2%</Typography>
                 <Typography sx={{ fontSize: 12, color: "#4CAF50", mt: 1 }}>Stable performance</Typography>
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Typography sx={{ opacity: 0.7, fontSize: 14 }}>Certified Skills</Typography>
                 <Typography sx={{ fontSize: 36, fontWeight: 800 }}>12.8k</Typography>
                 <Typography sx={{ fontSize: 12, color: "#4CAF50", mt: 1 }}>+850 this week</Typography>
@@ -54,7 +54,7 @@ const StudentsManagement = () => {
         </Grid>
 
         {/* Top Performers Card */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card sx={{ p: 3, borderRadius: "24px", boxShadow: "0px 15px 35px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.03)" }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
               <Typography sx={{ fontWeight: 700, fontFamily: poppins.style.fontFamily }}>Top Performers</Typography>
@@ -80,28 +80,28 @@ const StudentsManagement = () => {
 
       {/* Activity Grid */}
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Paper sx={{ p: 3, borderRadius: "20px", textAlign: "center", border: "1px dashed rgba(0,0,0,0.1)", bgcolor: "transparent" }}>
             <LocalLibrary sx={{ color: COLORS.PRIMARY_NAVY, mb: 1 }} />
             <Typography sx={{ fontSize: 14, fontWeight: 700 }}>Homework Completion</Typography>
             <Typography sx={{ fontSize: 12, color: COLORS.TEXT_SECONDARY }}>88% Rate</Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Paper sx={{ p: 3, borderRadius: "20px", textAlign: "center", border: "1px dashed rgba(0,0,0,0.1)", bgcolor: "transparent" }}>
             <Person sx={{ color: "#4CAF50", mb: 1 }} />
             <Typography sx={{ fontSize: 14, fontWeight: 700 }}>Parent Meetings</Typography>
             <Typography sx={{ fontSize: 12, color: COLORS.TEXT_SECONDARY }}>1,200 Scheduled</Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Paper sx={{ p: 3, borderRadius: "20px", textAlign: "center", border: "1px dashed rgba(0,0,0,0.1)", bgcolor: "transparent" }}>
             <WorkspacePremium sx={{ color: COLORS.ACCENT_TAN, mb: 1 }} />
             <Typography sx={{ fontSize: 14, fontWeight: 700 }}>Olympic Winners</Typography>
             <Typography sx={{ fontSize: 12, color: COLORS.TEXT_SECONDARY }}>45 Gold Medals</Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Paper sx={{ p: 3, borderRadius: "20px", textAlign: "center", border: "1px dashed rgba(0,0,0,0.1)", bgcolor: "transparent" }}>
             <MoreHoriz sx={{ color: COLORS.TEXT_SECONDARY, mb: 1 }} />
             <Typography sx={{ fontSize: 14, fontWeight: 700 }}>Extracurriculars</Typography>

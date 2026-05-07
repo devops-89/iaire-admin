@@ -281,7 +281,7 @@ const BatchesManagement = () => {
                           color: 
                             row.category === CATEGORY.RESEARCH ? "#6366F1" :
                             row.category === CATEGORY.INNOVATION ? "#F59E0B" : "#10B981",
-                          fontSize: FONT_SIZE.FS11,
+                          fontSize: FONT_SIZE.FS12,
                           borderRadius: "6px"
                         }}
                       />
@@ -301,7 +301,7 @@ const BatchesManagement = () => {
                           fontWeight: 600,
                           backgroundColor: row.isActive ? "rgba(76, 175, 80, 0.12)" : "rgba(0,0,0,0.06)",
                           color: row.isActive ? "#4CAF50" : COLORS.TEXT_SECONDARY,
-                          fontSize: FONT_SIZE.FS11,
+                          fontSize: FONT_SIZE.FS12,
                         }}
                       />
                     </TableCell>

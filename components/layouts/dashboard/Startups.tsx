@@ -51,7 +51,7 @@ const StartupsManagement = () => {
       {/* Lifecycle Funnel */}
       <Grid container spacing={3} sx={{ mb: 5 }}>
         {STARTUP_STAGES.map((item, idx) => (
-          <Grid item xs={12} sm={6} md={3} key={idx}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={idx}>
             <Card sx={{ 
               p: 3, 
               borderRadius: "24px", 
@@ -93,7 +93,7 @@ const StartupsManagement = () => {
 
       <Grid container spacing={3}>
         {/* Industry Distribution */}
-        <Grid item xs={12} md={7}>
+        <Grid size={{ xs: 12, md: 7 }}>
           <Card sx={{ p: 3, borderRadius: "24px", boxShadow: "0px 15px 35px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.03)" }}>
             <Typography sx={{ fontSize: 18, fontWeight: 700, mb: 3, fontFamily: poppins.style.fontFamily }}>
               Industry Focus Areas
@@ -127,7 +127,7 @@ const StartupsManagement = () => {
         </Grid>
 
         {/* Featured Startups */}
-        <Grid item xs={12} md={5}>
+        <Grid size={{ xs: 12, md: 5 }}>
           <Card sx={{ p: 3, borderRadius: "24px", boxShadow: "0px 15px 35px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.03)", height: "100%" }}>
             <Typography sx={{ fontSize: 18, fontWeight: 700, mb: 3, fontFamily: poppins.style.fontFamily }}>
               Featured Startups

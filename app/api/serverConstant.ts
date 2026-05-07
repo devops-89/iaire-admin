@@ -9,4 +9,5 @@ users:`${baseURL}/users`,
   patents: `${baseURL}/innovations/patents`,
   training: `${baseURL}/training`,
   batches: `${baseURL}/batches`,
+  boards: `${baseURL}/boards`,
 }
