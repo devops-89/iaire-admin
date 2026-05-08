@@ -79,7 +79,7 @@ const PatentManagement = () => {
       p.inventors.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Stats calculation
+
   const stats = [
     { label: "Total Patents", value: pagination.total, icon: <Description />, color: COLORS.PRIMARY_NAVY },
     { label: "Granted", value: patents.filter(p => p.status === "GRANTED").length, icon: <CheckCircle />, color: COLORS.SUCCESS },

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { poppins } from "@/utils/fonts";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard | Login",
@@ -17,8 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={poppins.className}>
-        {children}
-        <GlobalSnackbar />
+        <AppRouterCacheProvider>
+          {children}
+          <GlobalSnackbar />
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

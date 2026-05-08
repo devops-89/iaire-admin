@@ -23,7 +23,7 @@ export const useBatches = () => {
       const response: any = await BatchControllers.getBatches(page, limit);
       if (response.data.success) {
         setBatches(response.data.data.data || []);
-        setPagination(response.data.data.pagination);
+        setPagination(response.data.data.meta);
       }
     } catch (error: any) {
       setSnackbar(error.response?.data?.message || "Failed to fetch batches", "error");
@@ -66,20 +66,6 @@ export const useBatches = () => {
     return false;
   };
 
-  const deleteBatch = async (id: number) => {
-    try {
-      const response: any = await BatchControllers.deleteBatch(id);
-      if (response.data.success) {
-        setSnackbar("Batch deleted successfully", "success");
-        fetchBatches(pagination.page, pagination.limit);
-        return true;
-      }
-    } catch (error: any) {
-      setSnackbar(error.response?.data?.message || "Failed to delete batch", "error");
-    }
-    return false;
-  };
-
   const goToPage = (page: number) => {
     fetchBatches(page, pagination.limit);
   };
@@ -97,7 +83,7 @@ export const useBatches = () => {
     fetchBatches,
     createBatch,
     updateBatch,
-    deleteBatch,
+  
     goToPage,
   };
 };

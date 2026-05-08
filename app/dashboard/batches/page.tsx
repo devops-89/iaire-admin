@@ -1,5 +1,5 @@
 import React from "react";
-import BatchesManagement from "@/components/layouts/dashboard/Batches";
+import BatchesManagement from "@/components/layouts/dashboard/batches";
 
 const BatchesPage = () => {
   return <BatchesManagement />;

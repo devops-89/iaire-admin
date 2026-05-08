@@ -182,6 +182,8 @@ export interface Batch {
   startDate: string;
   endDate: string;
   category: string;
+  userRole: string;
+  status: string;
   isActive: boolean;
   createdAt?: string;
 }
@@ -191,6 +193,16 @@ export interface CREATE_BATCH_REQUEST {
   startDate: string;
   endDate: string;
   category: string;
+  userRole: string;
+  subjectiveQuestions?: {
+    question: string;
+    answer: string;
+  }[];
+  objectiveQuestions?: {
+    question: string;
+    options: string[];
+    answer: string;
+  }[];
 }
 
 export interface UPDATE_BATCH_REQUEST {
@@ -198,7 +210,17 @@ export interface UPDATE_BATCH_REQUEST {
   startDate?: string;
   endDate?: string;
   category?: string;
+  userRole?: string;
   isActive?: boolean;
+  subjectiveQuestions?: {
+    question: string;
+    answer: string;
+  }[];
+  objectiveQuestions?: {
+    question: string;
+    options: string[];
+    answer: string;
+  }[];
 }
 
 export interface BoardAnalytics {

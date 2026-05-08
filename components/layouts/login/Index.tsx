@@ -8,7 +8,6 @@ import {
   IconButton,
   InputAdornment,
   Link,
-  Stack,
   TextField,
   Typography,
   CircularProgress,
@@ -302,7 +301,7 @@ const LoginLayout = () => {
 
           {view === "RESET" && (
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              <Stack direction="row" spacing={1.5} justifyContent="center" sx={{ mb: 1 }}>
+              <Box sx={{ display: "flex", flexDirection: "row", gap: 1.5, justifyContent: "center", mb: 1 }}>
                 {otpArray.map((digit, index) => (
                   <TextField
                     key={index}
@@ -321,7 +320,7 @@ const LoginLayout = () => {
                     }}
                   />
                 ))}
-              </Stack>
+              </Box>
 
               <TextField
                 fullWidth
