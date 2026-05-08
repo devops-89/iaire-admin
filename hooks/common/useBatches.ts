@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { BatchControllers } from "@/app/api/batchControllers";
-import { Batch, Pagination, CREATE_BATCH_REQUEST, UPDATE_BATCH_REQUEST } from "@/utils/type";
+import {
+  Batch,
+  Pagination,
+  CREATE_BATCH_REQUEST,
+  UPDATE_BATCH_REQUEST,
+} from "@/utils/type";
 import useSnackbar from "@/store/useSnackbar";
 
 export const useBatches = () => {
@@ -26,7 +31,10 @@ export const useBatches = () => {
         setPagination(response.data.data.meta);
       }
     } catch (error: any) {
-      setSnackbar(error.response?.data?.message || "Failed to fetch batches", "error");
+      setSnackbar(
+        error.response?.data?.message || "Failed to fetch batches",
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -42,7 +50,10 @@ export const useBatches = () => {
         return true;
       }
     } catch (error: any) {
-      setSnackbar(error.response?.data?.message || "Failed to create batch", "error");
+      setSnackbar(
+        error.response?.data?.message || "Failed to create batch",
+        "error",
+      );
     } finally {
       setCreating(false);
     }
@@ -59,7 +70,10 @@ export const useBatches = () => {
         return true;
       }
     } catch (error: any) {
-      setSnackbar(error.response?.data?.message || "Failed to update batch", "error");
+      setSnackbar(
+        error.response?.data?.message || "Failed to update batch",
+        "error",
+      );
     } finally {
       setUpdating(false);
     }
@@ -83,7 +97,7 @@ export const useBatches = () => {
     fetchBatches,
     createBatch,
     updateBatch,
-  
+
     goToPage,
   };
 };

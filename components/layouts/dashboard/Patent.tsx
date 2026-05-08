@@ -76,15 +76,34 @@ const PatentManagement = () => {
     (p) =>
       p.title.toLowerCase().includes(search.toLowerCase()) ||
       p.patentNumber.toLowerCase().includes(search.toLowerCase()) ||
-      p.inventors.toLowerCase().includes(search.toLowerCase())
+      p.inventors.toLowerCase().includes(search.toLowerCase()),
   );
 
-
   const stats = [
-    { label: "Total Patents", value: pagination.total, icon: <Description />, color: COLORS.PRIMARY_NAVY },
-    { label: "Granted", value: patents.filter(p => p.status === "GRANTED").length, icon: <CheckCircle />, color: COLORS.SUCCESS },
-    { label: "Pending", value: patents.filter(p => p.status === "PENDING").length, icon: <HourglassEmpty />, color: COLORS.WARNING },
-    { label: "Under Review", value: patents.filter(p => p.status === "UNDER_REVIEW").length, icon: <Gavel />, color: COLORS.INFO },
+    {
+      label: "Total Patents",
+      value: pagination.total,
+      icon: <Description />,
+      color: COLORS.PRIMARY_NAVY,
+    },
+    {
+      label: "Granted",
+      value: patents.filter((p) => p.status === "GRANTED").length,
+      icon: <CheckCircle />,
+      color: COLORS.SUCCESS,
+    },
+    {
+      label: "Pending",
+      value: patents.filter((p) => p.status === "PENDING").length,
+      icon: <HourglassEmpty />,
+      color: COLORS.WARNING,
+    },
+    {
+      label: "Under Review",
+      value: patents.filter((p) => p.status === "UNDER_REVIEW").length,
+      icon: <Gavel />,
+      color: COLORS.INFO,
+    },
   ];
 
   const handleOpenDialog = (patent?: Patent) => {
@@ -95,7 +114,7 @@ const PatentManagement = () => {
         patentNumber: patent.patentNumber,
         inventors: patent.inventors,
         filingDate: patent.filingDate,
-        status: patent.status,
+        status: patent.status as PATENT_STATUS,
         description: patent.description,
       });
     } else {
@@ -142,22 +161,36 @@ const PatentManagement = () => {
   return (
     <Box sx={{ pb: 6 }}>
       {/* Header */}
-      <Box sx={{ mb: 6, display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+      <Box
+        sx={{
+          mb: 6,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-end",
+        }}
+      >
         <Box>
-          <Typography variant="h4" sx={{ ...FS, fontWeight: 800, color: COLORS.PRIMARY_NAVY, mb: 1 }}>
+          <Typography
+            variant="h4"
+            sx={{ ...FS, fontWeight: 800, color: COLORS.PRIMARY_NAVY, mb: 1 }}
+          >
             Patent Management
           </Typography>
-          <Typography variant="body1" sx={{ ...FS, color: COLORS.TEXT_SECONDARY, maxWidth: "600px" }}>
-            Track and manage intellectual property, filing dates, and current statuses for institutional innovations.
+          <Typography
+            variant="body1"
+            sx={{ ...FS, color: COLORS.TEXT_SECONDARY, maxWidth: "600px" }}
+          >
+            Track and manage intellectual property, filing dates, and current
+            statuses for institutional innovations.
           </Typography>
         </Box>
         <Box sx={{ display: "flex", gap: 2 }}>
-          <IconButton 
-            onClick={() => fetchPatents(pagination.page)} 
-            sx={{ 
-              backgroundColor: "white", 
+          <IconButton
+            onClick={() => fetchPatents(pagination.page)}
+            sx={{
+              backgroundColor: "white",
               boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-              "&:hover": { backgroundColor: "#f0f0f0" }
+              "&:hover": { backgroundColor: "#f0f0f0" },
             }}
           >
             <Refresh />
@@ -187,31 +220,53 @@ const PatentManagement = () => {
       <Grid container spacing={3} sx={{ mb: 6 }}>
         {stats.map((item, idx) => (
           <Grid size={{ xs: 12, sm: 6, md: 3 }} key={idx}>
-            <Card sx={{ 
-              p: 3, 
-              borderRadius: "24px", 
-              boxShadow: "0px 10px 30px rgba(0,0,0,0.03)", 
-              border: "1px solid rgba(0,0,0,0.05)",
-              background: "white",
-              display: "flex",
-              alignItems: "center",
-              gap: 2
-            }}>
-              <Box sx={{ 
-                width: 56, 
-                height: 56, 
-                borderRadius: "16px", 
-                backgroundColor: `${item.color}15`, 
-                color: item.color,
+            <Card
+              sx={{
+                p: 3,
+                borderRadius: "24px",
+                boxShadow: "0px 10px 30px rgba(0,0,0,0.03)",
+                border: "1px solid rgba(0,0,0,0.05)",
+                background: "white",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
-              }}>
+                gap: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: "16px",
+                  backgroundColor: `${item.color}15`,
+                  color: item.color,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 {item.icon}
               </Box>
               <Box>
-                <Typography sx={{ ...FS, fontSize: 24, fontWeight: 800, color: COLORS.PRIMARY_NAVY }}>{item.value}</Typography>
-                <Typography sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY, fontWeight: 500 }}>{item.label}</Typography>
+                <Typography
+                  sx={{
+                    ...FS,
+                    fontSize: 24,
+                    fontWeight: 800,
+                    color: COLORS.PRIMARY_NAVY,
+                  }}
+                >
+                  {item.value}
+                </Typography>
+                <Typography
+                  sx={{
+                    ...FS,
+                    fontSize: 13,
+                    color: COLORS.TEXT_SECONDARY,
+                    fontWeight: 500,
+                  }}
+                >
+                  {item.label}
+                </Typography>
               </Box>
             </Card>
           </Grid>
@@ -225,52 +280,65 @@ const PatentManagement = () => {
           placeholder="Search by title, number or inventors..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          slotProps={{
-            input: {
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search sx={{ color: COLORS.TEXT_SECONDARY }} />
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "18px",
-              backgroundColor: "white",
-              fontFamily: poppins.style.fontFamily,
-              boxShadow: "0 4px 20px rgba(0,0,0,0.02)",
-            },
-          }}
+          // slotProps={{
+          //   input: {
+          //   startAdornment: (
+          //     <InputAdornment position="start">
+          //       <Search sx={{ color: COLORS.TEXT_SECONDARY }} />
+          //     </InputAdornment>
+          //   ),
+          // }}
+          // sx={{
+          //   "& .MuiOutlinedInput-root": {
+          //     borderRadius: "18px",
+          //     backgroundColor: "white",
+          //     fontFamily: poppins.style.fontFamily,
+          //     boxShadow: "0 4px 20px rgba(0,0,0,0.02)",
+          //   },
+          // }}
         />
       </Box>
 
       {/* Patents Grid */}
-      <Box 
-        sx={{ 
-          display: "grid", 
+      <Box
+        sx={{
+          display: "grid",
           gridTemplateColumns: {
             xs: "1fr",
             sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)"
+            md: "repeat(3, 1fr)",
           },
           gap: 4,
           alignItems: "stretch",
-          width: "100%"
+          width: "100%",
         }}
       >
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton 
+            <Skeleton
               key={i}
-              variant="rectangular" 
-              height={320} 
-              sx={{ borderRadius: "24px", width: "100%" }} 
+              variant="rectangular"
+              height={320}
+              sx={{ borderRadius: "24px", width: "100%" }}
             />
           ))
         ) : filtered.length === 0 ? (
-          <Box sx={{ gridColumn: "1 / -1", py: 10, textAlign: "center", backgroundColor: "rgba(255,255,255,0.5)", borderRadius: "24px" }}>
-            <Assignment sx={{ fontSize: 64, color: "rgba(0,0,0,0.1)", mb: 2 }} />
-            <Typography variant="h6" sx={{ ...FS, color: COLORS.TEXT_SECONDARY }}>
+          <Box
+            sx={{
+              gridColumn: "1 / -1",
+              py: 10,
+              textAlign: "center",
+              backgroundColor: "rgba(255,255,255,0.5)",
+              borderRadius: "24px",
+            }}
+          >
+            <Assignment
+              sx={{ fontSize: 64, color: "rgba(0,0,0,0.1)", mb: 2 }}
+            />
+            <Typography
+              variant="h6"
+              sx={{ ...FS, color: COLORS.TEXT_SECONDARY }}
+            >
               No patents found matching your search.
             </Typography>
           </Box>
@@ -296,29 +364,49 @@ const PatentManagement = () => {
               }}
             >
               {/* Card Header with Status */}
-              <Box sx={{ p: 3, pb: 0, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <Box
+                sx={{
+                  p: 3,
+                  pb: 0,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                }}
+              >
                 <Chip
                   label={formatLabel(patent.status)}
                   size="small"
                   sx={{
                     ...FS,
                     fontWeight: 700,
-                    backgroundColor: 
-                      patent.status === "GRANTED" ? "rgba(76,175,80,0.1)" :
-                      patent.status === "PENDING" ? "rgba(255,152,0,0.1)" :
-                      "rgba(33,150,243,0.1)",
-                    color: 
-                      patent.status === "GRANTED" ? COLORS.SUCCESS :
-                      patent.status === "PENDING" ? COLORS.WARNING :
-                      COLORS.INFO,
+                    backgroundColor:
+                      patent.status === "GRANTED"
+                        ? "rgba(76,175,80,0.1)"
+                        : patent.status === "PENDING"
+                          ? "rgba(255,152,0,0.1)"
+                          : "rgba(33,150,243,0.1)",
+                    color:
+                      patent.status === "GRANTED"
+                        ? COLORS.SUCCESS
+                        : patent.status === "PENDING"
+                          ? COLORS.WARNING
+                          : COLORS.INFO,
                     borderRadius: "8px",
                   }}
                 />
                 <Box>
-                  <IconButton size="small" onClick={() => handleOpenDialog(patent)} sx={{ color: COLORS.PRIMARY_NAVY }}>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleOpenDialog(patent)}
+                    sx={{ color: COLORS.PRIMARY_NAVY }}
+                  >
                     <Edit fontSize="small" />
                   </IconButton>
-                  <IconButton size="small" onClick={() => deletePatent(patent.id)} sx={{ color: COLORS.ERROR }}>
+                  <IconButton
+                    size="small"
+                    onClick={() => deletePatent(patent.id)}
+                    sx={{ color: COLORS.ERROR }}
+                  >
                     <Delete fontSize="small" />
                   </IconButton>
                 </Box>
@@ -326,35 +414,101 @@ const PatentManagement = () => {
 
               {/* Patent Info */}
               <Box sx={{ p: 3, pt: 2, flexGrow: 1 }}>
-                <Typography variant="h6" sx={{ ...FS, fontWeight: 800, mb: 0.5, color: COLORS.PRIMARY_NAVY, lineHeight: 1.3 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    ...FS,
+                    fontWeight: 800,
+                    mb: 0.5,
+                    color: COLORS.PRIMARY_NAVY,
+                    lineHeight: 1.3,
+                  }}
+                >
                   {patent.title}
                 </Typography>
-                <Typography variant="caption" sx={{ ...FS, color: COLORS.TEXT_SECONDARY, mb: 3, display: "block", fontWeight: 600 }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    ...FS,
+                    color: COLORS.TEXT_SECONDARY,
+                    mb: 3,
+                    display: "block",
+                    fontWeight: 600,
+                  }}
+                >
                   ID: {patent.patentNumber}
                 </Typography>
 
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mt: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1.5,
+                    mt: 2,
+                  }}
+                >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Box sx={{ width: 32, height: 32, borderRadius: "8px", backgroundColor: "rgba(11, 23, 39, 0.05)", display: "flex", alignItems: "center", justifyContent: "center", color: COLORS.PRIMARY_NAVY }}>
+                    <Box
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: "8px",
+                        backgroundColor: "rgba(11, 23, 39, 0.05)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: COLORS.PRIMARY_NAVY,
+                      }}
+                    >
                       <Person sx={{ fontSize: 18 }} />
                     </Box>
-                    <Typography variant="body2" sx={{ ...FS, fontWeight: 500, color: COLORS.TEXT_PRIMARY }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        ...FS,
+                        fontWeight: 500,
+                        color: COLORS.TEXT_PRIMARY,
+                      }}
+                    >
                       {patent.inventors}
                     </Typography>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                    <Box sx={{ width: 32, height: 32, borderRadius: "8px", backgroundColor: "rgba(11, 23, 39, 0.05)", display: "flex", alignItems: "center", justifyContent: "center", color: COLORS.PRIMARY_NAVY }}>
+                    <Box
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: "8px",
+                        backgroundColor: "rgba(11, 23, 39, 0.05)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: COLORS.PRIMARY_NAVY,
+                      }}
+                    >
                       <CalendarToday sx={{ fontSize: 18 }} />
                     </Box>
                     <Typography variant="body2" sx={{ ...FS, fontWeight: 500 }}>
-                      Filed: <span style={{ color: COLORS.PRIMARY_NAVY, fontWeight: 700 }}>{new Date(patent.filingDate).toLocaleDateString()}</span>
+                      Filed:{" "}
+                      <span
+                        style={{ color: COLORS.PRIMARY_NAVY, fontWeight: 700 }}
+                      >
+                        {new Date(patent.filingDate).toLocaleDateString()}
+                      </span>
                     </Typography>
                   </Box>
                 </Box>
               </Box>
 
               {/* Footer Decor */}
-              <Box sx={{ height: 6, width: "100%", backgroundColor: COLORS.PRIMARY_NAVY, opacity: 0.1 }} />
+              <Box
+                sx={{
+                  height: 6,
+                  width: "100%",
+                  backgroundColor: COLORS.PRIMARY_NAVY,
+                  opacity: 0.1,
+                }}
+              />
             </Card>
           ))
         )}
@@ -415,8 +569,13 @@ const PatentManagement = () => {
                   placeholder="Enter filing number"
                   value={formik.values.patentNumber}
                   onChange={formik.handleChange}
-                  error={formik.touched.patentNumber && Boolean(formik.errors.patentNumber)}
-                  helperText={formik.touched.patentNumber && formik.errors.patentNumber}
+                  error={
+                    formik.touched.patentNumber &&
+                    Boolean(formik.errors.patentNumber)
+                  }
+                  helperText={
+                    formik.touched.patentNumber && formik.errors.patentNumber
+                  }
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}
                 />
               </Grid>
@@ -429,8 +588,13 @@ const PatentManagement = () => {
                   slotProps={{ inputLabel: { shrink: true } }}
                   value={formik.values.filingDate}
                   onChange={formik.handleChange}
-                  error={formik.touched.filingDate && Boolean(formik.errors.filingDate)}
-                  helperText={formik.touched.filingDate && formik.errors.filingDate}
+                  error={
+                    formik.touched.filingDate &&
+                    Boolean(formik.errors.filingDate)
+                  }
+                  helperText={
+                    formik.touched.filingDate && formik.errors.filingDate
+                  }
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}
                 />
               </Grid>
@@ -442,13 +606,20 @@ const PatentManagement = () => {
                   placeholder="Enter inventors names"
                   value={formik.values.inventors}
                   onChange={formik.handleChange}
-                  error={formik.touched.inventors && Boolean(formik.errors.inventors)}
-                  helperText={formik.touched.inventors && formik.errors.inventors}
+                  error={
+                    formik.touched.inventors && Boolean(formik.errors.inventors)
+                  }
+                  helperText={
+                    formik.touched.inventors && formik.errors.inventors
+                  }
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}
                 />
               </Grid>
               <Grid size={{ xs: 12 }}>
-                <FormControl fullWidth sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}>
+                <FormControl
+                  fullWidth
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}
+                >
                   <InputLabel>Status</InputLabel>
                   <Select
                     name="status"
@@ -457,7 +628,9 @@ const PatentManagement = () => {
                     onChange={formik.handleChange}
                   >
                     {Object.values(PATENT_STATUS).map((s) => (
-                      <MenuItem key={s} value={s}>{formatLabel(s)}</MenuItem>
+                      <MenuItem key={s} value={s}>
+                        {formatLabel(s)}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -472,22 +645,41 @@ const PatentManagement = () => {
                   placeholder="Briefly describe the innovation..."
                   value={formik.values.description}
                   onChange={formik.handleChange}
-                  error={formik.touched.description && Boolean(formik.errors.description)}
-                  helperText={formik.touched.description && formik.errors.description}
+                  error={
+                    formik.touched.description &&
+                    Boolean(formik.errors.description)
+                  }
+                  helperText={
+                    formik.touched.description && formik.errors.description
+                  }
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: "14px" } }}
                 />
               </Grid>
             </Grid>
           </DialogContent>
           <DialogActions sx={{ px: 3, pb: 4, gap: 1.5 }}>
-            <Button onClick={handleCloseDialog} sx={{ ...FS, textTransform: "none", color: COLORS.TEXT_SECONDARY, fontWeight: 600 }}>
+            <Button
+              onClick={handleCloseDialog}
+              sx={{
+                ...FS,
+                textTransform: "none",
+                color: COLORS.TEXT_SECONDARY,
+                fontWeight: 600,
+              }}
+            >
               Cancel
             </Button>
             <Button
               type="submit"
               variant="contained"
               disabled={creating || updating}
-              startIcon={(creating || updating) ? <CircularProgress size={18} color="inherit" /> : <CheckCircle />}
+              startIcon={
+                creating || updating ? (
+                  <CircularProgress size={18} color="inherit" />
+                ) : (
+                  <CheckCircle />
+                )
+              }
               sx={{
                 ...FS,
                 textTransform: "none",
@@ -499,7 +691,11 @@ const PatentManagement = () => {
                 "&:hover": { backgroundColor: COLORS.SECONDARY_NAVY },
               }}
             >
-              {creating || updating ? "Saving..." : (selectedPatent ? "Update Patent" : "Register Patent")}
+              {creating || updating
+                ? "Saving..."
+                : selectedPatent
+                  ? "Update Patent"
+                  : "Register Patent"}
             </Button>
           </DialogActions>
         </form>
