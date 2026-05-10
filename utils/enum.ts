@@ -17,6 +17,7 @@ export enum COLORS {
   WARNING = "#FF9800",
   INFO = "#2196F3",
   SECONDARY_NAVY = "#1C2B3E",
+  TRANSPARENT = "transparent",
 }
 
 export enum FONT_SIZE {
@@ -35,6 +36,10 @@ export enum USER_ROLES {
   SCHOOL_ADMIN = "SCHOOL_ADMIN",
   TEACHER = "TEACHER",
   STUDENT = "STUDENT",
+  MENTOR = "MENTOR",
+  INSTITUTION = "institution",
+  EDUCATOR = "mentor",
+  SCHOOL = "SCHOOL",
 }
 
 export enum PLAN_TARGET {
@@ -60,4 +65,10 @@ export enum CATEGORY {
   RESEARCH = "RESEARCH",
   INNOVATION = "INNOVATION",
   ENTREPRENEURSHIP = "ENTREPRENEURSHIP",
+}
+
+export enum QUESTION_TYPE {
+  TEXT = "TEXT",
+  MCQ = "MCQ",
+  BOOLEAN = "BOOLEAN",
 }

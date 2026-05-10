@@ -7,6 +7,7 @@ import {
   UPDATE_BATCH_REQUEST,
 } from "@/utils/type";
 import useSnackbar from "@/store/useSnackbar";
+import { useModal } from "@/store/useModal";
 
 export const useBatches = () => {
   const [batches, setBatches] = useState<Batch[]>([]);
@@ -21,6 +22,7 @@ export const useBatches = () => {
   });
 
   const { setSnackbar } = useSnackbar();
+  const { hideModal } = useModal();
 
   const fetchBatches = async (page = 1, limit = 10) => {
     setLoading(true);
@@ -46,6 +48,7 @@ export const useBatches = () => {
       const response: any = await BatchControllers.createBatch(data);
       if (response.data.success) {
         setSnackbar("Batch created successfully", "success");
+        hideModal();
         fetchBatches(pagination.page, pagination.limit);
         return true;
       }

@@ -189,11 +189,17 @@ export interface Batch {
 }
 
 export interface CREATE_BATCH_REQUEST {
-  name: string;
+  name?: string;
   startDate: string;
   endDate: string;
   category: string;
   userRole: string;
+  questions?: {
+    id: string;
+    question: string;
+    type: string;
+    required: boolean;
+  }[];
   subjectiveQuestions?: {
     question: string;
     answer: string;
@@ -212,6 +218,12 @@ export interface UPDATE_BATCH_REQUEST {
   category?: string;
   userRole?: string;
   isActive?: boolean;
+  questions?: {
+    id: string;
+    question: string;
+    type: string;
+    required: boolean;
+  }[];
   subjectiveQuestions?: {
     question: string;
     answer: string;

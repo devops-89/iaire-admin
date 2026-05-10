@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Card,
   IconButton,
   Stack,
   Tab,
@@ -39,43 +40,12 @@ const BatchesManagement = () => {
     setTabValue(newValue);
   };
 
-  console.log("batches", batches);
   const { showModal } = useModal();
   const addBatches = () => {
     showModal(<AddBatches />);
   };
   return (
-    <Box>
-      {/* <BatchHeader
-        onRefresh={() =>
-          batchLogic.fetchBatches(
-            batchLogic.pagination.page,
-            batchLogic.pagination.limit,
-          )
-        }
-        onCreate={batchLogic.handleCreateOpen}
-        fontStyle={FS}
-      />
-
-      <BatchStats
-        loading={batchLogic.loading}
-        pagination={batchLogic.pagination}
-        batches={batchLogic.batches}
-        fontStyle={FS}
-      />
-
-      <BatchTable
-        loading={batchLogic.loading}
-        batches={batchLogic.batches}
-        pagination={batchLogic.pagination}
-        search={batchLogic.search}
-        setSearch={batchLogic.setSearch}
-        onEdit={batchLogic.handleEdit}
-        goToPage={batchLogic.goToPage}
-        fontStyle={FS}
-        poppinsFont={poppins}
-      /> */}
-
+    <Card sx={{ p: 2, boxShadow: "none", borderRadius: 2 }}>
       <Stack
         component="div"
         direction="row"
@@ -128,7 +98,7 @@ const BatchesManagement = () => {
             {batches.map((val, i) => (
               <TableRow key={i}>
                 <TableCell sx={{ ...FS }}>{val.id}</TableCell>
-                <TableCell sx={{ ...FS }}>{val.name}</TableCell>
+                <TableCell sx={{ ...FS }}>{val.name || "--"}</TableCell>
                 <TableCell sx={{ ...FS }}>
                   {moment(val.startDate).format("YYYY, MMM DD")}
                 </TableCell>
@@ -147,7 +117,7 @@ const BatchesManagement = () => {
           </TableBody>
         </Table>
       </TableContainer>
-    </Box>
+    </Card>
   );
 };
 
