@@ -1,4 +1,7 @@
-import { CREATE_COUNTRIES_REQUEST, UPDATE_COUNTRIES_REQUEST } from "@/utils/type";
+import {
+  CREATE_COUNTRIES_REQUEST,
+  UPDATE_COUNTRIES_REQUEST,
+} from "@/utils/type";
 import { countriesApi } from "./config";
 
 export const CountriesControllers = {
@@ -11,9 +14,22 @@ export const CountriesControllers = {
     }
   },
 
-  getAllCountries: async (page = 1, limit = 10) => {
+  getAllCountries: async (
+    page?: any,
+    limit?: any,
+    search?: string,
+    status?: boolean,
+  ) => {
     try {
-      const result = await countriesApi.get(`/all?page=${page}&limit=${limit}`);
+      const params = new URLSearchParams();
+      if (page) params.append("page", String(page));
+      if (limit) params.append("limit", String(limit));
+      if (search) params.append("search", search);
+      if (status !== undefined) params.append("isActive", String(status));
+
+      const queryString = params.toString();
+      const endpoint = queryString ? `/all?${queryString}` : "/all";
+      const result = await countriesApi.get(endpoint);
       return result;
     } catch (error) {
       throw error;
@@ -38,4 +54,3 @@ export const CountriesControllers = {
     }
   },
 };
-

@@ -54,6 +54,11 @@ export enum BILLING_CYCLE {
   YEARLY = "YEARLY",
 }
 
+export enum STATUS {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
+
 export enum PATENT_STATUS {
   PENDING = "PENDING",
   GRANTED = "GRANTED",
