@@ -1,4 +1,4 @@
-import { CATEGORY, USER_ROLES } from "./enum";
+import { BILLING_CYCLE, CATEGORY, PLAN_BENEFITS, USER_ROLES } from "./enum";
 
 export const BATCH_TABLE_TABS = [
   {
@@ -87,15 +87,15 @@ export const CURRENCIES = [
   //   code: "EUR",
   //   name_plural: "euros",
   // },
-  // {
-  //   symbol: "AED",
-  //   name: "United Arab Emirates Dirham",
-  //   symbol_native: "د.إ.‏",
-  //   decimal_digits: 2,
-  //   rounding: 0,
-  //   code: "AED",
-  //   name_plural: "UAE dirhams",
-  // },
+  {
+    symbol: "AED",
+    name: "United Arab Emirates Dirham",
+    symbol_native: "د.إ.‏",
+    decimal_digits: 2,
+    rounding: 0,
+    code: "AED",
+    name_plural: "UAE dirhams",
+  },
   // {
   //   symbol: "Af",
   //   name: "Afghan Afghani",
@@ -1132,4 +1132,54 @@ export const PLAN_TABLE_HEADER = [
   "Target Group",
   "Status",
   "Actions",
+];
+
+export const BILLING_CYCLE_DATA = [
+  {
+    label: BILLING_CYCLE.MONTHLY,
+  },
+  {
+    label: BILLING_CYCLE.YEARLY,
+  },
+];
+
+export const INSTITUTIONAL_PLANS_DATA = [
+  {
+    value: PLAN_BENEFITS.MAX_TEACHERS,
+    label: "Add Teachers",
+  },
+  {
+    value: PLAN_BENEFITS.MAX_STUDENTS,
+    label: "Add Students",
+  },
+  {
+    value: PLAN_BENEFITS.APPROVE_NOMINEE_TEACHERS,
+    label: "Approve Self Nominated Teachers",
+  },
+];
+
+export const MENTOR_PLANS_DATA = [
+  {
+    label: "Self Nomination Limit",
+    value: PLAN_BENEFITS.MAX_SELF_NOMINATION_TEACHER,
+  },
+  {
+    label: "Innovation Submissions Limit",
+    value: PLAN_BENEFITS.MAX_INNOVATION_SUBMISSIONS,
+  },
+  {
+    label: "Research Submissions Limit",
+    value: PLAN_BENEFITS.MAX_RESEARCH_SUBMISSIONS,
+  },
+];
+
+export const INDIVIDUAL_PLANS_DATA = [
+  {
+    label: "Innovation Submissions Limit",
+    value: PLAN_BENEFITS.MAX_INNOVATION_SUBMISSIONS,
+  },
+  {
+    label: "Research Submissions Limit",
+    value: PLAN_BENEFITS.MAX_RESEARCH_SUBMISSIONS,
+  },
 ];

@@ -1,5 +1,4 @@
 "use client";
-import { usePlans } from "@/hooks/common/usePlans";
 import { useCountries } from "@/hooks/country/getCountries";
 import AddPlan from "@/modals/AddPlan";
 import { useModal } from "@/store/useModal";
@@ -26,13 +25,22 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import { useFormik } from "formik";
 import { useState } from "react";
+import { usePlansList } from "@/hooks/common/usePlans";
 
 const FS = { fontFamily: poppins.style.fontFamily };
 
 const PlansManagement = () => {
-  const { plans, loading, pagination, deletePlan, fetchPlans, goToPage, updatePlan } =
-    usePlans();
+  // const {
+  //   plans,
+  //   loading,
+  //   pagination,
+  //   deletePlan,
+  //   fetchPlans,
+  //   goToPage,
+  //   updatePlan,
+  // } = usePlans();
 
   const [search, setSearch] = useState("");
 
@@ -47,13 +55,11 @@ const PlansManagement = () => {
   const { showModal } = useModal();
 
   const handleCreate = () => {
-    showModal(
-      <AddPlan
-        onSuccess={() => fetchPlans(pagination.page, pagination.limit)}
-      />,
-    );
+    showModal(<AddPlan />);
   };
-  console.log("plans", plans);
+
+  const { planList, planLoading } = usePlansList();
+  console.log("planList", planList);
 
   return (
     <Box>
@@ -136,7 +142,7 @@ const PlansManagement = () => {
                 ))}
               </TableRow>
             </TableHead>
-            {loading ? (
+            {/* {loading ? (
               <TableBody>
                 <TableRow>
                   <TableCell colSpan={12} align="center">
@@ -167,21 +173,38 @@ const PlansManagement = () => {
                         value={val.isActive ? "ACTIVE" : "INACTIVE"}
                         onChange={async (e) => {
                           const newStatus = e.target.value === "ACTIVE";
-                          const success = await updatePlan(val.id, { isActive: newStatus });
-                          if (success) fetchPlans(pagination.page, pagination.limit);
+                          const success = await updatePlan(val.id, {
+                            isActive: newStatus,
+                          });
+                          if (success)
+                            fetchPlans(pagination.page, pagination.limit);
                         }}
                         sx={{
                           height: 32,
                           fontSize: 14,
-                          "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-                          bgcolor: val.isActive ? "rgba(76, 175, 80, 0.1)" : "rgba(244, 67, 54, 0.1)",
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            border: "none",
+                          },
+                          bgcolor: val.isActive
+                            ? "rgba(76, 175, 80, 0.1)"
+                            : "rgba(244, 67, 54, 0.1)",
                           color: val.isActive ? COLORS.SUCCESS : COLORS.ERROR,
                           fontWeight: 600,
                           borderRadius: "8px",
                         }}
                       >
-                        <MenuItem value="ACTIVE" sx={{ fontSize: 14, fontWeight: 500 }}>Active</MenuItem>
-                        <MenuItem value="INACTIVE" sx={{ fontSize: 14, fontWeight: 500 }}>Inactive</MenuItem>
+                        <MenuItem
+                          value="ACTIVE"
+                          sx={{ fontSize: 14, fontWeight: 500 }}
+                        >
+                          Active
+                        </MenuItem>
+                        <MenuItem
+                          value="INACTIVE"
+                          sx={{ fontSize: 14, fontWeight: 500 }}
+                        >
+                          Inactive
+                        </MenuItem>
                       </Select>
                     </TableCell>
                     <TableCell>
@@ -192,7 +215,7 @@ const PlansManagement = () => {
                   </TableRow>
                 ))}
               </TableBody>
-            )}
+            )} */}
           </Table>
         </TableContainer>
       </Card>

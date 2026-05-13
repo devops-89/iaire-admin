@@ -54,13 +54,13 @@ export interface Plan {
 
 export interface CREATE_PLAN_REQUEST {
   name: string;
-  code: string;
+  // code: string;
   target: string;
   price: number;
   currency: string;
   billingCycle: string;
-  trialDays: number;
   isActive: boolean;
+  limit: { key: string; value: string }[];
 }
 
 export interface UPDATE_PLAN_REQUEST {
@@ -241,4 +241,42 @@ export interface BoardAnalytics {
   totalSchools: number;
   totalTeachers: number;
   totalStudents: number;
+}
+
+export interface COUNTRYDATAPROPS {
+  id: number;
+  name: string;
+  code: string;
+  currencyCode: string;
+}
+
+export interface PLAN_DATA_PROPS {
+  data: {
+    id: number;
+    name: string;
+    target: string;
+    price: string;
+    currency: string;
+    billingCycle: string;
+    isActive: boolean;
+    country: {
+      id: number;
+      name: string;
+      code: string;
+      phoneCode: string;
+      currencyCode: string;
+      isActive: boolean;
+    };
+  };
+  filters: {
+    code: null;
+    name: null;
+    billingCycle: null;
+  };
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }

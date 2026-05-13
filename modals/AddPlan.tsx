@@ -1,69 +1,166 @@
-import { usePlans } from "@/hooks/common/usePlans";
+import { useCreatePlans } from "@/hooks/common/usePlans";
+import { useCountries } from "@/hooks/country/getCountries";
 import { useModal } from "@/store/useModal";
-import { CURRENCIES, ROLES } from "@/utils/constant";
-import { BILLING_CYCLE, COLORS, PLAN_TARGET } from "@/utils/enum";
+import {
+  BILLING_CYCLE_DATA,
+  CURRENCIES,
+  INDIVIDUAL_PLANS_DATA,
+  INSTITUTIONAL_PLANS_DATA,
+  MENTOR_PLANS_DATA,
+  ROLES,
+} from "@/utils/constant";
+import { BILLING_CYCLE, COLORS, PLAN_TARGET, USER_ROLES } from "@/utils/enum";
 import { poppins, roboto } from "@/utils/fonts";
-import { Autocomplete, Box, Grid, TextField, Typography } from "@mui/material";
-import React from "react";
+import { COUNTRYDATAPROPS, CREATE_PLAN_REQUEST } from "@/utils/type";
+import { planValidationSchema } from "@/utils/validation";
+import { Add, Delete } from "@mui/icons-material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  IconButton,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useFormik } from "formik";
+import React, { useState } from "react";
 import * as Yup from "yup";
-
-const validationSchema = Yup.object({
-  name: Yup.string().required("Plan name is required"),
-  code: Yup.string().required("Plan code is required"),
-  target: Yup.string()
-    .oneOf(Object.values(PLAN_TARGET))
-    .required("Target is required"),
-  price: Yup.number()
-    .min(0, "Price cannot be negative")
-    .required("Price is required"),
-  currency: Yup.string()
-    .min(3, "Currency must be at least 3 characters")
-    .required("Currency is required"),
-  billingCycle: Yup.string()
-    .oneOf(Object.values(BILLING_CYCLE))
-    .required("Billing cycle is required"),
-  trialDays: Yup.number().min(0).required("Trial days is required"),
-  isActive: Yup.boolean(),
-});
-
-const FS = { fontFamily: poppins.style.fontFamily };
 
 interface AddPlanProps {
   selectedPlan?: any;
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }
 
-const customFieldStyles = {
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "16px",
-    backgroundColor: "#F9FAFB",
-    transition: "all 0.3s ease",
-    "& fieldset": {
-      border: "1px solid transparent",
-      transition: "all 0.3s ease",
-    },
-    "&:hover fieldset": {
-      border: "1px solid #E5E7EB",
-    },
-    "&.Mui-focused": {
-      backgroundColor: "#FFFFFF",
-      boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
-      "& fieldset": {
-        border: `2px solid ${COLORS.PRIMARY_NAVY}`,
-      },
-    },
-  },
-  "& .MuiInputBase-input": {
-    padding: "16px 14px",
-    fontSize: "15px",
-    fontFamily: poppins.style.fontFamily,
-    fontWeight: 500,
-  },
-};
+interface PlanFormValues {
+  name: string;
+  role: string;
+  country: COUNTRYDATAPROPS | null;
+  price: string;
+  currency: string;
+  billingCycle: string;
+  benefits: { key: string; value: string }[];
+}
 
 const AddPlan: React.FC<AddPlanProps> = ({ selectedPlan, onSuccess }) => {
-  const { createPlan, updatePlan, creating, updating } = usePlans();
   const { hideModal } = useModal();
+  const { createPlan, loading } = useCreatePlans();
+
+  const countryParams = {
+    status: true,
+    limit: 100,
+    page: 1,
+    search: "",
+  };
+
+  const formik = useFormik<PlanFormValues>({
+    initialValues: {
+      name: "",
+      role: "",
+      country: null,
+      price: "",
+      currency: "",
+      billingCycle: "",
+      benefits: [{ key: "", value: "" }],
+    },
+    validationSchema: planValidationSchema,
+    onSubmit: (values) => {
+      const payload = {
+        name: values?.name,
+        target:
+          values?.role === USER_ROLES.MENTOR
+            ? USER_ROLES.EDUCATOR
+            : values?.role === USER_ROLES.INSTITUTION
+              ? USER_ROLES.SCHOOL
+              : values?.role,
+        countryId: values?.country?.id,
+        billingCycle: values?.billingCycle,
+        price: values?.price,
+        currency: values?.country?.currencyCode,
+        limits: values?.benefits,
+        isActive: true,
+      };
+      createPlan(payload as unknown as CREATE_PLAN_REQUEST);
+    },
+  });
+  const addBenefit = () => {
+    formik.setFieldValue("benefits", [
+      ...formik.values.benefits,
+      { key: "", value: "" },
+    ]);
+  };
+  const removeBenefit = (index: number) => {
+    const newBenefits = [...formik.values.benefits];
+    newBenefits.splice(index, 1);
+    formik.setFieldValue("benefits", newBenefits);
+  };
+  const { countryData } = useCountries(countryParams);
+
+  const [country, setCountry] = useState<COUNTRYDATAPROPS>();
+
+  const [role, setRole] = useState<{ label: string; value: string } | null>(
+    null,
+  );
+
+  const countryChangeHandler = (
+    event: React.SyntheticEvent,
+    value: COUNTRYDATAPROPS | null,
+  ) => {
+    setCountry(value || undefined);
+
+    formik.setFieldValue("country", value as COUNTRYDATAPROPS);
+  };
+
+  const [existingBenefits, setExistingBenefits] = useState([
+    {
+      label: "",
+      value: "",
+    },
+  ]);
+
+  const handleRoleChangeHandler = (
+    e: React.SyntheticEvent,
+    newValue: { label: string; value: string } | null,
+  ) => {
+    setRole(newValue);
+    if (
+      newValue?.value === USER_ROLES.SCHOOL ||
+      newValue?.value === USER_ROLES.INSTITUTION
+    ) {
+      setExistingBenefits(INSTITUTIONAL_PLANS_DATA);
+    } else if (
+      newValue?.value === USER_ROLES.MENTOR ||
+      newValue?.value === USER_ROLES.TEACHER ||
+      newValue?.value === USER_ROLES.EDUCATOR
+    ) {
+      setExistingBenefits(MENTOR_PLANS_DATA);
+    } else if (newValue?.value === USER_ROLES.STUDENT) {
+      setExistingBenefits(INDIVIDUAL_PLANS_DATA);
+    } else {
+      setExistingBenefits([]);
+    }
+
+    if (newValue?.value) {
+      formik.setFieldValue("role", newValue.value);
+    } else {
+      formik.setFieldValue("role", "");
+    }
+  };
+
+  const [billingCycle, setBillingCycle] = useState(null);
+
+  const billingCycleChangeHandler = (
+    e: React.SyntheticEvent,
+    newValue: any,
+  ) => {
+    setBillingCycle(newValue);
+
+    if (newValue?.label) {
+      formik.setFieldValue("billingCycle", newValue.label);
+    }
+  };
 
   return (
     <Box>
@@ -72,24 +169,60 @@ const AddPlan: React.FC<AddPlanProps> = ({ selectedPlan, onSuccess }) => {
           fontFamily: roboto.style.fontFamily,
           color: COLORS.PRIMARY_NAVY,
           fontWeight: 600,
-          fontSize: 20,
+          fontSize: 30,
         }}
       >
         {" "}
-        Add Plans
+        Create Plan
       </Typography>
 
-      <form>
+      <form onSubmit={formik.handleSubmit}>
         <Grid container spacing={3} sx={{ mt: 2 }}>
           <Grid size={12}>
-            <TextField label="Plan Name" fullWidth />
+            <TextField
+              label="Plan Name"
+              fullWidth
+              id="name"
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              error={formik.touched.name && !!formik.errors.name}
+              helperText={formik.touched.name && formik.errors.name}
+            />
           </Grid>
           <Grid size={12}>
             <Autocomplete
               renderInput={(params) => (
-                <TextField {...params} label="Select Target" />
+                <TextField
+                  {...params}
+                  label="Select Role"
+                  error={formik.touched.role && !!formik.errors.role}
+                  helperText={formik.touched.role && formik.errors.role}
+                />
               )}
               options={ROLES}
+              onChange={handleRoleChangeHandler}
+              getOptionLabel={(option) => option.label}
+              value={role}
+            />
+          </Grid>
+          <Grid size={6}>
+            <Autocomplete
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select Country"
+                  error={formik.touched.country && !!formik.errors.country}
+                  helperText={formik.touched.country && formik.errors.country}
+                />
+              )}
+              options={countryData}
+              getOptionLabel={(option: COUNTRYDATAPROPS) => option.name}
+              renderOption={(props, option: COUNTRYDATAPROPS) => (
+                <Box component={"li"} {...props}>
+                  <Typography>{option.name}</Typography>
+                </Box>
+              )}
+              onChange={countryChangeHandler}
             />
           </Grid>
           <Grid size={6}>
@@ -106,17 +239,143 @@ const AddPlan: React.FC<AddPlanProps> = ({ selectedPlan, onSuccess }) => {
                 },
               }}
               fullWidth
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Typography>
+                        {
+                          CURRENCIES.find(
+                            (item: any) => item.code === country?.currencyCode,
+                          )?.symbol
+                        }
+                      </Typography>
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              error={formik.touched.price && !!formik.errors.price}
+              helperText={formik.touched.price && formik.errors.price}
+              id="price"
+              onChange={formik.handleChange}
             />
           </Grid>
-          <Grid size={6}>
+          <Grid size={12}>
             <Autocomplete
               renderInput={(params) => (
-                <TextField {...params} label="Select Currency" />
+                <TextField
+                  {...params}
+                  label="Select Billing Cycle"
+                  error={
+                    formik.touched.billingCycle && !!formik.errors.billingCycle
+                  }
+                  helperText={
+                    formik.touched.billingCycle && formik.errors.billingCycle
+                  }
+                />
               )}
-              options={CURRENCIES}
+              options={BILLING_CYCLE_DATA}
+              getOptionLabel={(option) => option.label}
+              onChange={billingCycleChangeHandler}
             />
           </Grid>
+          <Grid size={12} sx={{ textAlign: "right" }}>
+            <Button startIcon={<Add />} onClick={addBenefit}>
+              Add Benefits
+            </Button>
+          </Grid>
         </Grid>
+        {formik.values.benefits.map((val, i) => (
+          <Grid
+            container
+            spacing={3}
+            sx={{ mt: 3, alignItems: "center" }}
+            key={i}
+          >
+            <Grid size={7}>
+              <Autocomplete
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select Plan Benefit"
+                    error={
+                      formik.touched.benefits?.[i]?.key &&
+                      !!(formik.errors.benefits as any)?.[i]?.key
+                    }
+                    helperText={
+                      formik.touched.benefits?.[i]?.key &&
+                      (formik.errors.benefits as any)?.[i]?.key
+                    }
+                  />
+                )}
+                options={existingBenefits}
+                getOptionLabel={(option) => option.label}
+                value={
+                  existingBenefits.find((item) => item.value === val.key) ||
+                  null
+                }
+                onChange={(e, newValue) => {
+                  formik.setFieldValue(
+                    `benefits[${i}].key`,
+                    newValue ? newValue.value : "",
+                  );
+                  formik.setFieldTouched(`benefits[${i}].key`, true, false);
+                }}
+              />
+            </Grid>
+            <Grid size={4}>
+              <TextField
+                label="Enter Limit"
+                fullWidth
+                name={`benefits[${i}].value`}
+                value={val.value}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={
+                  formik.touched.benefits?.[i]?.value &&
+                  !!(formik.errors.benefits as any)?.[i]?.value
+                }
+                helperText={
+                  formik.touched.benefits?.[i]?.value &&
+                  (formik.errors.benefits as any)?.[i]?.value
+                }
+              />
+            </Grid>
+            <Grid size={1} sx={{ display: "flex", justifyContent: "center" }}>
+              <IconButton
+                onClick={() => removeBenefit(i)}
+                color="error"
+                size="small"
+                disabled={formik.values.benefits.length === 1}
+              >
+                <Delete />
+              </IconButton>
+            </Grid>
+          </Grid>
+        ))}
+
+        <Button
+          sx={{
+            mt: 2,
+            fontFamily: roboto.style.fontFamily,
+            fontSize: 15,
+            fontWeight: 600,
+            backgroundColor: COLORS.PRIMARY_NAVY,
+            color: "#fff",
+            // width: "100%",
+            borderRadius: 2,
+            p: 1,
+            textTransform: "none",
+            width: 150,
+          }}
+          type="submit"
+        >
+          {loading ? (
+            <CircularProgress sx={{ fontSize: 20, color: COLORS.WHITE }} />
+          ) : (
+            "Add Plan"
+          )}
+        </Button>
       </form>
     </Box>
   );

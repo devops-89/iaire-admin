@@ -18,6 +18,20 @@ export const batchValidationSchema = Yup.object({
       question: Yup.string().required("Question cannot be empty"),
       type: Yup.string(),
       required: Yup.boolean(),
-    })
+    }),
+  ),
+});
+
+export const planValidationSchema = Yup.object({
+  name: Yup.string().required("Please Enter Plan Name"),
+  role: Yup.string().required("Please Select Role"),
+  country: Yup.object().nullable().required("Please Select Country"),
+  price: Yup.number().required("Please Enter Price"),
+  billingCycle: Yup.string().required("Please Select Billing Cycle"),
+  benefits: Yup.array().of(
+    Yup.object({
+      key: Yup.string().required("Please Enter Plan Benefit"),
+      value: Yup.string().required("Please Enter Plan Benefit Limit"),
+    }),
   ),
 });

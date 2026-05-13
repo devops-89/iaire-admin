@@ -14,7 +14,7 @@ export const PlansControllers = {
   getAllPlans: async (page = 1, limit = 10) => {
     try {
       const result = await plansApi.get("/plans/all", {
-        params: { page, limit }
+        params: { page, limit },
       });
       return result;
     } catch (error) {

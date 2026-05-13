@@ -1,7 +1,7 @@
-const baseURL ="http://103.150.136.71/api";
-export const serverConstants={
-users:`${baseURL}/users`,
- base: `${baseURL}`,
+const baseURL = process.env.NEXT_PUBLIC_API_URL;
+export const serverConstants = {
+  users: `${baseURL}/users`,
+  base: `${baseURL}`,
   auth: `${baseURL}/auth`,
   plans: `${baseURL}/plans`,
   payment: `${baseURL}/payment`,
@@ -10,4 +10,4 @@ users:`${baseURL}/users`,
   training: `${baseURL}/training`,
   batches: `${baseURL}/batch`,
   boards: `${baseURL}/boards`,
-}
+};
