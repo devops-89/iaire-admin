@@ -20,6 +20,9 @@ export const batchValidationSchema = Yup.object({
       required: Yup.boolean(),
     }),
   ),
+  mode: Yup.string().required("Please Select Training Mode"),
+  name: Yup.string().required("Please Enter Batch Title").trim(),
+  description: Yup.string().required("Please Enter Batch Description").trim(),
 });
 
 export const planValidationSchema = Yup.object({

@@ -4,7 +4,7 @@ import { plansApi } from "./config";
 export const PlansControllers = {
   createPlan: async (data: CREATE_PLAN_REQUEST) => {
     try {
-      const result = await plansApi.post("/plans/add-plan", data);
+      const result = await plansApi.post("/add-plan", data);
       return result;
     } catch (error) {
       throw error;
@@ -13,7 +13,7 @@ export const PlansControllers = {
 
   getAllPlans: async (page = 1, limit = 10) => {
     try {
-      const result = await plansApi.get("/plans/all", {
+      const result = await plansApi.get("/all", {
         params: { page, limit },
       });
       return result;
@@ -24,7 +24,7 @@ export const PlansControllers = {
 
   deletePlan: async (id: number) => {
     try {
-      const result = await plansApi.delete(`/plans/${id}`);
+      const result = await plansApi.delete(`/${id}`);
       return result;
     } catch (error) {
       throw error;
@@ -33,7 +33,7 @@ export const PlansControllers = {
 
   updatePlan: async (id: number, data: UPDATE_PLAN_REQUEST) => {
     try {
-      const result = await plansApi.patch(`/plans/${id}`, data);
+      const result = await plansApi.patch(`/${id}`, data);
       return result;
     } catch (error) {
       throw error;

@@ -22,22 +22,41 @@ export const useCreatePlans = () => {
 export const usePlansList = () => {
   const [planLoading, setPlanLoading] = useState(false);
   const [planList, setPlanList] = useState<PLAN_DATA_PROPS>();
+  const { setSnackbar } = useSnackbar();
+
+  const fetchPlans = async (page = 1, limit = 10) => {
+    setPlanLoading(true);
+    PlansControllers.getAllPlans(page, limit)
+      .then((res) => {
+        setPlanList(res.data.data);
+        setPlanLoading(false);
+      })
+      .catch((err) => {
+        console.log("error in plansData", err);
+        setPlanLoading(false);
+      });
+  };
+
+  const updatePlan = async (id: number, data: any) => {
+    try {
+      const res = await PlansControllers.updatePlan(id, data);
+      if (res.status === 200 || res.status === 201) {
+        setSnackbar("Plan updated successfully", "success");
+        return true;
+      }
+      return false;
+    } catch (error: any) {
+      setSnackbar(
+        error.response?.data?.message || "Failed to update plan",
+        "error",
+      );
+      return false;
+    }
+  };
 
   useEffect(() => {
-    const fetchPlans = async () => {
-      setPlanLoading(true);
-      PlansControllers.getAllPlans()
-        .then((res) => {
-          console.log("plansData", res);
-          // setPlanList(res.data);
-          setPlanLoading(false);
-        })
-        .catch((err) => {
-          console.log("error in plansData", err);
-          setPlanLoading(false);
-        });
-    };
     fetchPlans();
   }, []);
-  return { planList, planLoading };
+
+  return { planList, planLoading, fetchPlans, updatePlan };
 };

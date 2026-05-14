@@ -24,10 +24,12 @@ import {
   Typography,
   Select,
   MenuItem,
+  TablePagination,
 } from "@mui/material";
 import { useFormik } from "formik";
 import { useState } from "react";
 import { usePlansList } from "@/hooks/common/usePlans";
+import { PLAN_DATA_PROPS } from "@/utils/type";
 
 const FS = { fontFamily: poppins.style.fontFamily };
 
@@ -58,7 +60,8 @@ const PlansManagement = () => {
     showModal(<AddPlan />);
   };
 
-  const { planList, planLoading } = usePlansList();
+  const { planList, planLoading, updatePlan, fetchPlans } = usePlansList();
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
   console.log("planList", planList);
 
   return (
@@ -142,7 +145,7 @@ const PlansManagement = () => {
                 ))}
               </TableRow>
             </TableHead>
-            {/* {loading ? (
+            {planLoading ? (
               <TableBody>
                 <TableRow>
                   <TableCell colSpan={12} align="center">
@@ -154,8 +157,8 @@ const PlansManagement = () => {
               </TableBody>
             ) : (
               <TableBody>
-                {plans.map((val, i) => (
-                  <TableRow>
+                {planList?.data?.map((val, i: number) => (
+                  <TableRow key={val.id}>
                     <TableCell>{val.id}</TableCell>
                     <TableCell>{val.name}</TableCell>
                     <TableCell>
@@ -171,13 +174,20 @@ const PlansManagement = () => {
                       <Select
                         size="small"
                         value={val.isActive ? "ACTIVE" : "INACTIVE"}
+                        disabled={updatingId === val.id}
                         onChange={async (e) => {
                           const newStatus = e.target.value === "ACTIVE";
+                          setUpdatingId(val.id);
                           const success = await updatePlan(val.id, {
                             isActive: newStatus,
                           });
-                          if (success)
-                            fetchPlans(pagination.page, pagination.limit);
+                          if (success) {
+                            await fetchPlans(
+                              planList?.pagination?.page,
+                              planList?.pagination?.limit,
+                            );
+                          }
+                          setUpdatingId(null);
                         }}
                         sx={{
                           height: 32,
@@ -215,8 +225,21 @@ const PlansManagement = () => {
                   </TableRow>
                 ))}
               </TableBody>
-            )} */}
+            )}
           </Table>
+          <TablePagination
+            component="div"
+            count={planList?.pagination?.total ?? 0}
+            page={(planList?.pagination?.page ?? 1) - 1}
+            rowsPerPage={planList?.pagination?.limit ?? 10}
+            onPageChange={(_, newPage) => {
+              fetchPlans(newPage + 1, planList?.pagination?.limit);
+            }}
+            onRowsPerPageChange={(event) => {
+              fetchPlans(1, parseInt(event.target.value, 10));
+            }}
+            rowsPerPageOptions={[5, 10, 25]}
+          />
         </TableContainer>
       </Card>
     </Box>

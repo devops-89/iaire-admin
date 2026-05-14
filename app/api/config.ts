@@ -25,7 +25,7 @@ const authApi = axios.create({
 });
 
 const plansApi = axios.create({
-  baseURL: serverConstants.base,
+  baseURL: serverConstants.plans,
 });
 
 plansApi.interceptors.request.use((config) => {
@@ -35,7 +35,6 @@ plansApi.interceptors.request.use((config) => {
   }
   return config;
 });
-
 
 const paymentSecuredApi = axios.create({
   baseURL: serverConstants.payment,

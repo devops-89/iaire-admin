@@ -250,24 +250,26 @@ export interface COUNTRYDATAPROPS {
   currencyCode: string;
 }
 
-export interface PLAN_DATA_PROPS {
-  data: {
+export interface PlanListItem {
+  id: number;
+  name: string;
+  target: string;
+  price: string;
+  currency: string;
+  billingCycle: string;
+  isActive: boolean;
+  country: {
     id: number;
     name: string;
-    target: string;
-    price: string;
-    currency: string;
-    billingCycle: string;
+    code: string;
+    phoneCode: string;
+    currencyCode: string;
     isActive: boolean;
-    country: {
-      id: number;
-      name: string;
-      code: string;
-      phoneCode: string;
-      currencyCode: string;
-      isActive: boolean;
-    };
   };
+}
+
+export interface PLAN_DATA_PROPS {
+  data: PlanListItem[];
   filters: {
     code: null;
     name: null;

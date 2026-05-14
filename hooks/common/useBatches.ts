@@ -53,10 +53,13 @@ export const useBatches = () => {
         return true;
       }
     } catch (error: any) {
-      setSnackbar(
-        error.response?.data?.message || "Failed to create batch",
-        "error",
-      );
+      const errorData = error.response?.data;
+      const errorMessage = errorData?.error
+        ? Array.isArray(errorData.error)
+          ? errorData.error.join(" & ")
+          : errorData.error
+        : errorData?.message || "Failed to create batch";
+      setSnackbar(errorMessage, "error");
     } finally {
       setCreating(false);
     }
@@ -73,10 +76,13 @@ export const useBatches = () => {
         return true;
       }
     } catch (error: any) {
-      setSnackbar(
-        error.response?.data?.message || "Failed to update batch",
-        "error",
-      );
+      const errorData = error.response?.data;
+      const errorMessage = errorData?.error
+        ? Array.isArray(errorData.error)
+          ? errorData.error.join(", ")
+          : errorData.error
+        : errorData?.message || "Failed to update batch";
+      setSnackbar(errorMessage, "error");
     } finally {
       setUpdating(false);
     }

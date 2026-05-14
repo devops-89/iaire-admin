@@ -1,4 +1,10 @@
-import { BILLING_CYCLE, CATEGORY, PLAN_BENEFITS, USER_ROLES } from "./enum";
+import {
+  BILLING_CYCLE,
+  CATEGORY,
+  PLAN_BENEFITS,
+  TRAINING_MODE,
+  USER_ROLES,
+} from "./enum";
 
 export const BATCH_TABLE_TABS = [
   {
@@ -1181,5 +1187,39 @@ export const INDIVIDUAL_PLANS_DATA = [
   {
     label: "Research Submissions Limit",
     value: PLAN_BENEFITS.MAX_RESEARCH_SUBMISSIONS,
+  },
+];
+
+export const TABS_MEMBERSHIP = [
+  {
+    label: "All",
+    value: "All",
+  },
+  {
+    label: "Active",
+    value: "Active",
+  },
+  {
+    label: "Inactive",
+    value: "Inactive",
+  },
+];
+
+export const TRAINING_MODE_DATA = [
+  {
+    label: "Online",
+    value: TRAINING_MODE.ONLINE,
+  },
+  {
+    label: "Offline",
+    value: TRAINING_MODE.OFFLINE,
+  },
+  {
+    label: "Hybrid",
+    value: TRAINING_MODE.HYBRID,
+  },
+  {
+    label: "Any of the Above",
+    value: TRAINING_MODE.ANY_OF_THE_ABOVE,
   },
 ];

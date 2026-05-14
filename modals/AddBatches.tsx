@@ -1,4 +1,4 @@
-import { CATEGORY_DATA, ROLES } from "@/utils/constant";
+import { CATEGORY_DATA, ROLES, TRAINING_MODE_DATA } from "@/utils/constant";
 import { COLORS, QUESTION_TYPE, USER_ROLES } from "@/utils/enum";
 import { roboto } from "@/utils/fonts";
 import { Add, Delete } from "@mui/icons-material";
@@ -11,6 +11,7 @@ import {
   Typography,
   IconButton,
   CircularProgress,
+  Grid,
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
@@ -33,6 +34,9 @@ const AddBatches = () => {
         type: string;
         required: boolean;
       }[],
+      mode: "",
+      name: "",
+      description: "",
     },
     validationSchema: batchValidationSchema,
     onSubmit: (values) => {
@@ -47,6 +51,9 @@ const AddBatches = () => {
           : "",
         endDate: values.endDate ? (values.endDate as any).toISOString() : "",
         questions: values.questions,
+        mode: values?.mode,
+        name: values?.name,
+        description: values?.description,
       };
       createBatch(payload);
     },
@@ -91,133 +98,204 @@ const AddBatches = () => {
         Add Batches
       </Typography>
       <form onSubmit={formik.handleSubmit}>
-        <Stack spacing={3}>
-          <LocalizationProvider dateAdapter={AdapterMoment}>
-            <DatePicker
-              label="Start Date"
-              value={formik.values.startDate}
-              onChange={(value) => formik.setFieldValue("startDate", value)}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  error:
-                    formik.touched.startDate &&
-                    Boolean(formik.errors.startDate),
-                  helperText:
-                    formik.touched.startDate &&
-                    (formik.errors.startDate as string),
-                },
-              }}
-              disablePast
+        <Grid container spacing={3}>
+          <Grid size={12}>
+            <TextField
+              label="Batch Title"
+              name="name"
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              error={formik.touched.name && Boolean(formik.errors.name)}
+              helperText={formik.touched.name && (formik.errors.name as string)}
+              fullWidth
             />
-          </LocalizationProvider>
-          <LocalizationProvider dateAdapter={AdapterMoment}>
-            <DatePicker
-              label="End Date"
-              value={formik.values.endDate}
-              onChange={(value) => formik.setFieldValue("endDate", value)}
-              minDate={formik.values.startDate || undefined}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  error:
-                    formik.touched.endDate && Boolean(formik.errors.endDate),
-                  helperText:
-                    formik.touched.endDate && (formik.errors.endDate as string),
-                },
-              }}
-              disablePast
+          </Grid>
+          <Grid size={12}>
+            <TextField
+              label="Batch Description (optional)"
+              name="description"
+              value={formik.values.description}
+              onChange={formik.handleChange}
+              error={
+                formik.touched.description && Boolean(formik.errors.description)
+              }
+              helperText={
+                formik.touched.description &&
+                (formik.errors.description as string)
+              }
+              multiline
+              rows={4}
+              fullWidth
+              id="description"
             />
-          </LocalizationProvider>
-
-          <Autocomplete
-            options={ROLES}
-            getOptionLabel={(option) => option.label}
-            value={formik.values.userRole}
-            onChange={(_, newValue) =>
-              formik.setFieldValue("userRole", newValue)
-            }
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Role"
-                error={
-                  formik.touched.userRole && Boolean(formik.errors.userRole)
-                }
-                helperText={
-                  formik.touched.userRole && (formik.errors.userRole as string)
-                }
+          </Grid>
+          <Grid size={6}>
+            <LocalizationProvider dateAdapter={AdapterMoment}>
+              <DatePicker
+                label="Start Date"
+                value={formik.values.startDate}
+                onChange={(value) => formik.setFieldValue("startDate", value)}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error:
+                      formik.touched.startDate &&
+                      Boolean(formik.errors.startDate),
+                    helperText:
+                      formik.touched.startDate &&
+                      (formik.errors.startDate as string),
+                  },
+                }}
+                disablePast
               />
-            )}
-          />
-
-          <Autocomplete
-            options={CATEGORY_DATA}
-            getOptionLabel={(option) => option.label}
-            value={formik.values.category}
-            onChange={(_, newValue) =>
-              formik.setFieldValue("category", newValue)
-            }
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Category"
-                error={
-                  formik.touched.category && Boolean(formik.errors.category)
-                }
-                helperText={
-                  formik.touched.category && (formik.errors.category as string)
-                }
+            </LocalizationProvider>
+          </Grid>
+          <Grid size={6}>
+            <LocalizationProvider dateAdapter={AdapterMoment}>
+              <DatePicker
+                label="End Date"
+                value={formik.values.endDate}
+                onChange={(value) => formik.setFieldValue("endDate", value)}
+                minDate={formik.values.startDate || undefined}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error:
+                      formik.touched.endDate && Boolean(formik.errors.endDate),
+                    helperText:
+                      formik.touched.endDate &&
+                      (formik.errors.endDate as string),
+                  },
+                }}
+                disablePast
               />
-            )}
-          />
-
-          {formik.values.questions.map((q, index) => {
-            const questionErrors = formik.errors.questions as any[] | undefined;
-            const questionTouched = formik.touched.questions as
-              | any[]
-              | undefined;
-            const hasError =
-              Boolean(questionTouched?.[index]?.question) &&
-              Boolean(questionErrors?.[index]?.question);
-
-            return (
-              <Box
-                key={index}
-                sx={{ display: "flex", gap: 1, alignItems: "center" }}
-              >
+            </LocalizationProvider>
+          </Grid>
+          <Grid size={4}>
+            <Autocomplete
+              options={ROLES}
+              getOptionLabel={(option) => option.label}
+              value={formik.values.userRole}
+              onChange={(_, newValue) =>
+                formik.setFieldValue("userRole", newValue)
+              }
+              renderInput={(params) => (
                 <TextField
-                  label={`Question ${index + 1}`}
-                  fullWidth
-                  value={q.question}
-                  onChange={(e) => handleQuestionChange(index, e.target.value)}
-                  onBlur={() =>
-                    formik.setFieldTouched(`questions[${index}].question`, true)
+                  {...params}
+                  label="Role"
+                  error={
+                    formik.touched.userRole && Boolean(formik.errors.userRole)
                   }
-                  error={hasError}
                   helperText={
-                    hasError ? questionErrors?.[index]?.question : undefined
+                    formik.touched.userRole &&
+                    (formik.errors.userRole as string)
                   }
                 />
-                <IconButton
-                  onClick={() => handleDeleteQuestion(index)}
-                  color="error"
-                >
-                  <Delete />
-                </IconButton>
-              </Box>
-            );
-          })}
+              )}
+            />
+          </Grid>
+          <Grid size={4}>
+            <Autocomplete
+              options={CATEGORY_DATA}
+              getOptionLabel={(option) => option.label}
+              value={formik.values.category}
+              onChange={(_, newValue) =>
+                formik.setFieldValue("category", newValue)
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Category"
+                  error={
+                    formik.touched.category && Boolean(formik.errors.category)
+                  }
+                  helperText={
+                    formik.touched.category &&
+                    (formik.errors.category as string)
+                  }
+                />
+              )}
+            />
+          </Grid>
+          <Grid size={4}>
+            <Autocomplete
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Training Mode"
+                  error={formik.touched.mode && Boolean(formik.errors.mode)}
+                  helperText={
+                    formik.touched.mode && (formik.errors.mode as string)
+                  }
+                />
+              )}
+              onChange={(_, newValue) =>
+                formik.setFieldValue("mode", newValue?.value as string)
+              }
+              options={TRAINING_MODE_DATA}
+              value={{
+                label: formik.values.mode,
+                value: formik.values.mode,
+              }}
+            />
+          </Grid>
+          <Grid size={12}>
+            {formik.values.questions.map((q, index) => {
+              const questionErrors = formik.errors.questions as
+                | any[]
+                | undefined;
+              const questionTouched = formik.touched.questions as
+                | any[]
+                | undefined;
+              const hasError =
+                Boolean(questionTouched?.[index]?.question) &&
+                Boolean(questionErrors?.[index]?.question);
 
-          <Box sx={{ textAlign: "right" }}>
-            <Button
-              endIcon={<Add />}
-              sx={{ color: COLORS.PRIMARY_NAVY }}
-              onClick={handleAddQuestion}
-            >
-              Add Question
-            </Button>
-          </Box>
+              return (
+                <Box
+                  key={index}
+                  sx={{ display: "flex", gap: 1, alignItems: "center" }}
+                >
+                  <TextField
+                    label={`Question ${index + 1}`}
+                    fullWidth
+                    value={q.question}
+                    onChange={(e) =>
+                      handleQuestionChange(index, e.target.value)
+                    }
+                    onBlur={() =>
+                      formik.setFieldTouched(
+                        `questions[${index}].question`,
+                        true,
+                      )
+                    }
+                    error={hasError}
+                    helperText={
+                      hasError ? questionErrors?.[index]?.question : undefined
+                    }
+                  />
+                  <IconButton
+                    onClick={() => handleDeleteQuestion(index)}
+                    color="error"
+                  >
+                    <Delete />
+                  </IconButton>
+                </Box>
+              );
+            })}
+          </Grid>
+
+          <Grid size={12}>
+            <Box sx={{ textAlign: "right" }}>
+              <Button
+                endIcon={<Add />}
+                sx={{ color: COLORS.PRIMARY_NAVY }}
+                onClick={handleAddQuestion}
+              >
+                Add Question
+              </Button>
+            </Box>
+          </Grid>
 
           <Button
             type="submit"
@@ -241,7 +319,7 @@ const AddBatches = () => {
               "Submit"
             )}
           </Button>
-        </Stack>
+        </Grid>
       </form>
     </Box>
   );
