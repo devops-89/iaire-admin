@@ -182,7 +182,7 @@ const AddBatches = () => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Role"
+                  label="Attendees"
                   error={
                     formik.touched.userRole && Boolean(formik.errors.userRole)
                   }
