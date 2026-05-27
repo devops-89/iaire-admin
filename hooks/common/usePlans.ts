@@ -2,13 +2,18 @@ import { PlansControllers } from "@/app/api/plansControllers";
 import { CREATE_PLAN_REQUEST, PLAN_DATA_PROPS } from "@/utils/type";
 import { useState, useEffect } from "react";
 import useSnackbar from "@/store/useSnackbar";
+import { useModal } from "@/store/useModal";
 export const useCreatePlans = () => {
   const [loading, setLoading] = useState(false);
+  const { hideModal } = useModal();
+  const { setSnackbar } = useSnackbar();
   const createPlan = (data: CREATE_PLAN_REQUEST) => {
     setLoading(true);
     PlansControllers.createPlan(data)
       .then((res) => {
-        console.log("response in create plan ", res);
+        // console.log("response in create plan ", res);
+        setSnackbar("Plan Created Successfully", "success");
+        hideModal();
         setLoading(false);
       })
       .catch((err) => {

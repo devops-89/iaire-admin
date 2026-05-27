@@ -71,9 +71,9 @@ const AddPlan: React.FC<AddPlanProps> = ({ selectedPlan, onSuccess }) => {
         name: values?.name,
         target:
           values?.role === USER_ROLES.MENTOR
-            ? USER_ROLES.EDUCATOR
+            ? USER_ROLES.TEACHER
             : values?.role === USER_ROLES.INSTITUTION
-              ? USER_ROLES.SCHOOL
+              ? USER_ROLES.SCHOOL_ADMIN
               : values?.role,
         countryId: values?.country?.id,
         billingCycle: values?.billingCycle,
@@ -125,16 +125,9 @@ const AddPlan: React.FC<AddPlanProps> = ({ selectedPlan, onSuccess }) => {
     newValue: { label: string; value: string } | null,
   ) => {
     setRole(newValue);
-    if (
-      newValue?.value === USER_ROLES.SCHOOL ||
-      newValue?.value === USER_ROLES.INSTITUTION
-    ) {
+    if (newValue?.value === USER_ROLES.SCHOOL_ADMIN) {
       setExistingBenefits(INSTITUTIONAL_PLANS_DATA);
-    } else if (
-      newValue?.value === USER_ROLES.MENTOR ||
-      newValue?.value === USER_ROLES.TEACHER ||
-      newValue?.value === USER_ROLES.EDUCATOR
-    ) {
+    } else if (newValue?.value === USER_ROLES.TEACHER) {
       setExistingBenefits(MENTOR_PLANS_DATA);
     } else if (newValue?.value === USER_ROLES.STUDENT) {
       setExistingBenefits(INDIVIDUAL_PLANS_DATA);
@@ -369,9 +362,10 @@ const AddPlan: React.FC<AddPlanProps> = ({ selectedPlan, onSuccess }) => {
             width: 150,
           }}
           type="submit"
+          disabled={loading}
         >
           {loading ? (
-            <CircularProgress sx={{ fontSize: 20, color: COLORS.WHITE }} />
+            <CircularProgress sx={{ fontSize: 15, color: COLORS.WHITE }} />
           ) : (
             "Add Plan"
           )}

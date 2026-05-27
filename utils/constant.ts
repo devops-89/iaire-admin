@@ -42,11 +42,11 @@ export const ROLES = [
   },
   {
     label: "Mentor",
-    value: USER_ROLES.MENTOR,
+    value: USER_ROLES.TEACHER,
   },
   {
     label: "Institution",
-    value: USER_ROLES.INSTITUTION,
+    value: USER_ROLES.SCHOOL_ADMIN,
   },
 ];
 
