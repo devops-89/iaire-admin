@@ -1223,3 +1223,18 @@ export const TRAINING_MODE_DATA = [
     value: TRAINING_MODE.ANY_OF_THE_ABOVE,
   },
 ];
+
+export const INNOVATION_TABLE_HEADER = [
+  "Id",
+  "Innovation Title",
+  "Board",
+  "School",
+  "Status",
+  "Date Added",
+];
+
+export const INNOVATION_TAB = [
+  {
+    label: "All",
+  },
+];

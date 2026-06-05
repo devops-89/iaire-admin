@@ -282,3 +282,139 @@ export interface PLAN_DATA_PROPS {
     totalPages: number;
   };
 }
+
+export interface InnovationTeam {
+  id: number;
+  title: string;
+  type: string;
+  teamCode: string;
+  mentorId: number;
+  assistantMentorId: number | null;
+  createdBy: number;
+  schoolId: number;
+  boardId: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+export interface InnovationSchoolCountry {
+  id: number;
+  name: string;
+}
+
+export interface InnovationSchool {
+  id: number;
+  name: string;
+  code: string | null;
+  address: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  city: string;
+  state: string;
+  zipCode: string;
+  logo: string | null;
+  affiliationCertificate: string | null;
+  affiliationNumber: string | null;
+  website: string | null;
+  registrationYear: number;
+  contactPersonName: string;
+  contactPersonEmail: string;
+  contactPersonPhone: string;
+  isActive: boolean;
+  boardId: number;
+  countryId: number;
+  country: InnovationSchoolCountry;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  schoolLogoDownloadUrl: string | null;
+  affiliationCertificateDownloadUrl: string | null;
+}
+
+export interface InnovationCreator {
+  id: number;
+  email: string;
+  username: string;
+  phone: string;
+  countryCode: string | null;
+  isdCode: string | null;
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
+  isBoardAdminManuallyVerfied: boolean;
+  fullName: string;
+  firstName: string | null;
+  lastName: string | null;
+  bio: string | null;
+  profileImage: string | null;
+  password?: string;
+  hashedRefreshToken?: string;
+  lastLoginAt: string | null;
+  tokenVersion: number;
+  role: string;
+  status: string;
+  schoolId: number | null;
+  grade: string | null;
+  state: string | null;
+  dob: string | null;
+  spocDetails: any | null;
+  city: string | null;
+  totalSchools: number | null;
+  totalStudents: number | null;
+  totalTeachers: number | null;
+  noOfStudents: number | null;
+  noOfTeachers: number | null;
+  category: string | null;
+  gender: string | null;
+  approvalStatus: string;
+  isSchoolPay: boolean;
+  primarySubjects: string[];
+  experienceYears: number | null;
+  experienceinYears?: number | null;
+  experienceMonths: number | null;
+  fatherName: string | null;
+  fatherEmail: string | null;
+  fatherPhone: string | null;
+  fatherProfession: string | null;
+  motherName: string | null;
+  motherEmail: string | null;
+  motherPhone: string | null;
+  motherProfession: string | null;
+  boardId: number | null;
+  countryId: number | null;
+  approvedAt: string | null;
+  rejectedAt: string | null;
+  rejectReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  profileImageDownloadUrl: string | null;
+}
+
+export interface INNOVATION_RESPONSE_DATA_PROPS {
+  id: number;
+  title: string;
+  problemDescription: string;
+  solution: string;
+  teamId: number;
+  team: InnovationTeam;
+  schoolId: number;
+  school: InnovationSchool;
+  createdBy: number;
+  creator: InnovationCreator;
+  status: string;
+  isDraft: boolean;
+  attachments: any | null;
+  attomeyFinalTemplate: string | null;
+  reviewedBy: number | null;
+  reviewer: any | null;
+  reviewComments: string | null;
+  reviewedAt: string | null;
+  archiveComments: string | null;
+  archivedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  attorneyTemplateDownloadUrl: string | null;
+  attachmentsDownloadUrls: string[];
+}

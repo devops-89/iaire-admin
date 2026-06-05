@@ -108,6 +108,18 @@ boardsApi.interceptors.request.use((config) => {
   return config;
 });
 
+const innovationAPI = axios.create({
+  baseURL: serverConstants.innovations,
+});
+
+innovationAPI.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export {
   userPublicApi,
   userSecuredApi,
@@ -120,4 +132,5 @@ export {
   trainingApi,
   batchesApi,
   boardsApi,
+  innovationAPI,
 };

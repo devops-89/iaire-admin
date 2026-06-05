@@ -10,4 +10,5 @@ export const serverConstants = {
   training: `${baseURL}/training`,
   batches: `${baseURL}/batch`,
   boards: `${baseURL}/boards`,
+  innovations: `${baseURL}/innovations`,
 };

@@ -151,7 +151,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             Overview
           </Typography>
 
-          <Stack direction="row" spacing={2} alignItems="center">
+          <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
             <IconButton color="inherit">
               <SearchIcon />
             </IconButton>
@@ -159,8 +159,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
               <NotificationsIcon />
             </IconButton>
             <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Box textAlign="right" sx={{ display: { xs: "none", md: "block" } }}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+              <Box sx={{ display: { xs: "none", md: "block" }, textAlign: "right" }}>
                 <Typography variant="body2" sx={{ fontWeight: 600, fontSize: "0.85rem" }}>
                   Admin User
                 </Typography>

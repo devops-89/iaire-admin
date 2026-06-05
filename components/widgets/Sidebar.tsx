@@ -32,13 +32,41 @@ const DRAWER_WIDTH = 280;
 const MENU_ITEMS = [
   { text: "Dashboard", icon: <Dashboard />, path: "/dashboard" },
   { text: "Board Management", icon: <School />, path: "/dashboard/schools" },
-  { text: "Plan Management", icon: <CardMembership />, path: "/dashboard/plans" },
-  { text: "Training Management", icon: <EventAvailable />, path: "/dashboard/interviews" },
-  { text: "Batch Management", icon: <BatchPrediction />, path: "/dashboard/batches" },
-  { text: "Country Management", icon: <Public />, path: "/dashboard/countries" },
-  { text: "Research Management", icon: <Description />, path: "/dashboard/research" },
-  { text: "Patent Management", icon: <Description />, path: "/dashboard/patent" },
-  { text: "Startup Management", icon: <RocketLaunch />, path: "/dashboard/startups" },
+  {
+    text: "Plan Management",
+    icon: <CardMembership />,
+    path: "/dashboard/plans",
+  },
+  {
+    text: "Training Management",
+    icon: <EventAvailable />,
+    path: "/dashboard/interviews",
+  },
+  {
+    text: "Batch Management",
+    icon: <BatchPrediction />,
+    path: "/dashboard/batches",
+  },
+  {
+    text: "Country Management",
+    icon: <Public />,
+    path: "/dashboard/countries",
+  },
+  {
+    text: "Research Management",
+    icon: <Description />,
+    path: "/dashboard/research",
+  },
+  {
+    text: "Innovation Management",
+    icon: <Description />,
+    path: "/dashboard/innovation-management",
+  },
+  {
+    text: "Startup Management",
+    icon: <RocketLaunch />,
+    path: "/dashboard/startups",
+  },
 ];
 
 const Sidebar = () => {
@@ -54,8 +82,8 @@ const Sidebar = () => {
         "& .MuiDrawer-paper": {
           width: DRAWER_WIDTH,
           boxSizing: "border-box",
-          backgroundColor: COLORS.NAVY_GRADIENT_START,
-          backgroundImage: `linear-gradient(180deg, ${COLORS.NAVY_GRADIENT_START} 0%, ${COLORS.NAVY_GRADIENT_END} 100%)`,
+          backgroundColor: COLORS.PRIMARY_NAVY,
+          // backgroundImage: `linear-gradient(180deg, ${COLORS.NAVY_GRADIENT_START} 0%, ${COLORS.NAVY_GRADIENT_END} 100%)`,
           color: COLORS.WHITE,
           borderRight: "1px solid rgba(255, 255, 255, 0.1)",
         },
@@ -93,8 +121,12 @@ const Sidebar = () => {
                 onClick={() => router.push(item.path)}
                 sx={{
                   borderRadius: "12px",
-                  backgroundColor: isActive ? "rgba(209, 160, 84, 0.15)" : "transparent",
-                  color: isActive ? COLORS.ACCENT_TAN : "rgba(255, 255, 255, 0.7)",
+                  backgroundColor: isActive
+                    ? "rgba(209, 160, 84, 0.15)"
+                    : "transparent",
+                  color: isActive
+                    ? COLORS.ACCENT_TAN
+                    : "rgba(255, 255, 255, 0.7)",
                   "&:hover": {
                     backgroundColor: "rgba(255, 255, 255, 0.05)",
                     color: COLORS.WHITE,
@@ -104,7 +136,9 @@ const Sidebar = () => {
               >
                 <ListItemIcon
                   sx={{
-                    color: isActive ? COLORS.ACCENT_TAN : "rgba(255, 255, 255, 0.7)",
+                    color: isActive
+                      ? COLORS.ACCENT_TAN
+                      : "rgba(255, 255, 255, 0.7)",
                     minWidth: 45,
                   }}
                 >
