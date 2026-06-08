@@ -761,7 +761,7 @@ const Interviews = () => {
             <MobileDateTimePicker
               label="Interview Date & Time"
               value={interviewDate}
-              onChange={(newValue) => setInterviewDate(newValue)}
+              onChange={(newValue: any) => setInterviewDate(newValue)}
               disablePast // Prevent past dates
               closeOnSelect={false}
               slotProps={{

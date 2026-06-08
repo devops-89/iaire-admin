@@ -126,13 +126,15 @@ const Navbar = () => {
           onClose={handleMenuClose}
           transformOrigin={{ horizontal: "right", vertical: "top" }}
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-          PaperProps={{
-            sx: {
-              mt: 1.5,
-              borderRadius: "12px",
-              boxShadow: "0px 10px 30px rgba(0,0,0,0.1)",
-              border: "1px solid rgba(0,0,0,0.05)",
-              minWidth: 150,
+          slotProps={{
+            paper: {
+              sx: {
+                mt: 1.5,
+                borderRadius: "12px",
+                boxShadow: "0px 10px 30px rgba(0,0,0,0.1)",
+                border: "1px solid rgba(0,0,0,0.05)",
+                minWidth: 150,
+              },
             },
           }}
         >

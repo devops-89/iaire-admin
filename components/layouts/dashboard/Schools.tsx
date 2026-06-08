@@ -22,9 +22,9 @@ const SchoolsManagement = () => {
 
   const statsCards = [
     { label: "Total Boards", value: boardAnalytics.length, icon: <Business />, color: COLORS.PRIMARY_NAVY },
-    { label: "Active Schools", value: totalStats.schools.toLocaleString(), icon: <School />, color: "#4CAF50" },
-    { label: "Total Teachers", value: totalStats.teachers.toLocaleString(), icon: <People />, color: COLORS.ACCENT_TAN },
-    { label: "Total Students", value: totalStats.students.toLocaleString(), icon: <People />, color: COLORS.INFO },
+    { label: "Active Schools", value: totalStats.schools.toLocaleString(), icon: <School />, color: COLORS.PRIMARY_NAVY },
+    { label: "Total Teachers", value: totalStats.teachers.toLocaleString(), icon: <People />, color: COLORS.PRIMARY_NAVY },
+    { label: "Total Students", value: totalStats.students.toLocaleString(), icon: <People />, color: COLORS.PRIMARY_NAVY },
   ];
 
   return (
@@ -42,9 +42,9 @@ const SchoolsManagement = () => {
       <Grid container spacing={3} sx={{ mb: 5 }}>
         {statsCards.map((stat, idx) => (
           <Grid size={{ xs: 12, sm: 6, md: 3 }} key={idx}>
-            <Card sx={{ 
-              p: 3, 
-              borderRadius: "20px", 
+            <Card sx={{
+              p: 3,
+              borderRadius: "20px",
               boxShadow: "0px 10px 20px rgba(0,0,0,0.02)",
               display: "flex",
               alignItems: "center",
@@ -72,10 +72,10 @@ const SchoolsManagement = () => {
       <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, fontFamily: poppins.style.fontFamily }}>
         Educational Boards Hierarchy
       </Typography>
-      
-      <Box 
-        sx={{ 
-          display: "grid", 
+
+      <Box
+        sx={{
+          display: "grid",
           gridTemplateColumns: {
             xs: "1fr",
             sm: "repeat(2, 1fr)",
@@ -94,9 +94,9 @@ const SchoolsManagement = () => {
           boardAnalytics.map((board, idx) => (
             <Card
               key={board.boardId}
-              sx={{ 
-                p: 0, 
-                borderRadius: "24px", 
+              sx={{
+                p: 0,
+                borderRadius: "24px",
                 overflow: "hidden",
                 boxShadow: "0px 10px 25px rgba(0,0,0,0.04)",
                 border: "1px solid rgba(0,0,0,0.03)",
@@ -110,7 +110,7 @@ const SchoolsManagement = () => {
               <Box sx={{ p: 3, flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2, minHeight: 60 }}>
                   <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
-                    <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: BOARD_COLORS[idx % BOARD_COLORS.length], flexShrink: 0, mt: 0.8 }} />
+                    <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: COLORS.PRIMARY_NAVY, flexShrink: 0, mt: 0.8 }} />
                     <Typography sx={{ fontSize: 16, fontWeight: 700, fontFamily: poppins.style.fontFamily, lineHeight: 1.2 }}>
                       {board.boardName}
                     </Typography>
@@ -133,8 +133,8 @@ const SchoolsManagement = () => {
                   </Grid>
                 </Grid>
               </Box>
-              
-              <Box sx={{ height: 6, width: "100%", bgcolor: BOARD_COLORS[idx % BOARD_COLORS.length], opacity: 0.8 }} />
+
+              <Box sx={{ height: 6, width: "100%", bgcolor: COLORS.PRIMARY_NAVY, opacity: 0.8 }} />
             </Card>
           ))
         )}
