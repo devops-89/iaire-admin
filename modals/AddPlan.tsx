@@ -18,7 +18,9 @@ import {
   Autocomplete,
   Box,
   Button,
+  Checkbox,
   CircularProgress,
+  FormControlLabel,
   Grid,
   IconButton,
   InputAdornment,
@@ -41,12 +43,12 @@ interface PlanFormValues {
   price: string;
   currency: string;
   billingCycle: string;
-  benefits: { key: string; value: string }[];
+  benefits: { key: string; value: string; hasLimit?: boolean }[];
 }
 
 const AddPlan: React.FC<AddPlanProps> = ({ selectedPlan, onSuccess }) => {
   const { hideModal } = useModal();
-  const { createPlan, loading } = useCreatePlans();
+  const { createPlan, loading } = useCreatePlans(onSuccess);
 
   const countryParams = {
     status: true,
@@ -63,23 +65,26 @@ const AddPlan: React.FC<AddPlanProps> = ({ selectedPlan, onSuccess }) => {
       price: "",
       currency: "",
       billingCycle: "",
-      benefits: [{ key: "", value: "" }],
+      benefits: [{ key: "", value: "0", hasLimit: false }],
     },
     validationSchema: planValidationSchema,
     onSubmit: (values) => {
       const payload = {
         name: values?.name,
         target:
-          values?.role === USER_ROLES.MENTOR
-            ? USER_ROLES.TEACHER
-            : values?.role === USER_ROLES.INSTITUTION
-              ? USER_ROLES.SCHOOL_ADMIN
+          values?.role === USER_ROLES.SCHOOL_ADMIN || values?.role === USER_ROLES.INSTITUTION || values?.role === USER_ROLES.SCHOOL
+            ? "SCHOOL"
+            : values?.role === USER_ROLES.MENTOR || values?.role === USER_ROLES.TEACHER
+              ? "TEACHER"
               : values?.role,
         countryId: values?.country?.id,
         billingCycle: values?.billingCycle,
         price: values?.price,
         currency: values?.country?.currencyCode,
-        limits: values?.benefits,
+        limits: values?.benefits.map((b) => ({
+          key: b.key.trim().toUpperCase().replace(/\s+/g, "_").replace(/TEACHER/g, "TECHER"),
+          value: b.hasLimit ? b.value : "0",
+        })),
         isActive: true,
       };
       createPlan(payload as unknown as CREATE_PLAN_REQUEST);
@@ -88,7 +93,7 @@ const AddPlan: React.FC<AddPlanProps> = ({ selectedPlan, onSuccess }) => {
   const addBenefit = () => {
     formik.setFieldValue("benefits", [
       ...formik.values.benefits,
-      { key: "", value: "" },
+      { key: "", value: "0", hasLimit: false },
     ]);
   };
   const removeBenefit = (index: number) => {
@@ -282,64 +287,90 @@ const AddPlan: React.FC<AddPlanProps> = ({ selectedPlan, onSuccess }) => {
           <Grid
             container
             spacing={3}
-            sx={{ mt: 3, alignItems: "center" }}
+            sx={{ mt: 3, alignItems: "flex-start" }}
             key={i}
           >
-            <Grid size={7}>
-              <Autocomplete
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select Plan Benefit"
-                    error={
-                      formik.touched.benefits?.[i]?.key &&
-                      !!(formik.errors.benefits as any)?.[i]?.key
-                    }
-                    helperText={
-                      formik.touched.benefits?.[i]?.key &&
-                      (formik.errors.benefits as any)?.[i]?.key
-                    }
-                  />
-                )}
-                options={existingBenefits}
-                getOptionLabel={(option) => option.label}
-                value={
-                  existingBenefits.find((item) => item.value === val.key) ||
-                  null
-                }
-                onChange={(e, newValue) => {
-                  formik.setFieldValue(
-                    `benefits[${i}].key`,
-                    newValue ? newValue.value : "",
-                  );
-                  formik.setFieldTouched(`benefits[${i}].key`, true, false);
-                }}
-              />
-            </Grid>
-            <Grid size={4}>
+            <Grid size={val.hasLimit ? 5 : 8}>
               <TextField
-                label="Enter Limit"
+                label="Benefit Point / Name"
                 fullWidth
-                name={`benefits[${i}].value`}
-                value={val.value}
+                name={`benefits[${i}].key`}
+                value={val.key}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 error={
-                  formik.touched.benefits?.[i]?.value &&
-                  !!(formik.errors.benefits as any)?.[i]?.value
+                  formik.touched.benefits?.[i]?.key &&
+                  !!(formik.errors.benefits as any)?.[i]?.key
                 }
                 helperText={
-                  formik.touched.benefits?.[i]?.value &&
-                  (formik.errors.benefits as any)?.[i]?.value
+                  formik.touched.benefits?.[i]?.key &&
+                  (formik.errors.benefits as any)?.[i]?.key
                 }
               />
             </Grid>
+            <Grid size={3} sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={!!val.hasLimit}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      formik.setFieldValue(`benefits[${i}].hasLimit`, checked);
+                      if (checked) {
+                        formik.setFieldValue(`benefits[${i}].value`, "");
+                      } else {
+                        formik.setFieldValue(`benefits[${i}].value`, "0");
+                      }
+                    }}
+                  />
+                }
+                label="Add Limit"
+                sx={{
+                  "& .MuiFormControlLabel-label": {
+                    fontFamily: poppins.style.fontFamily,
+                    fontSize: 13,
+                    color: COLORS.TEXT_PRIMARY,
+                  },
+                }}
+              />
+            </Grid>
+            {val.hasLimit && (
+              <Grid size={3}>
+                <TextField
+                  label="Enter Limit"
+                  type="number"
+                  sx={{
+                    "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button":
+                      {
+                        display: "none",
+                      },
+                    "& input[type=number]": {
+                      MozAppearance: "textfield",
+                    },
+                  }}
+                  fullWidth
+                  name={`benefits[${i}].value`}
+                  value={val.value}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  error={
+                    formik.touched.benefits?.[i]?.value &&
+                    !!(formik.errors.benefits as any)?.[i]?.value
+                  }
+                  helperText={
+                    formik.touched.benefits?.[i]?.value &&
+                    (formik.errors.benefits as any)?.[i]?.value
+                  }
+                />
+              </Grid>
+            )}
             <Grid size={1} sx={{ display: "flex", justifyContent: "center" }}>
               <IconButton
                 onClick={() => removeBenefit(i)}
                 color="error"
                 size="small"
                 disabled={formik.values.benefits.length === 1}
+                sx={{ mt: 1.5 }}
               >
                 <Delete />
               </IconButton>

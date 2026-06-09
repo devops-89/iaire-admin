@@ -3,7 +3,7 @@ import { CREATE_PLAN_REQUEST, PLAN_DATA_PROPS } from "@/utils/type";
 import { useState, useEffect } from "react";
 import useSnackbar from "@/store/useSnackbar";
 import { useModal } from "@/store/useModal";
-export const useCreatePlans = () => {
+export const useCreatePlans = (onSuccess?: () => void) => {
   const [loading, setLoading] = useState(false);
   const { hideModal } = useModal();
   const { setSnackbar } = useSnackbar();
@@ -14,10 +14,15 @@ export const useCreatePlans = () => {
         // console.log("response in create plan ", res);
         setSnackbar("Plan Created Successfully", "success");
         hideModal();
+        if (onSuccess) onSuccess();
         setLoading(false);
       })
       .catch((err) => {
         console.log("error in create plan", err);
+        setSnackbar(
+          err.response?.data?.message || "Failed to create plan",
+          "error"
+        );
         setLoading(false);
       });
   };

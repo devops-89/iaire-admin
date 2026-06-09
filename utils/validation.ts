@@ -34,7 +34,12 @@ export const planValidationSchema = Yup.object({
   benefits: Yup.array().of(
     Yup.object({
       key: Yup.string().required("Please Enter Plan Benefit"),
-      value: Yup.string().required("Please Enter Plan Benefit Limit"),
+      hasLimit: Yup.boolean(),
+      value: Yup.string().when("hasLimit", {
+        is: true,
+        then: (schema) => schema.required("Please Enter Plan Benefit Limit"),
+        otherwise: (schema) => schema.optional(),
+      }),
     }),
   ),
 });

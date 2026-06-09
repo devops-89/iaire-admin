@@ -186,8 +186,8 @@ const DashboardOverview = () => {
           const innovationsRes = await innovationControllers.getInnovations();
           if (innovationsRes?.success && Array.isArray(innovationsRes.data)) {
             innovationsCount = innovationsRes.data.length;
-            approvedCount = innovationsRes.data.filter((item: any) => item.status === "IAIRE_APPROVED").length;
-            attorneyReviewCount = innovationsRes.data.filter((item: any) => item.status === "ATTORNEY_REVIEW").length;
+            approvedCount = innovationsRes.data.filter((item: any) => item.status === "PATENT_GRANTED").length;
+            attorneyReviewCount = innovationsRes.data.filter((item: any) => item.status === "PATENT_PENDING").length;
           }
         } catch (e) {
           console.warn("Could not fetch innovations, using mock fallbacks.", e);

@@ -289,7 +289,31 @@ export interface InnovationTeam {
   type: string;
   teamCode: string;
   mentorId: number;
+  mentor?: {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+  } | null;
   assistantMentorId: number | null;
+  assistantMentor?: {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string;
+  } | null;
+  members?: {
+    id: number;
+    teamId: number;
+    studentId: number;
+    createdAt?: string;
+    student: {
+      id: number;
+      email: string;
+      firstName: string;
+      lastName: string;
+    };
+  }[];
   createdBy: number;
   schoolId: number;
   boardId: number;
@@ -325,6 +349,10 @@ export interface InnovationSchool {
   boardId: number;
   countryId: number;
   country: InnovationSchoolCountry;
+  board?: {
+    id: number;
+    name: string;
+  } | null;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
