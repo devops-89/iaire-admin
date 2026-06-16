@@ -37,7 +37,6 @@ const LoginLayout = () => {
     setMounted(true);
   }, []);
 
-  // Reset states
   const [identifier, setIdentifier] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");

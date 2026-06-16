@@ -59,13 +59,11 @@ import { PlanListItem } from "@/utils/type";
 import dayjs from "dayjs";
 
 const FS = { fontFamily: poppins.style.fontFamily };
-
 const STATUS_TABS = [
   { label: "All Plans", value: "All" },
   { label: "Active", value: "Active" },
   { label: "Inactive", value: "Inactive" },
 ];
-
 const PlansManagement = () => {
   const { planList, planLoading, updatePlan, fetchPlans } = usePlansList();
   const { showModal } = useModal();
@@ -510,7 +508,7 @@ const PlansManagement = () => {
                 sx={{
                   position: "absolute",
                   top: 16,
-                  right: 16,
+                  right: 16,     
                   color: "white",
                   "&:hover": {
                     bgcolor: "rgba(255, 255, 255, 0.15)",

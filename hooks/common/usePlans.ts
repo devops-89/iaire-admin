@@ -11,7 +11,6 @@ export const useCreatePlans = (onSuccess?: () => void) => {
     setLoading(true);
     PlansControllers.createPlan(data)
       .then((res) => {
-        // console.log("response in create plan ", res);
         setSnackbar("Plan Created Successfully", "success");
         hideModal();
         if (onSuccess) onSuccess();

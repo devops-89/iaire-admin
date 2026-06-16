@@ -22,6 +22,7 @@ import {
   RocketLaunch,
   EventAvailable,
   BatchPrediction,
+  FolderOpen,
 } from "@mui/icons-material";
 import { usePathname, useRouter } from "next/navigation";
 import { COLORS, FONT_SIZE } from "@/utils/enum";
@@ -61,6 +62,11 @@ const MENU_ITEMS = [
     text: "Innovation Management",
     icon: <Description />,
     path: "/dashboard/innovation-management",
+  },
+  {
+    text: "Resource Management",
+    icon: <FolderOpen />,
+    path: "/dashboard/resources",
   },
   {
     text: "Startup Management",
