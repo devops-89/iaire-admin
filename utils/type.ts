@@ -1,3 +1,5 @@
+import { FILE_TYPE, RESOURCES_TYPE } from "./enum";
+
 export interface LOGIN_REQUEST {
   identifier: string;
   password: string;
@@ -446,3 +448,38 @@ export interface INNOVATION_RESPONSE_DATA_PROPS {
   attorneyTemplateDownloadUrl: string | null;
   attachmentsDownloadUrls: string[];
 }
+
+export interface ADD_RESOURCE_PROPS {
+  file: File;
+  title: string;
+  description: string;
+  section: RESOURCES_TYPE;
+  fileType: FILE_TYPE;
+}
+
+export interface ResourceItem {
+  id: number;
+  title: string;
+  description: string | null;
+  section: string;
+  fileType: string;
+  fileUrl: string;
+  fileName: string;
+  fileSize: string;
+  mimeType: string;
+  thumbnailUrl: string | null;
+  status: string;
+  isFeatured: boolean;
+  displayOrder: number | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+export interface GET_RESOURCES_RESPONSE {
+  statusCode: number;
+  message: string;
+  data: ResourceItem[];
+  pagination: Pagination;
+}
+

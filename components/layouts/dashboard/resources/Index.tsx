@@ -1,152 +1,124 @@
 "use client";
-
-import React, { useState } from "react";
+import { useGetResources } from "@/hooks/common/useResources";
+import { COLORS, FILE_TYPE, RESOURCES_TYPE } from "@/utils/enum";
+import { poppins } from "@/utils/fonts";
+import { ResourceItem } from "@/utils/type";
 import {
   Box,
   Button,
   Card,
-  IconButton,
+  Chip,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Skeleton,
   Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
-  Tabs,
   Typography,
   InputBase,
-  Menu,
-  MenuItem,
-  Dialog,
-  CircularProgress,
-  Grid,
-  Avatar,
-  Divider,
-  Paper,
-  Chip,
-  Skeleton,
   alpha,
 } from "@mui/material";
-import {
-  Add,
-  MoreVert,
-  Search,
-  Visibility,
-  Edit,
-  Delete,
-  Close,
-  FolderOpen,
-  CalendarMonth,
-  Tag,
-  Category,
-} from "@mui/icons-material";
-import { poppins } from "@/utils/fonts";
-import { COLORS } from "@/utils/enum";
-import { useResources, Resource } from "@/hooks/common/useResources";
-import { useModal } from "@/store/useModal";
-import AddResource from "@/modals/AddResource";
+import { Folder, Search } from "@mui/icons-material";
+import Link from "next/link";
 import moment from "moment";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const FS = { fontFamily: poppins.style.fontFamily };
 
-const TABS = [
-  { label: "All Resources", value: "ALL" },
-  { label: "Playbooks", value: "Playbooks" },
-  { label: "Modules", value: "Modules" },
-  { label: "Templates", value: "Templates" },
+const FILE_TYPE_COLORS: Record<string, string> = {
+  PDF: "#E53935",
+  PPT: "#FB8C00",
+  VIDEO: "#1E88E5",
+  IMAGE: "#43A047",
+};
+
+const SECTION_OPTIONS = [
+  { label: "All Sections", value: "ALL" },
+  { label: "Curriculum", value: RESOURCES_TYPE.CURRICULUM },
+  { label: "Modules", value: RESOURCES_TYPE.MODULES },
+  { label: "Document Templates", value: RESOURCES_TYPE.DOCUMENT_TEMPLATE },
+  { label: "Training Videos", value: RESOURCES_TYPE.TRAINING_VIDEOS },
+  { label: "Case Studies", value: RESOURCES_TYPE.CASE_STUDIES },
+  { label: "Template", value: RESOURCES_TYPE.TEMPLATE },
 ];
 
-const ResourcesManagement = () => {
-  const { resources, loading, fetchResources, deleteResource } = useResources();
-  const { showModal } = useModal();
+const FILE_TYPE_OPTIONS = [
+  { label: "All File Types", value: "ALL" },
+  { label: "PDF", value: FILE_TYPE.PDF },
+  { label: "PPT", value: FILE_TYPE.PPT },
+  { label: "Videos", value: FILE_TYPE.VIDEOS },
+  { label: "Images", value: FILE_TYPE.IMAGES },
+];
 
-  const [activeTab, setActiveTab] = useState("ALL");
+const ResourceManagement = () => {
+  const { getResources, loading, data, pagination } = useGetResources();
   const [searchTerm, setSearchTerm] = useState("");
-  
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [activeRecord, setActiveRecord] = useState<Resource | null>(null);
-  const [openDetailsModal, setOpenDetailsModal] = useState(false);
+  const [sectionFilter, setSectionFilter] = useState("ALL");
+  const [fileTypeFilter, setFileTypeFilter] = useState("ALL");
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
-    setActiveTab(newValue);
+  const fetchResources = useCallback(
+    (page = 1, limit = pagination.limit) => {
+      getResources(
+        page,
+        limit,
+        sectionFilter !== "ALL" ? sectionFilter : undefined,
+        fileTypeFilter !== "ALL" ? fileTypeFilter : undefined,
+      );
+    },
+    [sectionFilter, fileTypeFilter, pagination.limit],
+  );
+
+  // Initial fetch
+  useEffect(() => {
+    fetchResources();
+  }, []);
+
+  // Re-fetch when filters change
+  useEffect(() => {
+    fetchResources(1);
+  }, [sectionFilter, fileTypeFilter]);
+
+  // Client-side search on the current page data
+  const filteredData = useMemo(() => {
+    if (!data || !Array.isArray(data)) return [];
+    if (!searchTerm) return data;
+    const search = searchTerm.toLowerCase();
+    return data.filter((item: ResourceItem) => {
+      const titleMatch = item.title?.toLowerCase().includes(search);
+      const descMatch = item.description?.toLowerCase().includes(search);
+      const fileNameMatch = item.fileName?.toLowerCase().includes(search);
+      return titleMatch || descMatch || fileNameMatch;
+    });
+  }, [data, searchTerm]);
+
+  const formatFileSize = (bytes: string) => {
+    const size = parseInt(bytes, 10);
+    if (isNaN(size)) return "—";
+    if (size < 1024) return `${size} B`;
+    if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+    return `${(size / (1024 * 1024)).toFixed(1)} MB`;
   };
-
-  const handleOpenAddModal = () => {
-    showModal(<AddResource onSuccess={fetchResources} />);
-  };
-
-  const handleOpenEditModal = () => {
-    if (activeRecord) {
-      showModal(<AddResource resourceToEdit={activeRecord} onSuccess={fetchResources} />);
-      setAnchorEl(null);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (activeRecord) {
-      if (confirm("Are you sure you want to delete this resource?")) {
-        await deleteResource(activeRecord.id);
-      }
-      setAnchorEl(null);
-    }
-  };
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>, record: Resource) => {
-    setAnchorEl(event.currentTarget);
-    setActiveRecord(record);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setActiveRecord(null);
-  };
-
-  const handleViewDetails = () => {
-    if (activeRecord) {
-      setOpenDetailsModal(true);
-      setAnchorEl(null);
-    }
-  };
-
-  // Filter resources based on tab and search query
-  const filteredResources = (resources || []).filter((item) => {
-    // Category Filter
-    if (activeTab !== "ALL" && item.category !== activeTab) {
-      return false;
-    }
-
-    // Search Query
-    if (searchTerm) {
-      const q = searchTerm.toLowerCase();
-      const titleMatch = item.title?.toLowerCase().includes(q);
-      const descMatch = item.description?.toLowerCase().includes(q);
-      const tagMatch = item.tags?.some((t) => t.toLowerCase().includes(q));
-      if (!titleMatch && !descMatch && !tagMatch) {
-        return false;
-      }
-    }
-
-    return true;
-  });
 
   return (
-    <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 4 }}>
-      {/* Header section */}
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between",
-          alignItems: { xs: "flex-start", sm: "center" },
-          gap: 2,
-        }}
+    <Box
+      sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 4 }}
+    >
+      {/* Header */}
+      <Stack
+        direction={"row"}
+        sx={{ justifyContent: "space-between", alignItems: "center" }}
       >
         <Box>
           <Typography
-            variant="h4"
             sx={{
+              fontSize: 20,
               fontFamily: poppins.style.fontFamily,
               fontWeight: 800,
               color: COLORS.TEXT_PRIMARY,
@@ -156,68 +128,139 @@ const ResourcesManagement = () => {
             Resource Management
           </Typography>
           <Typography
-            variant="body1"
             sx={{
-              fontFamily: poppins.style.fontFamily,
+              ...FS,
               color: COLORS.TEXT_SECONDARY,
+              fontSize: 14,
               mt: 0.5,
             }}
           >
-            Access, view, search, and update playbooks, training modules, and standard template materials.
+            Manage curriculum documents, training videos, templates, and more.
           </Typography>
         </Box>
+        <Link href="/dashboard/resources/add-resources">
+          <Button
+            sx={{
+              fontSize: 14,
+              fontFamily: poppins.style.fontFamily,
+              background: `linear-gradient(135deg, ${COLORS.PRIMARY_NAVY} 0%, #1A293D 100%)`,
+              color: COLORS.WHITE,
+              padding: "10px 24px",
+              borderRadius: "14px",
+              fontWeight: 600,
+              cursor: "pointer",
+              textTransform: "none",
+              boxShadow: "0 8px 20px 0 rgba(11, 23, 39, 0.15)",
+              transition: "all 0.3s",
+              "&:hover": {
+                boxShadow: "0 10px 24px 0 rgba(11, 23, 39, 0.25)",
+                transform: "translateY(-2px)",
+              },
+            }}
+          >
+            Add Resource
+          </Button>
+        </Link>
+      </Stack>
 
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          onClick={handleOpenAddModal}
+      {/* Search & Filters */}
+      <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+        {/* Search */}
+        <Box
           sx={{
-            background: `linear-gradient(135deg, ${COLORS.PRIMARY_NAVY} 0%, #1A293D 100%)`,
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: COLORS.INPUT_BG,
             borderRadius: "14px",
-            textTransform: "none",
-            ...FS,
-            px: 3,
-            py: 1.5,
-            fontWeight: 600,
-            boxShadow: "0 8px 20px 0 rgba(11, 23, 39, 0.15)",
-            transition: "all 0.3s",
-            "&:hover": {
-              boxShadow: "0 10px 24px 0 rgba(11, 23, 39, 0.25)",
-              transform: "translateY(-2px)",
-            },
+            px: 2,
+            py: 0.8,
+            flex: 1,
+            border: "1px solid rgba(0,0,0,0.03)",
           }}
         >
-          Add Resource
-        </Button>
-      </Box>
+          <Search sx={{ color: COLORS.TEXT_SECONDARY, mr: 1, fontSize: 20 }} />
+          <InputBase
+            placeholder="Search by title, description, or file name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{
+              ...FS,
+              fontSize: "0.9rem",
+              width: "100%",
+            }}
+          />
+        </Box>
 
-      {/* Search Input */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          backgroundColor: COLORS.INPUT_BG,
-          borderRadius: "14px",
-          px: 2,
-          py: 0.8,
-          width: "100%",
-          border: "1px solid rgba(0,0,0,0.03)",
-        }}
-      >
-        <Search sx={{ color: COLORS.TEXT_SECONDARY, mr: 1, fontSize: 20 }} />
-        <InputBase
-          placeholder="Search by title, description, or tags..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+        {/* Section Filter */}
+        <FormControl
+          size="small"
           sx={{
-            fontFamily: poppins.style.fontFamily,
-            fontSize: "0.9rem",
-            width: "100%",
+            minWidth: 180,
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "14px",
+              backgroundColor: COLORS.INPUT_BG,
+              ...FS,
+              fontSize: 14,
+              "& fieldset": { borderColor: "rgba(0,0,0,0.03)" },
+              "&:hover fieldset": { borderColor: "rgba(0,0,0,0.1)" },
+            },
+            "& .MuiInputLabel-root": { ...FS, fontSize: 14 },
           }}
-        />
-      </Box>
+        >
+          <InputLabel>Section</InputLabel>
+          <Select
+            value={sectionFilter}
+            label="Section"
+            onChange={(e) => setSectionFilter(e.target.value)}
+          >
+            {SECTION_OPTIONS.map((opt) => (
+              <MenuItem
+                key={opt.value}
+                value={opt.value}
+                sx={{ ...FS, fontSize: 14 }}
+              >
+                {opt.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-      {/* Resources Table Card */}
+        {/* File Type Filter */}
+        <FormControl
+          size="small"
+          sx={{
+            minWidth: 170,
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "14px",
+              backgroundColor: COLORS.INPUT_BG,
+              ...FS,
+              fontSize: 14,
+              "& fieldset": { borderColor: "rgba(0,0,0,0.03)" },
+              "&:hover fieldset": { borderColor: "rgba(0,0,0,0.1)" },
+            },
+            "& .MuiInputLabel-root": { ...FS, fontSize: 14 },
+          }}
+        >
+          <InputLabel>File Type</InputLabel>
+          <Select
+            value={fileTypeFilter}
+            label="File Type"
+            onChange={(e) => setFileTypeFilter(e.target.value)}
+          >
+            {FILE_TYPE_OPTIONS.map((opt) => (
+              <MenuItem
+                key={opt.value}
+                value={opt.value}
+                sx={{ ...FS, fontSize: 14 }}
+              >
+                {opt.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Stack>
+
+      {/* Table Card */}
       <Card
         sx={{
           borderRadius: "28px",
@@ -231,50 +274,34 @@ const ResourcesManagement = () => {
           sx={{
             borderBottom: "1px solid rgba(0,0,0,0.05)",
             px: 3,
-            pt: 1,
+            py: 2,
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
+          <Typography
             sx={{
-              "& .MuiTabs-indicator": {
-                height: 3,
-                borderRadius: "3px 3px 0 0",
-                bgcolor: COLORS.PRIMARY_NAVY,
-              },
-              "& .MuiTab-root": {
-                ...FS,
-                textTransform: "none",
-                fontSize: 14,
-                fontWeight: 600,
-                minWidth: 100,
-                color: COLORS.TEXT_SECONDARY,
-                py: 2,
-                "&.Mui-selected": {
-                  color: COLORS.PRIMARY_NAVY,
-                },
-              },
+              ...FS,
+              fontSize: 15,
+              fontWeight: 700,
+              color: COLORS.TEXT_PRIMARY,
             }}
           >
-            {TABS.map((tab) => (
-              <Tab key={tab.value} label={tab.label} value={tab.value} />
-            ))}
-          </Tabs>
-
+            All Resources
+          </Typography>
           <Typography
             sx={{
               ...FS,
               fontSize: 13,
               color: COLORS.TEXT_SECONDARY,
               fontWeight: 500,
-              display: { xs: "none", md: "block" },
             }}
           >
-            Total Items: <strong style={{ color: COLORS.PRIMARY_NAVY }}>{filteredResources.length}</strong>
+            Total:{" "}
+            <strong style={{ color: COLORS.PRIMARY_NAVY }}>
+              {pagination.total}
+            </strong>
           </Typography>
         </Box>
 
@@ -282,23 +309,45 @@ const ResourcesManagement = () => {
           <Table>
             <TableHead sx={{ backgroundColor: "rgba(11, 23, 39, 0.02)" }}>
               <TableRow>
-                <TableCell sx={{ ...FS, fontWeight: 700, color: COLORS.PRIMARY_NAVY, pl: 4 }}>
-                  Resource details
-                </TableCell>
-                <TableCell sx={{ ...FS, fontWeight: 700, color: COLORS.PRIMARY_NAVY }}>
-                  Category
-                </TableCell>
-                <TableCell sx={{ ...FS, fontWeight: 700, color: COLORS.PRIMARY_NAVY }}>
-                  Tags
-                </TableCell>
-                <TableCell sx={{ ...FS, fontWeight: 700, color: COLORS.PRIMARY_NAVY }}>
-                  Date Created
+                <TableCell
+                  sx={{
+                    ...FS,
+                    fontWeight: 700,
+                    color: COLORS.PRIMARY_NAVY,
+                    pl: 4,
+                  }}
+                >
+                  ID
                 </TableCell>
                 <TableCell
-                  align="right"
-                  sx={{ ...FS, fontWeight: 700, color: COLORS.PRIMARY_NAVY, pr: 4 }}
+                  sx={{ ...FS, fontWeight: 700, color: COLORS.PRIMARY_NAVY }}
                 >
-                  Actions
+                  Title
+                </TableCell>
+                <TableCell
+                  sx={{ ...FS, fontWeight: 700, color: COLORS.PRIMARY_NAVY }}
+                >
+                  Section
+                </TableCell>
+                <TableCell
+                  sx={{ ...FS, fontWeight: 700, color: COLORS.PRIMARY_NAVY }}
+                >
+                  File Type
+                </TableCell>
+                <TableCell
+                  sx={{ ...FS, fontWeight: 700, color: COLORS.PRIMARY_NAVY }}
+                >
+                  File Size
+                </TableCell>
+                <TableCell
+                  sx={{ ...FS, fontWeight: 700, color: COLORS.PRIMARY_NAVY }}
+                >
+                  Status
+                </TableCell>
+                <TableCell
+                  sx={{ ...FS, fontWeight: 700, color: COLORS.PRIMARY_NAVY }}
+                >
+                  Created At
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -307,64 +356,112 @@ const ResourcesManagement = () => {
                 Array.from({ length: 5 }).map((_, idx) => (
                   <TableRow key={idx}>
                     <TableCell sx={{ pl: 4 }}>
-                      <Skeleton width="180px" height="24px" />
-                      <Skeleton width="280px" height="16px" sx={{ mt: 0.5 }} />
+                      <Skeleton width="30px" height="24px" />
                     </TableCell>
                     <TableCell>
-                      <Skeleton width="90px" height="24px" />
+                      <Skeleton width="200px" height="24px" />
                     </TableCell>
                     <TableCell>
-                      <Skeleton width="150px" height="24px" />
+                      <Skeleton width="100px" height="24px" />
                     </TableCell>
                     <TableCell>
-                      <Skeleton width="100px" height="20px" />
+                      <Skeleton width="60px" height="24px" />
                     </TableCell>
-                    <TableCell align="right" sx={{ pr: 4 }}>
-                      <Skeleton variant="circular" width={30} height={30} sx={{ ml: "auto" }} />
+                    <TableCell>
+                      <Skeleton width="70px" height="24px" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton width="80px" height="24px" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton width="100px" height="24px" />
                     </TableCell>
                   </TableRow>
                 ))
-              ) : filteredResources.length === 0 ? (
+              ) : filteredData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
-                    <Stack spacing={1} sx={{ alignItems: "center", justifyContent: "center" }}>
-                      <FolderOpen sx={{ fontSize: 48, color: alpha(COLORS.PRIMARY_NAVY, 0.2), mb: 1 }} />
-                      <Typography sx={{ ...FS, fontWeight: 700, color: COLORS.TEXT_PRIMARY }}>
+                  <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
+                    <Stack
+                      spacing={1}
+                      sx={{ alignItems: "center", justifyContent: "center" }}
+                    >
+                      <Folder
+                        sx={{
+                          fontSize: 48,
+                          color: alpha(COLORS.PRIMARY_NAVY, 0.2),
+                          mb: 1,
+                        }}
+                      />
+                      <Typography
+                        sx={{
+                          ...FS,
+                          fontWeight: 700,
+                          color: COLORS.TEXT_PRIMARY,
+                        }}
+                      >
                         No Resources Found
                       </Typography>
-                      <Typography sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY }}>
-                        No items match the selected category or search filters.
+                      <Typography
+                        sx={{
+                          ...FS,
+                          fontSize: 13,
+                          color: COLORS.TEXT_SECONDARY,
+                        }}
+                      >
+                        {searchTerm ||
+                        sectionFilter !== "ALL" ||
+                        fileTypeFilter !== "ALL"
+                          ? "No records match the selected filters or search."
+                          : "Start by adding your first resource."}
                       </Typography>
                     </Stack>
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredResources.map((row) => (
-                  <TableRow key={row.id} hover sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                    {/* Details */}
-                    <TableCell sx={{ pl: 4, maxWidth: "350px" }}>
-                      <Typography sx={{ ...FS, fontWeight: 700, color: COLORS.TEXT_PRIMARY, fontSize: 14 }}>
-                        {row.title}
-                      </Typography>
+                filteredData.map((row: ResourceItem) => (
+                  <TableRow
+                    key={row.id}
+                    hover
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell sx={{ ...FS, pl: 4, fontWeight: 600 }}>
+                      {row.id}
+                    </TableCell>
+                    <TableCell>
                       <Typography
                         sx={{
                           ...FS,
-                          fontSize: 12,
-                          color: COLORS.TEXT_SECONDARY,
-                          mt: 0.5,
+                          fontWeight: 700,
+                          fontSize: 14,
+                          color: COLORS.TEXT_PRIMARY,
+                          maxWidth: 280,
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {row.description}
+                        {row.title}
                       </Typography>
+                      {row.description && (
+                        <Typography
+                          sx={{
+                            ...FS,
+                            fontSize: 12,
+                            color: COLORS.TEXT_SECONDARY,
+                            maxWidth: 280,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            mt: 0.25,
+                          }}
+                        >
+                          {row.description}
+                        </Typography>
+                      )}
                     </TableCell>
-
-                    {/* Category */}
                     <TableCell>
                       <Chip
-                        label={row.category}
+                        label={row.section}
                         size="small"
                         sx={{
                           ...FS,
@@ -377,44 +474,66 @@ const ResourcesManagement = () => {
                         }}
                       />
                     </TableCell>
-
-                    {/* Tags */}
-                    <TableCell sx={{ maxWidth: "250px" }}>
-                      <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: "wrap" }}>
-                        {row.tags?.map((t) => (
-                          <Chip
-                            key={t}
-                            label={t}
-                            size="small"
-                            sx={{
-                              ...FS,
-                              fontWeight: 600,
-                              fontSize: 9,
-                              height: 18,
-                              bgcolor: "rgba(0,0,0,0.04)",
-                              color: COLORS.TEXT_SECONDARY,
-                            }}
-                          />
-                        ))}
-                      </Stack>
-                    </TableCell>
-
-                    {/* Created At */}
-                    <TableCell sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY }}>
-                      {moment(row.createdAt).format("MMM DD, YYYY")}
-                    </TableCell>
-
-                    {/* Action button */}
-                    <TableCell align="right" sx={{ pr: 4 }}>
-                      <IconButton
-                        onClick={(e) => handleMenuOpen(e, row)}
+                    <TableCell>
+                      <Chip
+                        label={row.fileType}
+                        size="small"
                         sx={{
-                          bgcolor: "rgba(0,0,0,0.03)",
-                          "&:hover": { bgcolor: "rgba(0,0,0,0.08)" },
+                          ...FS,
+                          fontWeight: 700,
+                          fontSize: 10,
+                          height: 24,
+                          bgcolor: alpha(
+                            FILE_TYPE_COLORS[row.fileType] ||
+                              COLORS.TEXT_SECONDARY,
+                            0.1,
+                          ),
+                          color:
+                            FILE_TYPE_COLORS[row.fileType] ||
+                            COLORS.TEXT_SECONDARY,
+                          border: `1px solid ${
+                            FILE_TYPE_COLORS[row.fileType] ||
+                            COLORS.TEXT_SECONDARY
+                          }`,
+                          borderRadius: "6px",
                         }}
-                      >
-                        <MoreVert sx={{ color: COLORS.PRIMARY_NAVY }} />
-                      </IconButton>
+                      />
+                    </TableCell>
+                    <TableCell
+                      sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY }}
+                    >
+                      {formatFileSize(row.fileSize)}
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={row.status}
+                        size="small"
+                        sx={{
+                          ...FS,
+                          fontWeight: 700,
+                          fontSize: 10,
+                          height: 24,
+                          bgcolor:
+                            row.status === "ACTIVE"
+                              ? alpha(COLORS.SUCCESS, 0.1)
+                              : alpha(COLORS.ERROR, 0.1),
+                          color:
+                            row.status === "ACTIVE"
+                              ? COLORS.SUCCESS
+                              : COLORS.ERROR,
+                          border: `1px solid ${
+                            row.status === "ACTIVE"
+                              ? COLORS.SUCCESS
+                              : COLORS.ERROR
+                          }`,
+                          borderRadius: "6px",
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell
+                      sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY }}
+                    >
+                      {moment(row.createdAt).format("MMM DD, YYYY")}
                     </TableCell>
                   </TableRow>
                 ))
@@ -422,270 +541,24 @@ const ResourcesManagement = () => {
             </TableBody>
           </Table>
         </TableContainer>
+
+        <TablePagination
+          component="div"
+          count={pagination.total}
+          page={pagination.page - 1}
+          rowsPerPage={pagination.limit}
+          onPageChange={(_, newPage) => {
+            fetchResources(newPage + 1, pagination.limit);
+          }}
+          onRowsPerPageChange={(event) => {
+            fetchResources(1, parseInt(event.target.value, 10));
+          }}
+          rowsPerPageOptions={[5, 10, 25]}
+          sx={{ borderTop: "1px solid rgba(0,0,0,0.05)" }}
+        />
       </Card>
-
-      {/* Dropdown Menu */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        slotProps={{
-          paper: {
-            sx: {
-              borderRadius: "16px",
-              boxShadow: "0px 10px 30px rgba(0,0,0,0.1)",
-              border: "1px solid rgba(0,0,0,0.05)",
-              mt: 1,
-              minWidth: 160,
-            },
-          },
-        }}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-      >
-        <MenuItem
-          onClick={handleViewDetails}
-          sx={{
-            ...FS,
-            fontSize: 13,
-            fontWeight: 600,
-            py: 1,
-            color: COLORS.BLACK,
-            display: "flex",
-            gap: 1.5,
-            "&:hover": { bgcolor: "rgba(1, 90, 80, 0.04)" },
-          }}
-        >
-          <Visibility sx={{ fontSize: 18, color: COLORS.TEXT_SECONDARY }} />
-          View Details
-        </MenuItem>
-        <MenuItem
-          onClick={handleOpenEditModal}
-          sx={{
-            ...FS,
-            fontSize: 13,
-            fontWeight: 600,
-            py: 1,
-            color: COLORS.BLACK,
-            display: "flex",
-            gap: 1.5,
-            "&:hover": { bgcolor: "rgba(1, 90, 80, 0.04)" },
-          }}
-        >
-          <Edit sx={{ fontSize: 18, color: COLORS.TEXT_SECONDARY }} />
-          Edit
-        </MenuItem>
-        <Divider sx={{ my: 0.5 }} />
-        <MenuItem
-          onClick={handleDelete}
-          sx={{
-            ...FS,
-            fontSize: 13,
-            fontWeight: 600,
-            py: 1,
-            color: COLORS.ERROR,
-            display: "flex",
-            gap: 1.5,
-            "&:hover": { bgcolor: alpha(COLORS.ERROR, 0.04) },
-          }}
-        >
-          <Delete sx={{ fontSize: 18, color: COLORS.ERROR }} />
-          Delete
-        </MenuItem>
-      </Menu>
-
-      {/* Details Dialog */}
-      <Dialog
-        fullWidth
-        maxWidth="sm"
-        open={openDetailsModal}
-        onClose={() => {
-          setOpenDetailsModal(false);
-          setActiveRecord(null);
-        }}
-        slotProps={{
-          paper: { sx: { borderRadius: "28px", p: 0, overflow: "hidden" } },
-          backdrop: {
-            sx: {
-              backgroundColor: "rgba(0, 0, 0, 0.4)",
-              backdropFilter: "blur(8px)",
-            },
-          },
-        }}
-      >
-        {activeRecord && (
-          <Box>
-            {/* Dialog Header Banner */}
-            <Box sx={{ p: 4, bgcolor: COLORS.PRIMARY_NAVY, color: "white", position: "relative" }}>
-              <IconButton
-                onClick={() => {
-                  setOpenDetailsModal(false);
-                  setActiveRecord(null);
-                }}
-                sx={{
-                  position: "absolute",
-                  top: 16,
-                  right: 16,
-                  color: "white",
-                  "&:hover": {
-                    bgcolor: "rgba(255, 255, 255, 0.15)",
-                  },
-                }}
-              >
-                <Close sx={{ fontSize: 20 }} />
-              </IconButton>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 3, pr: 4 }}>
-                <Avatar
-                  sx={{
-                    width: 64,
-                    height: 64,
-                    bgcolor: "rgba(255,255,255,0.2)",
-                    color: "white",
-                    borderRadius: "16px",
-                  }}
-                >
-                  <FolderOpen sx={{ fontSize: 32 }} />
-                </Avatar>
-                <Box>
-                  <Typography sx={{ ...FS, fontSize: 20, fontWeight: 800, lineHeight: 1.2 }}>
-                    {activeRecord.title}
-                  </Typography>
-                  <Typography sx={{ ...FS, fontSize: 13, color: "rgba(255,255,255,0.8)", mt: 0.8 }}>
-                    Category: {activeRecord.category}
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
-
-            {/* Dialog Content */}
-            <Box sx={{ p: 4 }}>
-              <Grid container spacing={3}>
-                <Grid size={12}>
-                  <Typography
-                    sx={{
-                      ...FS,
-                      fontSize: 12,
-                      color: COLORS.TEXT_SECONDARY,
-                      fontWeight: 600,
-                      mb: 1,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 0.5,
-                    }}
-                  >
-                    <Category sx={{ fontSize: 14 }} /> Description
-                  </Typography>
-                  <Paper
-                    variant="outlined"
-                    sx={{ p: 2.5, borderRadius: "16px", bgcolor: "rgba(0,0,0,0.01)" }}
-                  >
-                    <Typography
-                      sx={{
-                        ...FS,
-                        fontSize: 14,
-                        color: COLORS.TEXT_PRIMARY,
-                        lineHeight: 1.6,
-                        whiteSpace: "pre-line",
-                      }}
-                    >
-                      {activeRecord.description}
-                    </Typography>
-                  </Paper>
-                </Grid>
-
-                <Grid size={12}>
-                  <Typography
-                    sx={{
-                      ...FS,
-                      fontSize: 12,
-                      color: COLORS.TEXT_SECONDARY,
-                      fontWeight: 600,
-                      mb: 1,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 0.5,
-                    }}
-                  >
-                    <Tag sx={{ fontSize: 14 }} /> Resource Tags
-                  </Typography>
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.8 }}>
-                    {activeRecord.tags?.length === 0 ? (
-                      <Typography
-                        variant="caption"
-                        sx={{ ...FS, color: COLORS.TEXT_SECONDARY, fontStyle: "italic" }}
-                      >
-                        No tags assigned to this resource.
-                      </Typography>
-                    ) : (
-                      activeRecord.tags?.map((t) => (
-                        <Chip
-                          key={t}
-                          label={t}
-                          sx={{
-                            ...FS,
-                            fontWeight: 600,
-                            fontSize: 11,
-                            bgcolor: "rgba(1, 90, 80, 0.08)",
-                            color: COLORS.PRIMARY_NAVY,
-                            borderRadius: "8px",
-                          }}
-                        />
-                      ))
-                    )}
-                  </Box>
-                </Grid>
-
-                <Grid size={12}>
-                  <Divider sx={{ my: 1 }} />
-                  <Stack direction="row" spacing={3} sx={{ mt: 2 }}>
-                    <Box>
-                      <Typography
-                        sx={{
-                          ...FS,
-                          fontSize: 11,
-                          color: COLORS.TEXT_SECONDARY,
-                          fontWeight: 500,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 0.5,
-                        }}
-                      >
-                        <CalendarMonth sx={{ fontSize: 14 }} /> Date Added
-                      </Typography>
-                      <Typography sx={{ ...FS, fontSize: 13, fontWeight: 700, mt: 0.5 }}>
-                        {moment(activeRecord.createdAt).format("MMMM DD, YYYY")}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </Grid>
-              </Grid>
-
-              <Divider sx={{ my: 3, borderStyle: "dashed" }} />
-
-              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  onClick={() => {
-                    setOpenDetailsModal(false);
-                    setActiveRecord(null);
-                  }}
-                  variant="outlined"
-                  sx={{
-                    borderRadius: "12px",
-                    textTransform: "none",
-                    px: 4,
-                    color: COLORS.TEXT_SECONDARY,
-                    borderColor: "rgba(0,0,0,0.15)",
-                  }}
-                >
-                  Close Details
-                </Button>
-              </Box>
-            </Box>
-          </Box>
-        )}
-      </Dialog>
     </Box>
   );
 };
 
-export default ResourcesManagement;
+export default ResourceManagement;

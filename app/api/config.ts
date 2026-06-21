@@ -120,6 +120,18 @@ innovationAPI.interceptors.request.use((config) => {
   return config;
 });
 
+const resourcesAPI = axios.create({
+  baseURL: serverConstants.resources,
+});
+resourcesAPI.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export {
   userPublicApi,
   userSecuredApi,
@@ -133,4 +145,5 @@ export {
   batchesApi,
   boardsApi,
   innovationAPI,
+  resourcesAPI,
 };

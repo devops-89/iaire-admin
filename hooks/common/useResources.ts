@@ -1,157 +1,81 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { ResourcesControllers } from "@/app/api/resourceControllers";
 import useSnackbar from "@/store/useSnackbar";
+import { Pagination, ResourceItem } from "@/utils/type";
+import { useState } from "react";
 
-export interface Resource {
-  id: string;
-  title: string;
-  category: "Playbooks" | "Modules" | "Templates" | string;
-  description: string;
-  tags: string[];
-  createdAt: string;
-}
-
-const INITIAL_RESOURCES: Resource[] = [
-  {
-    id: "res-1",
-    title: "Startup Fundraising Pitch Playbook",
-    category: "Playbooks",
-    description: "A comprehensive guide on structure, slide design, storyboarding, and pitching to early-stage investors for educational startups.",
-    tags: ["fundraising", "pitch deck", "investment", "guide"],
-    createdAt: new Date("2026-05-10").toISOString(),
-  },
-  {
-    id: "res-2",
-    title: "Introduction to Intellectual Property and Patents",
-    category: "Modules",
-    description: "An interactive learning module explaining patent search methodologies, novelty checks, and filing processes for student innovators.",
-    tags: ["patents", "IP", "legal", "module"],
-    createdAt: new Date("2026-05-20").toISOString(),
-  },
-  {
-    id: "res-3",
-    title: "Non-Disclosure Agreement (NDA) Template",
-    category: "Templates",
-    description: "Standard mutual non-disclosure agreement template ready for students, researchers, and mentors when discussing new innovations.",
-    tags: ["NDA", "legal", "template", "confidentiality"],
-    createdAt: new Date("2026-06-01").toISOString(),
-  },
-  {
-    id: "res-4",
-    title: "Design Thinking & Prototyping Module",
-    category: "Modules",
-    description: "Course material and exercises for validating startup ideas through low-fidelity wireframing and user experience interviews.",
-    tags: ["ux", "prototyping", "design thinking"],
-    createdAt: new Date("2026-06-05").toISOString(),
-  },
-  {
-    id: "res-5",
-    title: "Patent Filing Checklist",
-    category: "Templates",
-    description: "Step-by-step checklist to verify documentation requirements before submitting patents to the official administrative offices.",
-    tags: ["patent", "checklist", "documentation"],
-    createdAt: new Date("2026-06-08").toISOString(),
-  }
-];
-
-export const useResources = () => {
-  const [resources, setResources] = useState<Resource[]>([]);
+export const useAddResource = () => {
   const [loading, setLoading] = useState(false);
-  const [creating, setCreating] = useState(false);
   const { setSnackbar } = useSnackbar();
 
-  // Load resources on mount
-  useEffect(() => {
-    fetchResources();
-  }, []);
-
-  const fetchResources = () => {
+  const addResources = async (data: FormData): Promise<boolean> => {
     setLoading(true);
     try {
-      if (typeof window !== "undefined") {
-        const stored = localStorage.getItem("iaire_resources");
-        if (stored) {
-          setResources(JSON.parse(stored));
-        } else {
-          localStorage.setItem("iaire_resources", JSON.stringify(INITIAL_RESOURCES));
-          setResources(INITIAL_RESOURCES);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to fetch resources from localStorage", error);
-      setSnackbar("Error loading resources", "error");
+      await ResourcesControllers.addResources(data);
+      setSnackbar("Resource added successfully", "success");
+      return true;
+    } catch (error: any) {
+      const errorData = error.response?.data;
+      const errorMessage = errorData?.error
+        ? Array.isArray(errorData.error)
+          ? errorData.error.join(" & ")
+          : errorData.error
+        : errorData?.message || "Failed to add resource";
+      setSnackbar(errorMessage, "error");
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  const addResource = async (data: Omit<Resource, "id" | "createdAt">) => {
-    setCreating(true);
+  return { loading, addResources };
+};
+
+export const useGetResources = () => {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<ResourceItem[]>([]);
+  const [pagination, setPagination] = useState<Pagination>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+  });
+  const { setSnackbar } = useSnackbar();
+
+  const getResources = async (
+    page = 1,
+    limit = 10,
+    section?: string,
+    fileType?: string
+  ) => {
+    setLoading(true);
     try {
-      const newResource: Resource = {
-        ...data,
-        id: `res-${Date.now()}`,
-        createdAt: new Date().toISOString(),
-      };
-      
-      const updated = [newResource, ...resources];
-      setResources(updated);
-      localStorage.setItem("iaire_resources", JSON.stringify(updated));
-      setSnackbar("Resource added successfully", "success");
-      return true;
-    } catch (error) {
-      console.error("Failed to add resource", error);
-      setSnackbar("Failed to add resource", "error");
-      return false;
+      const response: any = await ResourcesControllers.getResourcesList(
+        page,
+        limit,
+        section,
+        fileType
+      );
+      if (response.data?.data) {
+        const resData = response.data.data;
+        setData(Array.isArray(resData.data) ? resData.data : []);
+        setPagination(
+          resData.pagination || {
+            page: 1,
+            limit: 10,
+            total: 0,
+            totalPages: 0,
+          }
+        );
+      }
+    } catch (err: any) {
+      setSnackbar(
+        err.response?.data?.message || "Failed to fetch resources",
+        "error"
+      );
     } finally {
-      setCreating(false);
+      setLoading(false);
     }
   };
 
-  const updateResource = async (id: string, data: Partial<Omit<Resource, "id" | "createdAt">>) => {
-    try {
-      const updated = resources.map((item) => {
-        if (item.id === id) {
-          return {
-            ...item,
-            ...data,
-          };
-        }
-        return item;
-      });
-      setResources(updated);
-      localStorage.setItem("iaire_resources", JSON.stringify(updated));
-      setSnackbar("Resource updated successfully", "success");
-      return true;
-    } catch (error) {
-      console.error("Failed to update resource", error);
-      setSnackbar("Failed to update resource", "error");
-      return false;
-    }
-  };
-
-  const deleteResource = async (id: string) => {
-    try {
-      const updated = resources.filter((item) => item.id !== id);
-      setResources(updated);
-      localStorage.setItem("iaire_resources", JSON.stringify(updated));
-      setSnackbar("Resource deleted successfully", "success");
-      return true;
-    } catch (error) {
-      console.error("Failed to delete resource", error);
-      setSnackbar("Failed to delete resource", "error");
-      return false;
-    }
-  };
-
-  return {
-    resources,
-    loading,
-    creating,
-    fetchResources,
-    addResource,
-    updateResource,
-    deleteResource,
-  };
+  return { getResources, loading, data, pagination };
 };

@@ -1,7 +1,9 @@
 import {
   BILLING_CYCLE,
   CATEGORY,
+  FILE_TYPE,
   PLAN_BENEFITS,
+  RESOURCES_TYPE,
   TRAINING_MODE,
   USER_ROLES,
 } from "./enum";
@@ -1233,8 +1235,50 @@ export const INNOVATION_TABLE_HEADER = [
   "Date Added",
 ];
 
-export const INNOVATION_TAB = [
+// export const INNOVATION_TAB = [
+//   {
+//     label: "All",
+//   },
+// ];
+
+export const RESOURCES_CATEGORY = [
   {
-    label: "All",
+    label: "Curriculum",
+    value: RESOURCES_TYPE.CURRICULUM,
+  },
+  {
+    label: "Modules",
+    value: RESOURCES_TYPE.MODULES,
+  },
+  {
+    label: "Document Templates",
+    value: RESOURCES_TYPE.DOCUMENT_TEMPLATE,
+  },
+  {
+    label: "Training Videos",
+    value: RESOURCES_TYPE.TRAINING_VIDEOS,
+  },
+  {
+    label: "Case Studies",
+    value: RESOURCES_TYPE.CASE_STUDIES,
+  },
+];
+
+export const FILE_DATA = [
+  {
+    label: "PDF",
+    value: FILE_TYPE.PDF,
+  },
+  {
+    label: "PPT",
+    value: FILE_TYPE.PPT,
+  },
+  {
+    label: "Videos",
+    value: FILE_TYPE.VIDEOS,
+  },
+  {
+    label: "Images",
+    value: FILE_TYPE.IMAGES,
   },
 ];
