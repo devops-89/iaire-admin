@@ -57,7 +57,7 @@ export const ResetForm: React.FC<ResetFormProps> = ({
             fontFamily: poppins.style.fontFamily,
             fontSize: "14px",
             fontWeight: 600,
-            color: COLORS.TEXT_PRIMARY,
+            color: "rgba(255, 255, 255, 0.9)",
           }}
         >
           Verification Code
@@ -81,18 +81,19 @@ export const ResetForm: React.FC<ResetFormProps> = ({
                 flex: 1,
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "14px",
-                  backgroundColor: "#F9FAFB",
-                  transition: "all 0.2s",
-                  "& fieldset": { border: "1px solid transparent" },
-                  "&:hover fieldset": {
-                    border: `1px solid #E5E7EB`,
+                  backgroundColor: "rgba(255, 255, 255, 0.03)",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  transition: "all 0.2s ease-in-out",
+                  color: COLORS.WHITE,
+                  "& fieldset": { border: "none" },
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    border: "1px solid rgba(255, 255, 255, 0.15)",
                   },
                   "&.Mui-focused": {
-                    backgroundColor: COLORS.WHITE,
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-                    "& fieldset": {
-                      border: `2px solid ${COLORS.PRIMARY_NAVY}`,
-                    },
+                    backgroundColor: "rgba(255, 255, 255, 0.06)",
+                    border: `1px solid ${COLORS.PRIMARY_NAVY}`,
+                    boxShadow: "0 0 16px rgba(1, 90, 80, 0.25)",
                   },
                   "& input": {
                     textAlign: "center",
@@ -100,6 +101,7 @@ export const ResetForm: React.FC<ResetFormProps> = ({
                     fontWeight: 800,
                     fontSize: { xs: 20, sm: 24 },
                     fontFamily: outfit.style.fontFamily,
+                    color: COLORS.WHITE,
                   },
                 },
               }}
@@ -121,7 +123,7 @@ export const ResetForm: React.FC<ResetFormProps> = ({
             fontFamily: poppins.style.fontFamily,
             fontSize: "14px",
             fontWeight: 600,
-            color: COLORS.TEXT_PRIMARY,
+            color: "rgba(255, 255, 255, 0.9)",
           }}
         >
           New Password
@@ -139,8 +141,9 @@ export const ResetForm: React.FC<ResetFormProps> = ({
                 <InputAdornment position="start">
                   <Lock
                     sx={{
-                      color: COLORS.TEXT_SECONDARY,
+                      color: "rgba(255, 255, 255, 0.4)",
                       fontSize: 20,
+                      ml: 0.5,
                     }}
                   />
                 </InputAdornment>
@@ -150,6 +153,7 @@ export const ResetForm: React.FC<ResetFormProps> = ({
                   <IconButton
                     onClick={handleClickShowNewPassword}
                     edge="end"
+                    sx={{ color: "rgba(255, 255, 255, 0.4)", mr: 0.5 }}
                   >
                     {showNewPassword ? (
                       <VisibilityOff sx={{ fontSize: 20 }} />
@@ -177,13 +181,19 @@ export const ResetForm: React.FC<ResetFormProps> = ({
           fontFamily: poppins.style.fontFamily,
           borderRadius: "16px",
           background: COLORS.PRIMARY_NAVY,
+          color: COLORS.WHITE,
           textTransform: "none",
-          transition: "all 0.3s ease",
-          boxShadow: "0 10px 20px rgba(11, 23, 39, 0.15)",
+          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          boxShadow: "0 8px 24px rgba(1, 90, 80, 0.3)",
           "&:hover": {
-            background: "#1A293D",
-            transform: "translateY(-3px)",
-            boxShadow: "0 15px 30px rgba(11, 23, 39, 0.2)",
+            background: "#017a6d",
+            transform: "translateY(-2px)",
+            boxShadow: "0 12px 32px rgba(1, 90, 80, 0.45)",
+          },
+          "&:disabled": {
+            background: "rgba(255, 255, 255, 0.12)",
+            color: "rgba(255, 255, 255, 0.3)",
+            boxShadow: "none",
           },
         }}
       >
@@ -196,3 +206,4 @@ export const ResetForm: React.FC<ResetFormProps> = ({
     </Box>
   );
 };
+

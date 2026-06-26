@@ -32,7 +32,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ loginFormik, loading, setV
             input: {
               startAdornment: (
                 <InputAdornment position="start">
-                  <Email sx={{ color: COLORS.TEXT_SECONDARY, fontSize: 20 }} />
+                  <Email sx={{ color: "rgba(255, 255, 255, 0.4)", fontSize: 20, ml: 0.5 }} />
                 </InputAdornment>
               ),
             },
@@ -53,12 +53,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({ loginFormik, loading, setV
             input: {
               startAdornment: (
                 <InputAdornment position="start">
-                  <Lock sx={{ color: COLORS.TEXT_SECONDARY, fontSize: 20 }} />
+                  <Lock sx={{ color: "rgba(255, 255, 255, 0.4)", fontSize: 20, ml: 0.5 }} />
                 </InputAdornment>
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={handleClickShowPassword} edge="end">
+                  <IconButton onClick={handleClickShowPassword} edge="end" sx={{ color: "rgba(255, 255, 255, 0.4)", mr: 0.5 }}>
                     {showPassword ? (
                       <VisibilityOff sx={{ fontSize: 20 }} />
                     ) : (
@@ -78,12 +78,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({ loginFormik, loading, setV
             onClick={() => setView("FORGOT")}
             underline="none"
             sx={{
-              color: COLORS.TEXT_SECONDARY,
+              color: "rgba(255, 255, 255, 0.5)",
               fontSize: "14px",
               fontWeight: 600,
               fontFamily: poppins.style.fontFamily,
-              transition: "color 0.2s",
-              "&:hover": { color: COLORS.PRIMARY_NAVY },
+              transition: "color 0.2s ease-in-out",
+              "&:hover": { color: "#00E5C9" },
             }}
           >
             Forgot password?
@@ -103,15 +103,21 @@ export const LoginForm: React.FC<LoginFormProps> = ({ loginFormik, loading, setV
             fontFamily: poppins.style.fontFamily,
             borderRadius: "16px",
             background: COLORS.PRIMARY_NAVY,
+            color: COLORS.WHITE,
             textTransform: "none",
             position: "relative",
             overflow: "hidden",
-            transition: "all 0.3s ease",
-            boxShadow: "0 10px 20px rgba(11, 23, 39, 0.15)",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            boxShadow: "0 8px 24px rgba(1, 90, 80, 0.3)",
             "&:hover": {
-              background: "#1A293D",
-              transform: "translateY(-3px)",
-              boxShadow: "0 15px 30px rgba(11, 23, 39, 0.2)",
+              background: "#017a6d",
+              transform: "translateY(-2px)",
+              boxShadow: "0 12px 32px rgba(1, 90, 80, 0.45)",
+            },
+            "&:disabled": {
+              background: "rgba(255, 255, 255, 0.12)",
+              color: "rgba(255, 255, 255, 0.3)",
+              boxShadow: "none",
             },
             "&::after": {
               content: '""',
@@ -121,9 +127,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ loginFormik, loading, setV
               width: "50%",
               height: "100%",
               background:
-                "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
+                "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)",
               transform: "skewX(-20deg)",
-              transition: "all 0.5s",
+              transition: "all 0.6s ease",
             },
             "&:hover::after": {
               left: "200%",
@@ -136,3 +142,4 @@ export const LoginForm: React.FC<LoginFormProps> = ({ loginFormik, loading, setV
     </form>
   );
 };
+

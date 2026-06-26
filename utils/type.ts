@@ -483,3 +483,105 @@ export interface GET_RESOURCES_RESPONSE {
   pagination: Pagination;
 }
 
+export interface ResearchTeam {
+  id: number;
+  title: string;
+  type: string;
+  teamCode: string;
+  mentorId: number;
+  assistantMentorId: number | null;
+  createdBy: number;
+  schoolId: number;
+  boardId: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+export interface ResearchCreator {
+  id: number;
+  email: string;
+  username: string;
+  phone: string;
+  countryCode: string | null;
+  isdCode: string | null;
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
+  fullName: string;
+  firstName: string | null;
+  lastName: string | null;
+  bio: string | null;
+  profileImage: string | null;
+  password?: string;
+  hashedRefreshToken?: string;
+  lastLoginAt: string | null;
+  tokenVersion: number;
+  role: string;
+  status: string;
+  schoolId: number | null;
+  grade: string | null;
+  state: string | null;
+  dob: string | null;
+  category: string | null;
+  gender: string | null;
+  approvalStatus: string;
+  primarySubjects: string[];
+  experienceYears: number | null;
+  experienceMonths: number | null;
+  fatherName: string | null;
+  fatherEmail: string | null;
+  fatherPhone: string | null;
+  fatherProfession: string | null;
+  motherName: string | null;
+  motherEmail: string | null;
+  motherPhone: string | null;
+  motherProfession: string | null;
+  boardId: number | null;
+  countryId: number | null;
+  approvedAt: string | null;
+  rejectedAt: string | null;
+  rejectReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+export interface ResearchCountry {
+  id: number;
+  name: string;
+  code: string;
+  phoneCode: string;
+  currencyCode: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+export interface ResearchSubmission {
+  id: number;
+  title: string;
+  description: string;
+  topic: string;
+  status: string;
+  teamId: number;
+  team: ResearchTeam;
+  createdBy: number;
+  creator: ResearchCreator;
+  countryId: number;
+  country: ResearchCountry;
+  archivedAt: string | null;
+  archivedBy: number | null;
+  archiveReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GET_RESEARCH_RESPONSE {
+  statusCode?: number;
+  message: string;
+  data: ResearchSubmission[];
+  pagination: Pagination;
+}
+
+

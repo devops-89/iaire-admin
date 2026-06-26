@@ -35,7 +35,7 @@ export const ForgotForm: React.FC<ForgotFormProps> = ({
           input: {
             startAdornment: (
               <InputAdornment position="start">
-                <Email sx={{ color: COLORS.TEXT_SECONDARY, fontSize: 20 }} />
+                <Email sx={{ color: "rgba(255, 255, 255, 0.4)", fontSize: 20, ml: 0.5 }} />
               </InputAdornment>
             ),
           },
@@ -57,13 +57,19 @@ export const ForgotForm: React.FC<ForgotFormProps> = ({
           fontFamily: poppins.style.fontFamily,
           borderRadius: "16px",
           background: COLORS.PRIMARY_NAVY,
+          color: COLORS.WHITE,
           textTransform: "none",
-          transition: "all 0.3s ease",
-          boxShadow: "0 10px 20px rgba(11, 23, 39, 0.15)",
+          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          boxShadow: "0 8px 24px rgba(1, 90, 80, 0.3)",
           "&:hover": {
-            background: "#1A293D",
-            transform: "translateY(-3px)",
-            boxShadow: "0 15px 30px rgba(11, 23, 39, 0.2)",
+            background: "#017a6d",
+            transform: "translateY(-2px)",
+            boxShadow: "0 12px 32px rgba(1, 90, 80, 0.45)",
+          },
+          "&:disabled": {
+            background: "rgba(255, 255, 255, 0.12)",
+            color: "rgba(255, 255, 255, 0.3)",
+            boxShadow: "none",
           },
         }}
       >
@@ -76,3 +82,4 @@ export const ForgotForm: React.FC<ForgotFormProps> = ({
     </Box>
   );
 };
+
