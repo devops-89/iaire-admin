@@ -17,7 +17,14 @@ import * as Yup from "yup";
 import { useModal } from "@/store/useModal";
 import { COLORS } from "@/utils/enum";
 import { poppins, roboto } from "@/utils/fonts";
-import { Resource } from "@/hooks/common/useResources";
+interface Resource {
+  id: string | number;
+  title: string;
+  category: string;
+  description: string;
+  tags: string[];
+  createdAt: string;
+}
 
 const CATEGORY_OPTIONS = [
   { label: "Playbooks", value: "Playbooks" },

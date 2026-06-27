@@ -19,8 +19,8 @@ export const useResearch = () => {
       );
 
       // Robust array extraction supporting direct payload, success wrapper, or raw arrays
-      const dataArray = Array.isArray(res?.data?.data)
-        ? res.data.data
+      const dataArray = Array.isArray((res as any)?.data?.data)
+        ? (res as any).data.data
         : Array.isArray(res?.data)
         ? res.data
         : Array.isArray(res)

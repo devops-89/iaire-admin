@@ -258,7 +258,7 @@ const ResearchManagement = () => {
                       <Skeleton width="95%" height="16px" sx={{ mt: 0.5 }} />
                     </TableCell>
                     <TableCell>
-                      <Stack direction="row" spacing={1.5} alignItems="center">
+                      <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
                         <Skeleton variant="circular" width={32} height={32} />
                         <Box>
                           <Skeleton width="100px" height="18px" />
@@ -327,7 +327,7 @@ const ResearchManagement = () => {
                       >
                         {row.description}
                       </Typography>
-                      <Box display="flex" mt={1}>
+                      <Box sx={{ display: "flex", mt: 1 }}>
                         <Chip
                           label={row.topic}
                           size="small"
@@ -376,7 +376,7 @@ const ResearchManagement = () => {
                           <Typography sx={{ ...FS, fontWeight: 600, fontSize: 13, color: COLORS.TEXT_PRIMARY }}>
                             {row.team.title}
                           </Typography>
-                          <Stack direction="row" spacing={0.5} alignItems="center" sx={{ mt: 0.25 }}>
+                          <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", mt: 0.25 }}>
                             <Groups sx={{ fontSize: 13, color: COLORS.TEXT_SECONDARY }} />
                             <Typography sx={{ ...FS, fontSize: 11, color: COLORS.TEXT_SECONDARY }}>
                               {row.team.teamCode}
@@ -463,14 +463,16 @@ const ResearchManagement = () => {
         <Dialog
           open={dialogOpen}
           onClose={() => setDialogOpen(false)}
-          TransitionComponent={Transition}
+          slots={{ transition: Transition }}
           maxWidth="md"
           fullWidth
-          PaperProps={{
-            sx: {
-              borderRadius: "20px",
-              p: 1,
-              overflow: "hidden",
+          slotProps={{
+            paper: {
+              sx: {
+                borderRadius: "20px",
+                p: 1,
+                overflow: "hidden",
+              },
             },
           }}
         >
@@ -485,7 +487,7 @@ const ResearchManagement = () => {
             }}
           >
             <Stack spacing={1} sx={{ width: "90%" }}>
-              <Box display="flex" gap={1.5} alignItems="center">
+              <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
                 <Chip
                   label={selectedItem.topic}
                   size="small"
@@ -594,7 +596,7 @@ const ResearchManagement = () => {
                     </Typography>
 
                     <Stack spacing={2}>
-                      <Stack direction="row" spacing={1.5} alignItems="center">
+                      <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
                         <Avatar
                           src={selectedItem.creator?.profileImage || ""}
                           sx={{
@@ -616,21 +618,21 @@ const ResearchManagement = () => {
                         </Box>
                       </Stack>
 
-                      <Stack spacing={1.2} pt={1.5} sx={{ borderTop: "1px solid rgba(0,0,0,0.04)" }}>
-                        <Stack direction="row" spacing={1} alignItems="center">
+                      <Stack spacing={1.2} sx={{ pt: 1.5, borderTop: "1px solid rgba(0,0,0,0.04)" }}>
+                        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                           <Email sx={{ fontSize: 15, color: COLORS.TEXT_SECONDARY }} />
                           <Typography sx={{ ...FS, fontSize: "12px", color: COLORS.TEXT_SECONDARY }}>
                             {selectedItem.creator?.email}
                           </Typography>
                         </Stack>
-                        <Stack direction="row" spacing={1} alignItems="center">
+                        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                           <Phone sx={{ fontSize: 15, color: COLORS.TEXT_SECONDARY }} />
                           <Typography sx={{ ...FS, fontSize: "12px", color: COLORS.TEXT_SECONDARY }}>
                             {selectedItem.creator?.countryCode || "+91"} {selectedItem.creator?.phone}
                           </Typography>
                         </Stack>
                         {selectedItem.creator?.state && (
-                          <Stack direction="row" spacing={1} alignItems="center">
+                          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                             <School sx={{ fontSize: 15, color: COLORS.TEXT_SECONDARY }} />
                             <Typography sx={{ ...FS, fontSize: "12px", color: COLORS.TEXT_SECONDARY }}>
                               {selectedItem.creator.state}
