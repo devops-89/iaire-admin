@@ -17,7 +17,7 @@ export const ResourcesControllers = {
     page = 1,
     limit = 10,
     section?: string,
-    fileType?: string
+    fileType?: string,
   ) => {
     try {
       const params: Record<string, any> = { page, limit };
