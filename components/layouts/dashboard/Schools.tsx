@@ -33,9 +33,6 @@ const SchoolsManagement = () => {
         <Typography variant="h4" sx={{ fontFamily: poppins.style.fontFamily, fontWeight: 700, color: COLORS.BLACK }}>
           Board Management
         </Typography>
-        <Typography variant="body1" sx={{ fontFamily: poppins.style.fontFamily, color: COLORS.TEXT_SECONDARY, mt: 0.5 }}>
-          Explore the hierarchy of educational boards, schools, and faculty.
-        </Typography>
       </Box>
 
       {/* Top Stats Overview */}
@@ -133,8 +130,6 @@ const SchoolsManagement = () => {
                   </Grid>
                 </Grid>
               </Box>
-
-              <Box sx={{ height: 6, width: "100%", bgcolor: COLORS.PRIMARY_NAVY, opacity: 0.8 }} />
             </Card>
           ))
         )}

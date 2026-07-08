@@ -126,16 +126,6 @@ const BatchesManagement = () => {
           >
             Batch Management
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              fontFamily: poppins.style.fontFamily,
-              color: COLORS.TEXT_SECONDARY,
-              mt: 0.5,
-            }}
-          >
-            Manage training cohorts, scheduled classes, objective assessments, and active semesters.
-          </Typography>
         </Box>
 
         <Button

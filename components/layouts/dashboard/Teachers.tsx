@@ -42,15 +42,6 @@ const TeachersManagement = () => {
           >
             Teacher Management
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              fontFamily: poppins.style.fontFamily,
-              color: COLORS.TEXT_SECONDARY,
-            }}
-          >
-            Manage and monitor all registered teachers on the platform.
-          </Typography>
         </Box>
         <Button
           variant="contained"

@@ -127,16 +127,6 @@ const ResourceManagement = () => {
           >
             Resource Management
           </Typography>
-          <Typography
-            sx={{
-              ...FS,
-              color: COLORS.TEXT_SECONDARY,
-              fontSize: 14,
-              mt: 0.5,
-            }}
-          >
-            Manage curriculum documents, training videos, templates, and more.
-          </Typography>
         </Box>
         <Link href="/dashboard/resources/add-resources">
           <Button

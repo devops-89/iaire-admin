@@ -275,16 +275,6 @@ const InnovationList = () => {
           >
             Innovation Management
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              fontFamily: poppins.style.fontFamily,
-              color: COLORS.TEXT_SECONDARY,
-              mt: 0.5,
-            }}
-          >
-            Review and evaluate student startup proposals and intellectual property.
-          </Typography>
         </Box>
 
         {/* Search Bar */}

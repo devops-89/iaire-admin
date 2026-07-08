@@ -19,9 +19,6 @@ const StudentsManagement = () => {
           <Typography variant="h4" sx={{ fontFamily: poppins.style.fontFamily, fontWeight: 700, color: COLORS.BLACK }}>
             Student Community
           </Typography>
-          <Typography variant="body1" sx={{ fontFamily: poppins.style.fontFamily, color: COLORS.TEXT_SECONDARY, mt: 0.5 }}>
-            Empowering the next generation through data-driven insights.
-          </Typography>
         </Box>
         <IconButton sx={{ bgcolor: COLORS.WHITE, boxShadow: "0px 4px 10px rgba(0,0,0,0.05)" }}>
           <FilterList />

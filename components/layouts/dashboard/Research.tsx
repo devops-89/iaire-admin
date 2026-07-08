@@ -136,16 +136,6 @@ const ResearchManagement = () => {
           >
             Research Management
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              fontFamily: poppins.style.fontFamily,
-              color: COLORS.TEXT_SECONDARY,
-              mt: 0.5,
-            }}
-          >
-            Manage and review all registered academic studies and research paper submissions.
-          </Typography>
         </Box>
       </Box>
 

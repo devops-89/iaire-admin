@@ -67,11 +67,11 @@ const STATUS_TABS = [
 const PlansManagement = () => {
   const { planList, planLoading, updatePlan, fetchPlans } = usePlansList();
   const { showModal } = useModal();
-  
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
   const [activeTab, setActiveTab] = useState("All");
-  
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRecord, setActiveRecord] = useState<PlanListItem | null>(null);
   const [openDetailsModal, setOpenDetailsModal] = useState(false);
@@ -157,16 +157,6 @@ const PlansManagement = () => {
           >
             Membership Plans
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              fontFamily: poppins.style.fontFamily,
-              color: COLORS.TEXT_SECONDARY,
-              mt: 0.5,
-            }}
-          >
-            Create, configure, and monitor subscription pricing and limits for students, mentors, and schools.
-          </Typography>
         </Box>
 
         <Button
@@ -201,26 +191,24 @@ const PlansManagement = () => {
             getOptionLabel={(option: any) => option.name || ""}
             value={selectedCountry}
             onChange={(event, newValue) => setSelectedCountry(newValue)}
-            renderInput={(params) => {
-              const inputProps = (params as any).InputProps || {};
-              return (
-                <TextField 
-                  {...params} 
-                  label="Filter by Country" 
-                  slotProps={{
-                    input: {
-                      ...inputProps,
-                      startAdornment: (
-                        <>
-                          <Public sx={{ color: COLORS.TEXT_SECONDARY, mr: 1, fontSize: 20 }} />
-                          {inputProps.startAdornment}
-                        </>
-                      )
-                    }
-                  }}
-                />
-              );
-            }}
+            renderInput={(params) => (
+              <TextField 
+                {...params} 
+                label="Filter by Country" 
+                slotProps={{
+                  ...params.slotProps,
+                  input: {
+                    ...params.slotProps?.input,
+                    startAdornment: (
+                      <>
+                        <Public sx={{ color: COLORS.TEXT_SECONDARY, mr: 1, fontSize: 20 }} />
+                        {params.slotProps?.input?.startAdornment}
+                      </>
+                    )
+                  }
+                }}
+              />
+            )}
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: "14px",
@@ -465,12 +453,12 @@ const PlansManagement = () => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem 
+        <MenuItem
           onClick={handleViewDetails}
-          sx={{ 
-            ...FS, 
-            fontSize: 14, 
-            fontWeight: 600, 
+          sx={{
+            ...FS,
+            fontSize: 14,
+            fontWeight: 600,
             py: 1.5,
             color: COLORS.BLACK,
             display: "flex",
@@ -508,7 +496,7 @@ const PlansManagement = () => {
                 sx={{
                   position: "absolute",
                   top: 16,
-                  right: 16,     
+                  right: 16,
                   color: "white",
                   "&:hover": {
                     bgcolor: "rgba(255, 255, 255, 0.15)",
@@ -518,11 +506,11 @@ const PlansManagement = () => {
                 <Close sx={{ fontSize: 20 }} />
               </IconButton>
               <Box sx={{ display: "flex", alignItems: "center", gap: 3, pr: 4 }}>
-                <Avatar 
-                  sx={{ 
-                    width: 64, 
-                    height: 64, 
-                    bgcolor: "rgba(255,255,255,0.2)", 
+                <Avatar
+                  sx={{
+                    width: 64,
+                    height: 64,
+                    bgcolor: "rgba(255,255,255,0.2)",
                     color: "white",
                     borderRadius: "16px",
                   }}
@@ -629,7 +617,7 @@ const PlansManagement = () => {
               <Divider sx={{ my: 3, borderStyle: "dashed" }} />
 
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button 
+                <Button
                   onClick={() => { setOpenDetailsModal(false); setActiveRecord(null); }}
                   variant="outlined"
                   sx={{ borderRadius: "12px", textTransform: "none", px: 4, color: COLORS.TEXT_SECONDARY, borderColor: "rgba(0,0,0,0.1)" }}

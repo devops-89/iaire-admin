@@ -10,13 +10,12 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import React from "react";
 
-const style = {
+const baseStyle = {
   position: "absolute" as "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   maxHeight: "90vh",
-  minWidth: { xs: "90%", sm: "600px" },
   bgcolor: "background.paper",
   boxShadow: "0 24px 48px rgba(0,0,0,0.15)",
   p: { xs: 3, md: 5 },
@@ -36,9 +35,22 @@ const style = {
 };
 
 export default function Modal() {
-  const { content, hideModal } = useModal();
+  const { content, config, hideModal } = useModal();
 
   const handleClose = () => hideModal();
+
+  const getWidth = () => {
+    if (config?.width) return config.width;
+    if (config?.size === "sm") return "420px";
+    if (config?.size === "lg") return "800px";
+    return "600px"; // Default md size
+  };
+
+  const modalStyle = {
+    ...baseStyle,
+    width: { xs: "90%", sm: getWidth() },
+    maxWidth: config?.maxWidth || "95vw",
+  };
 
   return (
     <MuiModal
@@ -57,7 +69,7 @@ export default function Modal() {
       }}
     >
       <Fade in={!!content}>
-        <Box sx={style}>
+        <Box sx={modalStyle}>
           <IconButton
             onClick={handleClose}
             sx={{

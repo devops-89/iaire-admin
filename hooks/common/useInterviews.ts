@@ -31,7 +31,14 @@ export const useInterviews = () => {
           return 0;
         });
         setTeachers(sortedTeachers);
-        setPagination(response.data.data.pagination);
+        setPagination(
+          response.data.data.pagination || {
+            page: 1,
+            limit: 10,
+            total: 0,
+            totalPages: 0,
+          }
+        );
       }
     } catch (error: any) {
       setSnackbar(error.response?.data?.message || "Failed to fetch training teachers", "error");
@@ -46,7 +53,7 @@ export const useInterviews = () => {
       const response: any = await TrainingControllers.scheduleInterview(id, date);
       if (response.data.success) {
         setSnackbar("Interview scheduled successfully", "success");
-        fetchTeachers(pagination.page, pagination.limit);
+        fetchTeachers(pagination?.page || 1, pagination?.limit || 10);
         return true;
       }
     } catch (error: any) {
@@ -78,7 +85,7 @@ export const useInterviews = () => {
       const response: any = await TrainingControllers.approveTraining(id);
       if (response.data.success) {
         setSnackbar("Teacher approved successfully", "success");
-        fetchTeachers(pagination.page, pagination.limit, currentStatus);
+        fetchTeachers(pagination?.page || 1, pagination?.limit || 10, currentStatus);
         return true;
       }
     } catch (error: any) {
@@ -95,7 +102,7 @@ export const useInterviews = () => {
       const response: any = await TrainingControllers.rejectTraining(id, reason);
       if (response.data.success) {
         setSnackbar("Teacher rejected", "success");
-        fetchTeachers(pagination.page, pagination.limit, currentStatus);
+        fetchTeachers(pagination?.page || 1, pagination?.limit || 10, currentStatus);
         return true;
       }
     } catch (error: any) {
@@ -107,7 +114,7 @@ export const useInterviews = () => {
   };
 
   const goToPage = (page: number, status?: string) => {
-    fetchTeachers(page, pagination.limit, status);
+    fetchTeachers(page, pagination?.limit || 10, status);
   };
 
   useEffect(() => {

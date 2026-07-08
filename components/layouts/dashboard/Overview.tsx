@@ -375,16 +375,6 @@ const DashboardOverview = () => {
           >
             Overview
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              fontFamily: poppins.style.fontFamily,
-              color: COLORS.TEXT_SECONDARY,
-              mt: 0.5,
-            }}
-          >
-            System stats overview for the IAIRE ecosystem.
-          </Typography>
         </Box>
         <Chip
           icon={<Schedule sx={{ color: `${COLORS.PRIMARY_NAVY} !important` }} />}

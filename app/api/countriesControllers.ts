@@ -53,4 +53,13 @@ export const CountriesControllers = {
       throw error;
     }
   },
+
+  getCountryDetails: async (id: number) => {
+    try {
+      const result = await countriesApi.get(`/${id}`);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  },
 };

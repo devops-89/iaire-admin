@@ -60,21 +60,21 @@ import dayjs, { Dayjs } from "dayjs";
 const FS = { fontFamily: poppins.style.fontFamily };
 
 const Interviews = () => {
-  const { 
-    teachers, 
+  const {
+    teachers,
     teacherDetails,
     setTeacherDetails,
-    loading, 
+    loading,
     loadingDetails,
-    scheduling, 
+    scheduling,
     approving,
-    pagination, 
-    scheduleInterview, 
+    pagination,
+    scheduleInterview,
     approveInterview,
     rejectInterview,
     fetchTeachers,
     fetchTeacherDetails,
-    goToPage 
+    goToPage
   } = useInterviews();
   const [openModal, setOpenModal] = useState(false);
   const [openDetailsModal, setOpenDetailsModal] = useState(false);
@@ -98,7 +98,7 @@ const Interviews = () => {
 
   const handleStatusChange = (event: React.SyntheticEvent, newValue: string) => {
     setActiveStatus(newValue);
-    fetchTeachers(1, pagination.limit, newValue);
+    fetchTeachers(1, pagination?.limit || 10, newValue);
   };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>, record: any) => {
@@ -175,15 +175,12 @@ const Interviews = () => {
           <Typography sx={{ fontSize: 24, fontWeight: 800, color: COLORS.PRIMARY_NAVY, fontFamily: poppins.style.fontFamily }}>
             Training Management
           </Typography>
-          <Typography sx={{ color: COLORS.TEXT_SECONDARY, fontSize: 14 }}>
-            Schedule and manage teacher training interviews
-          </Typography>
         </Box>
       </Box>
 
       <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(0,0,0,0.05)", px: 1 }}>
-        <Tabs 
-          value={activeStatus} 
+        <Tabs
+          value={activeStatus}
           onChange={handleStatusChange}
           variant="scrollable"
           scrollButtons="auto"
@@ -211,17 +208,17 @@ const Interviews = () => {
             <Tab key={tab.value} label={tab.label} value={tab.value} />
           ))}
         </Tabs>
-        
+
         <Typography sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY, fontWeight: 500 }}>
-          Total: <strong style={{ color: COLORS.PRIMARY_NAVY }}>{pagination.total}</strong> Records
+          Total: <strong style={{ color: COLORS.PRIMARY_NAVY }}>{pagination?.total ?? 0}</strong> Records
         </Typography>
       </Box>
 
       {/* Interviews Table View */}
-      <TableContainer 
-        sx={{ 
-          backgroundColor: "white", 
-          borderRadius: "28px", 
+      <TableContainer
+        sx={{
+          backgroundColor: "white",
+          borderRadius: "28px",
           boxShadow: "0px 15px 50px rgba(0,0,0,0.04)",
           border: "1px solid rgba(0,0,0,0.05)",
           overflow: "hidden"
@@ -239,9 +236,9 @@ const Interviews = () => {
           </TableHead>
           <TableBody>
             {teachers.map((record) => (
-              <TableRow 
+              <TableRow
                 key={record.id}
-                sx={{ 
+                sx={{
                   "&:hover": { bgcolor: "rgba(11, 23, 39, 0.01)" },
                   transition: "background-color 0.2s"
                 }}
@@ -249,8 +246,8 @@ const Interviews = () => {
                 {/* Teacher Profile */}
                 <TableCell sx={{ pl: 4 }}>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Avatar 
-                      src={record?.teacher?.profileImage} 
+                    <Avatar
+                      src={record?.teacher?.profileImage}
                       sx={{ width: 48, height: 48, border: `2px solid ${COLORS.ACCENT_TAN}30` }}
                     >
                       <Person />
@@ -283,23 +280,23 @@ const Interviews = () => {
                             gap: 0.5,
                             px: 1,
                             py: 0.3,
-                            bgcolor: 
-                              record.training.type === "RESEARCH" ? "rgba(99, 102, 241, 0.08)" : 
-                              record.training.type === "INNOVATION" ? "rgba(245, 158, 11, 0.08)" : "rgba(0,0,0,0.05)",
+                            bgcolor:
+                              record.training.type === "RESEARCH" ? "rgba(99, 102, 241, 0.08)" :
+                                record.training.type === "INNOVATION" ? "rgba(245, 158, 11, 0.08)" : "rgba(0,0,0,0.05)",
                             borderRadius: "6px",
-                            border: 
-                              record.training.type === "RESEARCH" ? "1px solid rgba(99, 102, 241, 0.2)" : 
-                              record.training.type === "INNOVATION" ? "1px solid rgba(245, 158, 11, 0.2)" : "1px solid rgba(0,0,0,0.1)",
+                            border:
+                              record.training.type === "RESEARCH" ? "1px solid rgba(99, 102, 241, 0.2)" :
+                                record.training.type === "INNOVATION" ? "1px solid rgba(245, 158, 11, 0.2)" : "1px solid rgba(0,0,0,0.1)",
                           }}
                         >
-                          <Typography 
-                            sx={{ 
-                              ...FS, 
-                              fontSize: 10, 
-                              fontWeight: 800, 
-                              color: 
-                                record.training.type === "RESEARCH" ? "#4F46E5" : 
-                                record.training.type === "INNOVATION" ? "#D97706" : "#6B7280" 
+                          <Typography
+                            sx={{
+                              ...FS,
+                              fontSize: 10,
+                              fontWeight: 800,
+                              color:
+                                record.training.type === "RESEARCH" ? "#4F46E5" :
+                                  record.training.type === "INNOVATION" ? "#D97706" : "#6B7280"
                             }}
                           >
                             {record.training.type}
@@ -340,30 +337,30 @@ const Interviews = () => {
                       height: 24,
                       textTransform: "none",
                       letterSpacing: 0.2,
-                      bgcolor: 
-                        record.status === "IAIRE_APPROVED" ? "rgba(16, 185, 129, 0.12)" : 
-                        record.status === "REJECTED" ? "rgba(239, 68, 68, 0.12)" : 
-                        record.status === "SELF_NOMINATED" ? "rgba(59, 130, 246, 0.12)" : 
-                        record.status === "SCHOOL_APPROVED" ? "rgba(245, 158, 11, 0.12)" : 
-                        record.status === "INTERVIEW_SCHEDULED" ? "rgba(99, 102, 241, 0.12)" : "rgba(0,0,0,0.05)",
-                      color: 
-                        record.status === "IAIRE_APPROVED" ? "#059669" : 
-                        record.status === "REJECTED" ? "#DC2626" : 
-                        record.status === "SELF_NOMINATED" ? "#2563EB" : 
-                        record.status === "SCHOOL_APPROVED" ? "#D97706" : 
-                        record.status === "INTERVIEW_SCHEDULED" ? "#4F46E5" : "#4B5563",
+                      bgcolor:
+                        record.status === "IAIRE_APPROVED" ? "rgba(16, 185, 129, 0.12)" :
+                          record.status === "REJECTED" ? "rgba(239, 68, 68, 0.12)" :
+                            record.status === "SELF_NOMINATED" ? "rgba(59, 130, 246, 0.12)" :
+                              record.status === "SCHOOL_APPROVED" ? "rgba(245, 158, 11, 0.12)" :
+                                record.status === "INTERVIEW_SCHEDULED" ? "rgba(99, 102, 241, 0.12)" : "rgba(0,0,0,0.05)",
+                      color:
+                        record.status === "IAIRE_APPROVED" ? "#059669" :
+                          record.status === "REJECTED" ? "#DC2626" :
+                            record.status === "SELF_NOMINATED" ? "#2563EB" :
+                              record.status === "SCHOOL_APPROVED" ? "#D97706" :
+                                record.status === "INTERVIEW_SCHEDULED" ? "#4F46E5" : "#4B5563",
                       borderRadius: "6px",
                       border: "1px solid currentColor",
                       "& .MuiChip-label": { px: 1.5 }
                     }}
                   />
                   {record.status === "REJECTED" && record.reason && (
-                    <Typography 
-                      sx={{ 
-                        ...FS, 
-                        fontSize: 10, 
-                        color: "#DC2626", 
-                        mt: 0.5, 
+                    <Typography
+                      sx={{
+                        ...FS,
+                        fontSize: 10,
+                        color: "#DC2626",
+                        mt: 0.5,
                         fontStyle: "italic",
                         maxWidth: 150,
                         overflow: "hidden",
@@ -395,7 +392,7 @@ const Interviews = () => {
 
                 {/* Actions */}
                 <TableCell align="right" sx={{ pr: 4 }}>
-                   <IconButton
+                  <IconButton
                     onClick={(e) => handleMenuOpen(e, record)}
                     disabled={record.status === "REJECTED"}
                     sx={{
@@ -431,12 +428,12 @@ const Interviews = () => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem 
+        <MenuItem
           onClick={handleViewDetails}
-          sx={{ 
-            ...FS, 
-            fontSize: 14, 
-            fontWeight: 600, 
+          sx={{
+            ...FS,
+            fontSize: 14,
+            fontWeight: 600,
             py: 1.5,
             color: COLORS.BLACK,
             display: "flex",
@@ -449,12 +446,12 @@ const Interviews = () => {
         </MenuItem>
         <Divider sx={{ my: 0.5, borderStyle: "dashed" }} />
         {activeStatus === "SCHOOL_APPROVED" && (
-          <MenuItem 
+          <MenuItem
             onClick={handleOpenSchedule}
-            sx={{ 
-              ...FS, 
-              fontSize: 14, 
-              fontWeight: 600, 
+            sx={{
+              ...FS,
+              fontSize: 14,
+              fontWeight: 600,
               py: 1.5,
               color: COLORS.PRIMARY_NAVY,
               display: "flex",
@@ -469,13 +466,13 @@ const Interviews = () => {
         {activeStatus === "INTERVIEW_SCHEDULED" && (
           <>
             <Divider sx={{ my: 0.5, borderStyle: "dashed" }} />
-            <MenuItem 
+            <MenuItem
               onClick={handleApprove}
               disabled={approving}
-              sx={{ 
-                ...FS, 
-                fontSize: 14, 
-                fontWeight: 600, 
+              sx={{
+                ...FS,
+                fontSize: 14,
+                fontWeight: 600,
                 py: 1.5,
                 color: "#059669",
                 display: "flex",
@@ -486,13 +483,13 @@ const Interviews = () => {
               <CheckCircle sx={{ fontSize: 20 }} />
               {approving ? "Processing..." : "Approve Teacher"}
             </MenuItem>
-            <MenuItem 
+            <MenuItem
               onClick={handleOpenReject}
               disabled={approving}
-              sx={{ 
-                ...FS, 
-                fontSize: 14, 
-                fontWeight: 600, 
+              sx={{
+                ...FS,
+                fontSize: 14,
+                fontWeight: 600,
                 py: 1.5,
                 color: COLORS.ERROR,
                 display: "flex",
@@ -532,8 +529,8 @@ const Interviews = () => {
             {/* Header Section */}
             <Box sx={{ p: 4, bgcolor: COLORS.PRIMARY_NAVY, color: "white", position: "relative" }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
-                <Avatar 
-                  src={teacherDetails.teacher.profileImage} 
+                <Avatar
+                  src={teacherDetails.teacher.profileImage}
                   sx={{ width: 100, height: 100, border: "4px solid rgba(255,255,255,0.2)" }}
                 />
                 <Box>
@@ -544,23 +541,23 @@ const Interviews = () => {
                     {teacherDetails.teacher.role} • {teacherDetails.teacher.experienceYears} Years Experience
                   </Typography>
                   <Stack direction="row" spacing={1} sx={{ mt: 1.5 }}>
-                    <Chip 
-                      label={teacherDetails.status.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')} 
-                      size="small" 
-                      sx={{ 
-                        bgcolor: "rgba(255,255,255,0.25)", 
-                        color: "white", 
-                        fontWeight: 700, 
-                        fontSize: 10, 
+                    <Chip
+                      label={teacherDetails.status.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')}
+                      size="small"
+                      sx={{
+                        bgcolor: "rgba(255,255,255,0.25)",
+                        color: "white",
+                        fontWeight: 700,
+                        fontSize: 10,
                         height: 24,
                         textTransform: "none",
                         border: "1px solid rgba(255,255,255,0.3)"
-                      }} 
+                      }}
                     />
-                    <Chip 
-                      label={teacherDetails.training.type} 
-                      size="small" 
-                      sx={{ bgcolor: COLORS.ACCENT_TAN, color: "white", fontWeight: 700, fontSize: 10, height: 24 }} 
+                    <Chip
+                      label={teacherDetails.training.type}
+                      size="small"
+                      sx={{ bgcolor: COLORS.ACCENT_TAN, color: "white", fontWeight: 700, fontSize: 10, height: 24 }}
                     />
                   </Stack>
                 </Box>
@@ -654,21 +651,21 @@ const Interviews = () => {
                     {/* Status & Rejection Reason */}
                     <Box sx={{ pt: 1 }}>
                       <Typography sx={{ ...FS, fontSize: 11, color: COLORS.TEXT_SECONDARY, mb: 0.5 }}>Nomination Status</Typography>
-                      <Chip 
-                        label={teacherDetails.status.replace('_', ' ')} 
-                        size="small" 
-                        sx={{ 
-                          fontWeight: 800, 
-                          fontSize: 10, 
-                          bgcolor: 
-                            teacherDetails.status === "IAIRE_APPROVED" ? "rgba(16, 185, 129, 0.1)" : 
-                            teacherDetails.status === "REJECTED" ? "rgba(239, 68, 68, 0.1)" : 
-                            "rgba(11, 23, 39, 0.05)",
-                          color: 
-                            teacherDetails.status === "IAIRE_APPROVED" ? "#059669" : 
-                            teacherDetails.status === "REJECTED" ? "#DC2626" : 
-                            COLORS.PRIMARY_NAVY,
-                        }} 
+                      <Chip
+                        label={teacherDetails.status.replace('_', ' ')}
+                        size="small"
+                        sx={{
+                          fontWeight: 800,
+                          fontSize: 10,
+                          bgcolor:
+                            teacherDetails.status === "IAIRE_APPROVED" ? "rgba(16, 185, 129, 0.1)" :
+                              teacherDetails.status === "REJECTED" ? "rgba(239, 68, 68, 0.1)" :
+                                "rgba(11, 23, 39, 0.05)",
+                          color:
+                            teacherDetails.status === "IAIRE_APPROVED" ? "#059669" :
+                              teacherDetails.status === "REJECTED" ? "#DC2626" :
+                                COLORS.PRIMARY_NAVY,
+                        }}
                       />
                       {teacherDetails.status === "REJECTED" && teacherDetails.reason && (
                         <Box sx={{ mt: 2, p: 2, bgcolor: "rgba(239, 68, 68, 0.05)", borderRadius: "12px", border: "1px solid rgba(239, 68, 68, 0.1)" }}>
@@ -688,7 +685,7 @@ const Interviews = () => {
               <Divider sx={{ my: 4, borderStyle: "dashed" }} />
 
               <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button 
+                <Button
                   onClick={() => setOpenDetailsModal(false)}
                   variant="outlined"
                   sx={{ borderRadius: "12px", textTransform: "none", px: 4, color: COLORS.TEXT_SECONDARY, borderColor: "rgba(0,0,0,0.1)" }}
@@ -702,11 +699,11 @@ const Interviews = () => {
       </Dialog>
 
       {/* Pagination */}
-      {pagination.totalPages > 1 && (
+      {(pagination?.totalPages ?? 0) > 1 && (
         <Box sx={{ mt: 6, display: "flex", justifyContent: "center" }}>
           <MuiPagination
-            count={pagination.totalPages}
-            page={pagination.page}
+            count={pagination?.totalPages || 1}
+            page={pagination?.page || 1}
             onChange={(_, page) => goToPage(page, activeStatus)}
             color="primary"
             size="large"
@@ -732,8 +729,8 @@ const Interviews = () => {
       )}
 
       {/* Schedule Modal */}
-      <Dialog 
-        open={openModal} 
+      <Dialog
+        open={openModal}
         onClose={() => setOpenModal(false)}
         slotProps={{
           paper: { sx: { borderRadius: "28px", p: 1, maxWidth: "480px" } },
@@ -750,13 +747,13 @@ const Interviews = () => {
         </DialogTitle>
         <DialogContent>
           <Typography variant="body2" sx={{ color: COLORS.TEXT_SECONDARY, mb: 4, ...FS }}>
-            {selectedTeacher?.interviewScheduledAt 
-              ? `You are rescheduling the interview for ` 
+            {selectedTeacher?.interviewScheduledAt
+              ? `You are rescheduling the interview for `
               : `Select a date and time for the interview with `
             }
             <strong style={{ color: COLORS.BLACK }}>{selectedTeacher?.teacher.fullName || `${selectedTeacher?.teacher.firstName} ${selectedTeacher?.teacher.lastName}`}</strong>.
           </Typography>
-          
+
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <MobileDateTimePicker
               label="Interview Date & Time"
@@ -787,12 +784,12 @@ const Interviews = () => {
           </LocalizationProvider>
         </DialogContent>
         <DialogActions sx={{ p: 3, pt: 1, gap: 1 }}>
-          <Button 
-            onClick={() => setOpenModal(false)} 
-            sx={{ 
-              ...FS, 
-              color: COLORS.TEXT_SECONDARY, 
-              textTransform: "none", 
+          <Button
+            onClick={() => setOpenModal(false)}
+            sx={{
+              ...FS,
+              color: COLORS.TEXT_SECONDARY,
+              textTransform: "none",
               fontWeight: 600,
               px: 3
             }}
@@ -803,9 +800,9 @@ const Interviews = () => {
             variant="contained"
             onClick={handleConfirmSchedule}
             disabled={scheduling || !interviewDate}
-            sx={{ 
-              ...PRIMARY_BUTTON_STYLE, 
-              width: "auto", 
+            sx={{
+              ...PRIMARY_BUTTON_STYLE,
+              width: "auto",
               px: 4,
               borderRadius: "12px",
               boxShadow: "0 4px 12px rgba(11, 23, 39, 0.2)"

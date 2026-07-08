@@ -26,9 +26,6 @@ const StartupsManagement = () => {
           <Typography variant="h4" sx={{ fontFamily: poppins.style.fontFamily, fontWeight: 700, color: COLORS.BLACK }}>
             Startup Ecosystem
           </Typography>
-          <Typography variant="body1" sx={{ fontFamily: poppins.style.fontFamily, color: COLORS.TEXT_SECONDARY, mt: 0.5 }}>
-            Track the journey of innovation from concept to exit.
-          </Typography>
         </Box>
         <Button 
           variant="contained" 
@@ -56,22 +53,13 @@ const StartupsManagement = () => {
               p: 3, 
               borderRadius: "24px", 
               textAlign: "center",
-              boxShadow: "0px 10px 30px rgba(0,0,0,0.03)",
+              boxShadow: "0px 10px 30px rgba(0,0,0,0.02)",
               border: "1px solid rgba(0,0,0,0.03)",
-              position: "relative",
-              overflow: "hidden"
+              height: "100%"
             }}>
-              <Box sx={{ 
-                position: "absolute", 
-                top: 0, 
-                left: 0, 
-                width: "4px", 
-                height: "100%", 
-                bgcolor: item.color 
-              }} />
               <Avatar sx={{ 
-                bgcolor: `${item.color}15`, 
-                color: item.color, 
+                bgcolor: "rgba(9, 9, 11, 0.05)", 
+                color: COLORS.PRIMARY_NAVY, 
                 width: 50, 
                 height: 50, 
                 mx: "auto", 
@@ -100,10 +88,10 @@ const StartupsManagement = () => {
             </Typography>
             <Stack spacing={3}>
               {[
-                { label: "Fintech", value: 75, color: COLORS.PRIMARY_NAVY },
-                { label: "Healthcare", value: 60, color: "#4CAF50" },
-                { label: "AI & ML", value: 90, color: "#2196F3" },
-                { label: "SaaS", value: 45, color: COLORS.ACCENT_TAN },
+                { label: "Fintech", value: 75, color: "#09090B" },
+                { label: "Healthcare", value: 60, color: "#3F3F46" },
+                { label: "AI & ML", value: 90, color: "#71717A" },
+                { label: "SaaS", value: 45, color: "#A1A1AA" },
               ].map((industry, idx) => (
                 <Box key={idx}>
                   <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
@@ -152,7 +140,7 @@ const StartupsManagement = () => {
                     </Box>
                   </Box>
                   <Box sx={{ textAlign: "right" }}>
-                    <Typography sx={{ fontSize: 13, fontWeight: 700, color: "#4CAF50" }}>{startup.funding}</Typography>
+                    <Typography sx={{ fontSize: 13, fontWeight: 700, color: COLORS.PRIMARY_NAVY }}>{startup.funding}</Typography>
                     <Typography sx={{ fontSize: 11, color: COLORS.TEXT_SECONDARY }}>{startup.status}</Typography>
                   </Box>
                 </Box>
