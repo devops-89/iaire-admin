@@ -57,6 +57,29 @@ const Transition = forwardRef(function Transition(
 
 const FS = { fontFamily: poppins.style.fontFamily };
 
+const getCreatorName = (creator: any) => {
+  if (!creator) return "N/A";
+  if (creator.fullName?.trim()) return creator.fullName;
+  const combined = `${creator.firstName || ""} ${creator.lastName || ""}`.trim();
+  return combined || creator.username || "N/A";
+};
+
+const getFormattedPhone = (creator: any) => {
+  if (!creator?.phone) return "N/A";
+  const phone = creator.phone.trim();
+  const code = creator.countryCode?.trim() || "";
+  
+  if (phone.startsWith("+")) {
+    return phone;
+  }
+  
+  if (code && phone.startsWith(code.replace("+", ""))) {
+    return `+${phone}`;
+  }
+  
+  return code ? `${code} ${phone}` : phone;
+};
+
 const ResearchManagement = () => {
   const { researchData, loading, updatingStatus, fetchResearchData, updateStatus } = useResearch();
   const [searchQuery, setSearchQuery] = useState("");
@@ -338,7 +361,7 @@ const ResearchManagement = () => {
                     <TableCell>
                       <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
                         <Avatar
-                          src={row.creator?.profileImage || ""}
+                          src={row.creator?.profileImageDownloadUrl || row.creator?.profileImage || ""}
                           sx={{
                             width: 32,
                             height: 32,
@@ -350,7 +373,7 @@ const ResearchManagement = () => {
                         </Avatar>
                         <Box>
                           <Typography sx={{ ...FS, fontWeight: 600, fontSize: 13, color: COLORS.TEXT_PRIMARY }}>
-                            {row.creator?.fullName || row.creator?.username || "N/A"}
+                            {getCreatorName(row.creator)}
                           </Typography>
                           <Typography sx={{ ...FS, fontSize: 11, color: COLORS.TEXT_SECONDARY }}>
                             {row.creator?.email || "No email"}
@@ -588,7 +611,7 @@ const ResearchManagement = () => {
                     <Stack spacing={2}>
                       <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
                         <Avatar
-                          src={selectedItem.creator?.profileImage || ""}
+                          src={selectedItem.creator?.profileImageDownloadUrl || selectedItem.creator?.profileImage || ""}
                           sx={{
                             width: 38,
                             height: 38,
@@ -600,7 +623,7 @@ const ResearchManagement = () => {
                         </Avatar>
                         <Box>
                           <Typography sx={{ ...FS, fontSize: "13px", fontWeight: 700, color: COLORS.TEXT_PRIMARY }}>
-                            {selectedItem.creator?.fullName}
+                            {getCreatorName(selectedItem.creator)}
                           </Typography>
                           <Typography sx={{ ...FS, fontSize: "11px", color: COLORS.TEXT_SECONDARY }}>
                             {selectedItem.creator?.role?.replace("_", " ")}
@@ -618,9 +641,17 @@ const ResearchManagement = () => {
                         <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                           <Phone sx={{ fontSize: 15, color: COLORS.TEXT_SECONDARY }} />
                           <Typography sx={{ ...FS, fontSize: "12px", color: COLORS.TEXT_SECONDARY }}>
-                            {selectedItem.creator?.countryCode || "+91"} {selectedItem.creator?.phone}
+                            {getFormattedPhone(selectedItem.creator)}
                           </Typography>
                         </Stack>
+                        {selectedItem.creator?.grade && (
+                          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                            <School sx={{ fontSize: 15, color: COLORS.TEXT_SECONDARY }} />
+                            <Typography sx={{ ...FS, fontSize: "12px", color: COLORS.TEXT_SECONDARY }}>
+                              Grade {selectedItem.creator.grade}
+                            </Typography>
+                          </Stack>
+                        )}
                         {selectedItem.creator?.state && (
                           <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                             <School sx={{ fontSize: 15, color: COLORS.TEXT_SECONDARY }} />
@@ -630,6 +661,61 @@ const ResearchManagement = () => {
                           </Stack>
                         )}
                       </Stack>
+
+                      {/* Parent / Guardian Details */}
+                      {(selectedItem.creator?.fatherName || selectedItem.creator?.motherName) && (
+                        <Box sx={{ mt: 1.5, pt: 1.5, borderTop: "1px solid rgba(0,0,0,0.04)" }}>
+                          <Typography
+                            sx={{
+                              fontFamily: outfit.style.fontFamily,
+                              fontWeight: 700,
+                              fontSize: "11px",
+                              color: COLORS.PRIMARY_NAVY,
+                              mb: 1.5,
+                              textTransform: "uppercase",
+                              letterSpacing: 0.5,
+                            }}
+                          >
+                            Parent / Guardian Details
+                          </Typography>
+                          <Grid container spacing={1.5}>
+                            {selectedItem.creator?.fatherName && (
+                              <Grid size={{ xs: 12 }}>
+                                <Typography sx={{ ...FS, fontSize: "12px", color: COLORS.TEXT_PRIMARY, fontWeight: 600 }}>
+                                  Father: {selectedItem.creator.fatherName}
+                                </Typography>
+                                {selectedItem.creator.fatherProfession && (
+                                  <Typography sx={{ ...FS, fontSize: "11px", color: COLORS.TEXT_SECONDARY, pl: 2 }}>
+                                    Profession: {selectedItem.creator.fatherProfession}
+                                  </Typography>
+                                )}
+                                {(selectedItem.creator.fatherPhone || selectedItem.creator.fatherEmail) && (
+                                  <Typography sx={{ ...FS, fontSize: "11px", color: COLORS.TEXT_SECONDARY, pl: 2 }}>
+                                    Contact: {[selectedItem.creator.fatherPhone, selectedItem.creator.fatherEmail].filter(Boolean).join(" | ")}
+                                  </Typography>
+                                )}
+                              </Grid>
+                            )}
+                            {selectedItem.creator?.motherName && (
+                              <Grid size={{ xs: 12 }}>
+                                <Typography sx={{ ...FS, fontSize: "12px", color: COLORS.TEXT_PRIMARY, fontWeight: 600, mt: selectedItem.creator?.fatherName ? 1 : 0 }}>
+                                  Mother: {selectedItem.creator.motherName}
+                                </Typography>
+                                {selectedItem.creator.motherProfession && (
+                                  <Typography sx={{ ...FS, fontSize: "11px", color: COLORS.TEXT_SECONDARY, pl: 2 }}>
+                                    Profession: {selectedItem.creator.motherProfession}
+                                  </Typography>
+                                )}
+                                {(selectedItem.creator.motherPhone || selectedItem.creator.motherEmail) && (
+                                  <Typography sx={{ ...FS, fontSize: "11px", color: COLORS.TEXT_SECONDARY, pl: 2 }}>
+                                    Contact: {[selectedItem.creator.motherPhone, selectedItem.creator.motherEmail].filter(Boolean).join(" | ")}
+                                  </Typography>
+                                )}
+                              </Grid>
+                            )}
+                          </Grid>
+                        </Box>
+                      )}
                     </Stack>
                   </Card>
 

@@ -512,6 +512,7 @@ export interface ResearchCreator {
   lastName: string | null;
   bio: string | null;
   profileImage: string | null;
+  profileImageDownloadUrl?: string | null;
   password?: string;
   hashedRefreshToken?: string;
   lastLoginAt: string | null;
