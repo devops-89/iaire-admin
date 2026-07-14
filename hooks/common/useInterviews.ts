@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { TrainingControllers } from "@/app/api/trainingControllers";
 import { TrainingTeacher, Pagination } from "@/utils/type";
 import useSnackbar from "@/store/useSnackbar";
+import { TRAINING_NOMINATION_STATUS } from "@/utils/enum";
 
 export const useInterviews = () => {
   const [teachers, setTeachers] = useState<TrainingTeacher[]>([]);
@@ -22,7 +23,7 @@ export const useInterviews = () => {
   const fetchTeachers = async (page = 1, limit = 10, status?: string) => {
     setLoading(true);
     try {
-      const currentStatus = status || "SCHOOL_APPROVED";
+      const currentStatus = status || TRAINING_NOMINATION_STATUS.SCHOOL_APPROVED;
       const response: any = await TrainingControllers.getTrainingTeachers(page, limit, currentStatus);
       if (response.data.success) {
         const sortedTeachers = (response.data.data.data || []).sort((a: any, b: any) => {
