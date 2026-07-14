@@ -29,8 +29,14 @@ export const useBatches = () => {
     try {
       const response: any = await BatchControllers.getBatches(page, limit);
       if (response.data.success) {
-        setBatches(response.data.data.data || []);
-        setPagination(response.data.data.meta);
+        const payload = response.data.data;
+        if (Array.isArray(payload)) {
+          setBatches(payload);
+          setPagination({ page: 1, limit: payload.length, total: payload.length, totalPages: 1 });
+        } else {
+          setBatches(payload?.data || []);
+          setPagination(payload?.meta || { page: 1, limit: 10, total: 0, totalPages: 0 });
+        }
       }
     } catch (error: any) {
       setSnackbar(

@@ -10,6 +10,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TablePagination,
   Avatar,
   Chip,
   TextField,
@@ -81,30 +82,29 @@ const getFormattedPhone = (creator: any) => {
 };
 
 const ResearchManagement = () => {
-  const { researchData, loading, updatingStatus, fetchResearchData, updateStatus } = useResearch();
+  const { researchData, loading, updatingStatus, pagination, fetchResearchData, updateStatus } = useResearch();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("ALL");
   const [selectedItem, setSelectedItem] = useState<ResearchSubmission | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Debounced search effect
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      fetchResearchData(searchQuery);
+      fetchResearchData(searchQuery, page + 1, rowsPerPage, activeTab);
     }, 400);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchQuery]);
+  }, [searchQuery, page, rowsPerPage, activeTab]);
 
-  // Filter local data based on status tabs
-  const filteredData = researchData.filter((item) => {
-    if (activeTab === "ALL") return true;
-    if (activeTab === "PENDING") return item.status?.toUpperCase() === "PENDING";
-    if (activeTab === "PUBLISHED") return item.status?.toUpperCase() === "PUBLISHED";
-    if (activeTab === "NOT_PUBLISHED") return item.status?.toUpperCase() === "NOT_PUBLISHED";
-    if (activeTab === "ARCHIVED") return item.status?.toUpperCase() === "ARCHIVED";
-    return true;
-  });
+  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+    setActiveTab(newValue);
+    setPage(0);
+  };
+
+  const filteredData = researchData || [];
 
   const getStatusTextColor = (status: string) => {
     const s = status || "PENDING";
@@ -200,16 +200,13 @@ const ResearchManagement = () => {
               }}
               sx={{ width: { xs: "100%", sm: 300 } }}
             />
-            <Typography sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY, fontWeight: 500 }}>
-              Total: <strong style={{ color: COLORS.PRIMARY_NAVY }}>{filteredData.length}</strong> Submissions
-            </Typography>
           </Box>
 
-          <Tabs
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
+            <Tabs
             value={activeTab}
-            onChange={(e, val) => setActiveTab(val)}
+            onChange={handleTabChange}
             sx={{
-              borderBottom: "1px solid rgba(0,0,0,0.05)",
               "& .MuiTabs-indicator": {
                 backgroundColor: COLORS.PRIMARY_NAVY,
                 height: 3,
@@ -233,9 +230,14 @@ const ResearchManagement = () => {
             <Tab label="All Submissions" value="ALL" />
             <Tab label="Pending Review" value="PENDING" />
             <Tab label="Published" value="PUBLISHED" />
-            <Tab label="Not Published" value="NOT_PUBLISHED" />
-            <Tab label="Archived" value="ARCHIVED" />
-          </Tabs>
+              <Tab label="Not Published" value="NOT_PUBLISHED" />
+              <Tab label="Archived" value="ARCHIVED" />
+            </Tabs>
+            
+            <Typography sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY, fontWeight: 500, display: { xs: "none", md: "block" } }}>
+              Total: <strong style={{ color: COLORS.PRIMARY_NAVY }}>{pagination?.total || 0}</strong> Submissions
+            </Typography>
+          </Box>
         </Box>
 
         <TableContainer>
@@ -469,6 +471,26 @@ const ResearchManagement = () => {
             </TableBody>
           </Table>
         </TableContainer>
+
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={pagination?.total || 0}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={(e, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          sx={{
+            borderTop: "1px solid rgba(0,0,0,0.05)",
+            ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
+              fontFamily: poppins.style.fontFamily,
+              margin: 0,
+            }
+          }}
+        />
       </Card>
 
       {/* Submission Detail Modal Dialog */}

@@ -348,7 +348,7 @@ const Interviews = () => {
                               color: COLORS.PRIMARY_NAVY,
                             }}
                           >
-                            {record.teacher.experienceYears}Y EXP
+                            {record?.teacher?.experienceYears ?? 0}Y EXP
                           </Typography>
                         </Box>
                         <Box
@@ -379,14 +379,14 @@ const Interviews = () => {
                               fontSize: 10,
                               fontWeight: 800,
                               color:
-                                record.training.type === "RESEARCH"
+                                record?.training?.type === "RESEARCH"
                                   ? "#4F46E5"
-                                  : record.training.type === "INNOVATION"
+                                  : record?.training?.type === "INNOVATION"
                                     ? "#D97706"
                                     : "#6B7280",
                             }}
                           >
-                            {record.training.type}
+                            {record?.training?.type || "N/A"}
                           </Typography>
                         </Box>
                       </Stack>
@@ -405,8 +405,8 @@ const Interviews = () => {
                         color: COLORS.BLACK,
                       }}
                     >
-                      {record.training.title ||
-                        `${record.training.type} Training`}
+                      {record?.training?.title ||
+                        (record?.training?.type ? `${record.training.type} Training` : "Unknown Training")}
                     </Typography>
                     <Box
                       sx={{
@@ -426,7 +426,7 @@ const Interviews = () => {
                           color: COLORS.TEXT_SECONDARY,
                         }}
                       >
-                        {record.training.school.name}
+                        {record?.training?.school?.name || "No School"}
                       </Typography>
                     </Box>
                     <Typography
@@ -445,7 +445,7 @@ const Interviews = () => {
                           textTransform: "capitalize",
                         }}
                       >
-                        {record.teacher.primarySubjects
+                        {record?.teacher?.primarySubjects
                           ?.map(
                             (s: string) =>
                               s.charAt(0).toUpperCase() + s.slice(1),
@@ -459,7 +459,7 @@ const Interviews = () => {
                 {/* Status Chip */}
                 <TableCell>
                   <Chip
-                    label={record.status
+                    label={(record?.status || "UNKNOWN")
                       .split("_")
                       .map(
                         (word: string) =>

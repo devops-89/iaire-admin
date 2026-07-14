@@ -58,6 +58,8 @@ const BatchesManagement = () => {
   const { fetchBatches, batches, loading, pagination } = useBatches();
   const [tabValue, setTabValue] = useState("ALL");
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRecord, setActiveRecord] = useState<Batch | null>(null);
@@ -69,6 +71,7 @@ const BatchesManagement = () => {
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
+    setPage(0);
   };
 
   const { showModal } = useModal();
@@ -109,6 +112,8 @@ const BatchesManagement = () => {
 
     return true;
   });
+
+  const paginatedBatches = filteredBatches.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 4 }}>
@@ -169,7 +174,10 @@ const BatchesManagement = () => {
         <InputBase
           placeholder="Search by batch title, attendees, or categories..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setPage(0);
+          }}
           sx={{
             fontFamily: poppins.style.fontFamily,
             fontSize: "0.9rem",
@@ -263,7 +271,7 @@ const BatchesManagement = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredBatches.map((row) => (
+                paginatedBatches.map((row) => (
                   <TableRow key={row.id} hover sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                     <TableCell sx={{ ...FS, pl: 4, fontWeight: 600 }}>{row.id}</TableCell>
                     <TableCell sx={{ ...FS, fontWeight: 700, color: COLORS.TEXT_PRIMARY }}>
@@ -330,14 +338,15 @@ const BatchesManagement = () => {
 
         <TablePagination
           component="div"
-          count={pagination?.total ?? 0}
-          page={(pagination?.page ?? 1) - 1}
-          rowsPerPage={pagination?.limit ?? 10}
+          count={filteredBatches.length}
+          page={page}
+          rowsPerPage={rowsPerPage}
           onPageChange={(_, newPage) => {
-            fetchBatches(newPage + 1, pagination?.limit);
+            setPage(newPage);
           }}
           onRowsPerPageChange={(event) => {
-            fetchBatches(1, parseInt(event.target.value, 10));
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
           }}
           rowsPerPageOptions={[5, 10, 25]}
           sx={{ borderTop: "1px solid rgba(0,0,0,0.05)" }}

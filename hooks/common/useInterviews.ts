@@ -25,19 +25,31 @@ export const useInterviews = () => {
     try {
       const currentStatus = status || TRAINING_NOMINATION_STATUS.SCHOOL_APPROVED;
       const response: any = await TrainingControllers.getTrainingTeachers(page, limit, currentStatus);
-      if (response.data.success) {
-        const sortedTeachers = (response.data.data.data || []).sort((a: any, b: any) => {
+      if (response.data.success || response.data.statusCode === 200) {
+        // Robust array extraction
+        const dataArray = Array.isArray(response.data?.data?.data)
+          ? response.data.data.data
+          : Array.isArray(response.data?.data)
+          ? response.data.data
+          : Array.isArray(response.data)
+          ? response.data
+          : [];
+
+        const sortedTeachers = dataArray.sort((a: any, b: any) => {
           if (a.interviewScheduledAt && !b.interviewScheduledAt) return -1;
           if (!a.interviewScheduledAt && b.interviewScheduledAt) return 1;
           return 0;
         });
         setTeachers(sortedTeachers);
+
+        // Extract pagination
+        const pag = response.data?.data?.pagination || response.data?.pagination;
         setPagination(
-          response.data.data.pagination || {
+          pag || {
             page: 1,
             limit: 10,
             total: 0,
-            totalPages: 0,
+            totalPages: 1,
           }
         );
       }

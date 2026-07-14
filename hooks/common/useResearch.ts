@@ -11,12 +11,35 @@ export const useResearch = () => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const { setSnackbar } = useSnackbar();
 
-  const fetchResearchData = async (search?: string) => {
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+  });
+
+  const fetchResearchData = async (search?: string, page: number = 1, limit: number = 10, status?: string) => {
     try {
       setLoading(true);
-      const res = await ResearchControllers.getAllResearchSubmissions(
-        search ? { search } : undefined
-      );
+      const params: any = { page, limit };
+      if (search) params.search = search;
+      
+      if (status && status !== "ALL") {
+        params.search = params.search ? `${params.search} ${status}` : status;
+      }
+      
+      const res = await ResearchControllers.getAllResearchSubmissions(params);
+
+      // Extract pagination
+      const pag = (res as any)?.data?.pagination || (res as any)?.pagination;
+      if (pag) {
+        setPagination({
+          page: pag.page || page,
+          limit: pag.limit || limit,
+          total: pag.total || 0,
+          totalPages: pag.totalPages || 1,
+        });
+      }
 
       // Robust array extraction supporting direct payload, success wrapper, or raw arrays
       const dataArray = Array.isArray((res as any)?.data?.data)
@@ -70,6 +93,7 @@ export const useResearch = () => {
     researchData,
     loading,
     updatingStatus,
+    pagination,
     fetchResearchData,
     updateStatus,
   };

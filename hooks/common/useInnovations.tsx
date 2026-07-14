@@ -13,12 +13,27 @@ export const useInnovations = () => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const { setSnackbar } = useSnackbar();
 
-  const fetchData = async (search?: string) => {
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 0 });
+
+  const fetchData = async (search?: string, page: number = 1, limit: number = 10, status?: string) => {
     try {
       setLoading(true);
-      const res = await innovationControllers.getInnovations(search);
+      const res = await innovationControllers.getInnovations(search, page, limit, status);
       console.log("innovation", res);
-      setInnovationData(res?.data?.data || []);
+      const payload = res?.data;
+      if (Array.isArray(payload)) {
+        setInnovationData(payload);
+        if (res?.pagination) {
+          setPagination(res.pagination);
+        }
+      } else {
+        setInnovationData(payload?.data || []);
+        if (payload?.pagination) {
+          setPagination(payload.pagination);
+        } else if (res?.pagination) {
+          setPagination(res.pagination);
+        }
+      }
     } catch (err) {
       console.error("error in innovation list", err);
     } finally {
@@ -69,6 +84,7 @@ export const useInnovations = () => {
     loading,
     loadingDetails,
     updatingStatus,
+    pagination,
     fetchData,
     fetchDetails,
     updateStatus,

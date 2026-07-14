@@ -34,6 +34,7 @@ import {
   Divider,
   CircularProgress,
   Grid,
+  TablePagination,
 } from "@mui/material";
 import {
   Close,
@@ -77,6 +78,7 @@ const InnovationList = () => {
     loading,
     loadingDetails,
     updatingStatus,
+    pagination,
     fetchData,
     fetchDetails,
     updateStatus,
@@ -94,18 +96,24 @@ const InnovationList = () => {
   const [rejectionComment, setRejectionComment] = useState("");
   const [updatingRowId, setUpdatingRowId] = useState<number | null>(null);
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
   useEffect(() => {
-    fetchData();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchData(searchTerm, page + 1, rowsPerPage, activeTab);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm, page, rowsPerPage, activeTab]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
     setActiveTab(newValue);
+    setPage(0);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-    fetchData(value);
+    setSearchTerm(e.target.value);
+    setPage(0);
   };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>, record: INNOVATION_RESPONSE_DATA_PROPS) => {
@@ -127,11 +135,7 @@ const InnovationList = () => {
     }
   };
 
-  // Filter local records by status (if tab is not ALL)
-  const filteredData = (innovationData || []).filter((item: INNOVATION_RESPONSE_DATA_PROPS) => {
-    if (activeTab === "ALL") return true;
-    return item.status === activeTab;
-  });
+  const filteredData = innovationData || [];
 
   const getStatusChip = (status: string) => {
     const s = status || "DRAFT";
@@ -214,25 +218,26 @@ const InnovationList = () => {
               fontWeight: 700,
               fontSize: 10,
               height: 24,
-              bgcolor: "rgba(0,0,0,0.05)",
+              bgcolor: alpha(COLORS.TEXT_SECONDARY, 0.1),
               color: COLORS.TEXT_SECONDARY,
+              border: `1px solid ${COLORS.TEXT_SECONDARY}`,
               borderRadius: "6px",
             }}
           />
         );
       default:
-        const label = s.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
         return (
           <Chip
-            label={label}
+            label="Draft"
             size="small"
             sx={{
               ...FS,
               fontWeight: 700,
               fontSize: 10,
               height: 24,
-              bgcolor: "rgba(0,0,0,0.05)",
+              bgcolor: alpha(COLORS.TEXT_SECONDARY, 0.1),
               color: COLORS.TEXT_SECONDARY,
+              border: `1px solid ${COLORS.TEXT_SECONDARY}`,
               borderRadius: "6px",
             }}
           />
@@ -241,73 +246,88 @@ const InnovationList = () => {
   };
 
   const getStatusTextColor = (status: string) => {
-    const s = status || "DRAFT";
-    switch (s) {
-      case "PATENT_GRANTED": return COLORS.SUCCESS;
+    switch (status) {
       case "PENDING": return COLORS.WARNING;
       case "PATENT_PENDING": return COLORS.INFO;
+      case "PATENT_GRANTED": return COLORS.SUCCESS;
       case "REJECTED": return COLORS.ERROR;
+      case "ARCHIVED": return COLORS.TEXT_SECONDARY;
       default: return COLORS.TEXT_SECONDARY;
     }
   };
 
   const getStatusBgColor = (status: string) => {
-    return alpha(getStatusTextColor(status), 0.1);
+    switch (status) {
+      case "PENDING": return alpha(COLORS.WARNING, 0.1);
+      case "PATENT_PENDING": return alpha(COLORS.INFO, 0.1);
+      case "PATENT_GRANTED": return alpha(COLORS.SUCCESS, 0.1);
+      case "REJECTED": return alpha(COLORS.ERROR, 0.1);
+      case "ARCHIVED": return alpha(COLORS.TEXT_SECONDARY, 0.1);
+      default: return alpha(COLORS.TEXT_SECONDARY, 0.1);
+    }
   };
 
   const getStatusBorderColor = (status: string) => {
-    return alpha(getStatusTextColor(status), 0.4);
+    switch (status) {
+      case "PENDING": return alpha(COLORS.WARNING, 0.3);
+      case "PATENT_PENDING": return alpha(COLORS.INFO, 0.3);
+      case "PATENT_GRANTED": return alpha(COLORS.SUCCESS, 0.3);
+      case "REJECTED": return alpha(COLORS.ERROR, 0.3);
+      case "ARCHIVED": return alpha(COLORS.TEXT_SECONDARY, 0.3);
+      default: return alpha(COLORS.TEXT_SECONDARY, 0.3);
+    }
   };
 
   return (
     <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 4 }}>
-      {/* Welcome & Overview Header */}
+      {/* Header */}
       <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { xs: "flex-start", sm: "center" }, gap: 2 }}>
-        <Box>
-          <Typography
-            variant="h4"
-            sx={{
-              fontFamily: poppins.style.fontFamily,
-              fontWeight: 800,
-              color: COLORS.TEXT_PRIMARY,
-              letterSpacing: -0.5,
-            }}
-          >
-            Innovation Management
-          </Typography>
-        </Box>
-
-        {/* Search Bar */}
-        <Box
+        <Typography
+          variant="h4"
           sx={{
-            display: "flex",
-            alignItems: "center",
-            backgroundColor: COLORS.INPUT_BG,
-            borderRadius: "14px",
-            px: 2,
-            py: 0.8,
-            width: { xs: "100%", sm: "320px" },
-            border: "1px solid rgba(0,0,0,0.03)",
+            fontFamily: poppins.style.fontFamily,
+            fontWeight: 800,
+            color: COLORS.TEXT_PRIMARY,
+            letterSpacing: -0.5,
           }}
         >
-          <Search sx={{ color: COLORS.TEXT_SECONDARY, mr: 1, fontSize: 20 }} />
-          <InputBase
-            placeholder="Search by country or term..."
-            value={searchTerm}
-            onChange={handleSearchChange}
+          Innovation Management
+        </Typography>
+
+        <Box sx={{ display: "flex", gap: 2, width: { xs: "100%", sm: "auto" } }}>
+          <Paper
+            elevation={0}
             sx={{
-              fontFamily: poppins.style.fontFamily,
-              fontSize: "0.9rem",
-              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              width: { xs: "100%", sm: 300 },
+              px: 2,
+              height: 44,
+              borderRadius: "12px",
+              border: "1px solid rgba(0,0,0,0.08)",
+              bgcolor: "white",
+              transition: "all 0.2s",
+              "&:focus-within": {
+                borderColor: COLORS.PRIMARY_NAVY,
+                boxShadow: `0 0 0 3px ${alpha(COLORS.PRIMARY_NAVY, 0.1)}`,
+              },
             }}
-          />
+          >
+            <Search sx={{ color: COLORS.TEXT_SECONDARY, fontSize: 20, mr: 1 }} />
+            <InputBase
+              placeholder="Search innovations..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              sx={{ ...FS, width: "100%", fontSize: 14 }}
+            />
+          </Paper>
         </Box>
       </Box>
 
-      {/* Tabs & Table Card */}
+      {/* Main Card */}
       <Card
         sx={{
-          borderRadius: "28px",
+          borderRadius: "20px",
           boxShadow: "0px 15px 50px rgba(0,0,0,0.02)",
           border: "1px solid rgba(0,0,0,0.04)",
           bgcolor: COLORS.WHITE,
@@ -346,7 +366,7 @@ const InnovationList = () => {
           </Tabs>
           
           <Typography sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY, fontWeight: 500, display: { xs: "none", md: "block" } }}>
-            Total: <strong style={{ color: COLORS.PRIMARY_NAVY }}>{filteredData.length}</strong> Submissions
+            Total: <strong style={{ color: COLORS.PRIMARY_NAVY }}>{pagination?.total || 0}</strong> Submissions
           </Typography>
         </Box>
 
@@ -509,7 +529,27 @@ const InnovationList = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={pagination?.total || 0}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={(e, newPage) => setPage(newPage)}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          sx={{
+            borderTop: "1px solid rgba(0,0,0,0.05)",
+            ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
+              fontFamily: poppins.style.fontFamily,
+              margin: 0,
+            }
+          }}
+        />
       </Card>
+
 
       {/* Action Menu */}
       <Menu
