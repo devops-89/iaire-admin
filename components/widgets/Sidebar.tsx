@@ -1,37 +1,33 @@
 "use client";
-import React from "react";
+import { useLogin } from "@/hooks/common/useLogin";
+import { COLORS, FONT_SIZE } from "@/utils/enum";
+import { poppins } from "@/utils/fonts";
 import {
+  Dashboard,
+  EventAvailable,
+  ExpandLess,
+  ExpandMore,
+  KeyboardArrowDown,
+  Public,
+  RocketLaunch
+} from "@mui/icons-material";
+import {
+  Avatar,
   Box,
+  Collapse,
+  Divider,
   Drawer,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Typography,
-  Divider,
-  Collapse,
-  Avatar,
   Menu,
   MenuItem,
+  Typography,
 } from "@mui/material";
-import {
-  Dashboard,
-  School,
-  CardMembership,
-  Public,
-  Description,
-  RocketLaunch,
-  EventAvailable,
-  FolderOpen,
-  ExpandLess,
-  ExpandMore,
-  KeyboardArrowDown,
-} from "@mui/icons-material";
 import { usePathname, useRouter } from "next/navigation";
-import { COLORS, FONT_SIZE } from "@/utils/enum";
-import { poppins } from "@/utils/fonts";
-import { useLogin } from "@/hooks/common/useLogin";
+import React from "react";
 
 const DRAWER_WIDTH = 280;
 
@@ -138,17 +134,16 @@ const Sidebar = () => {
         width: DRAWER_WIDTH,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          width: DRAWER_WIDTH - 32,
-          height: "calc(100vh - 32px)",
-          top: "16px",
-          left: "16px",
-          bottom: "16px",
+          width: DRAWER_WIDTH,
+          height: "100vh",
+          top: 0,
+          left: 0,
           boxSizing: "border-box",
           backgroundColor: COLORS.PRIMARY_NAVY,
           color: COLORS.WHITE,
-          borderRadius: "20px",
-          border: "1px solid rgba(255, 255, 255, 0.08)",
-          boxShadow: "0px 20px 40px rgba(0, 0, 0, 0.15)",
+          borderRadius: 0,
+          borderRight: "1px solid rgba(255, 255, 255, 0.08)",
+          boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
           display: "flex",
           flexDirection: "column",
         },
@@ -364,6 +359,18 @@ const Sidebar = () => {
           </Box>
           <KeyboardArrowDown sx={{ color: "rgba(255, 255, 255, 0.4)", fontSize: 18 }} />
         </Box>
+        <Typography 
+          sx={{ 
+            fontSize: "15px", 
+            color: "rgba(255, 255, 255, 0.3)", 
+            fontFamily: poppins.style.fontFamily, 
+            textAlign: "right", 
+            mt: 1.5,
+            letterSpacing: "1px"
+          }}
+        >
+          v1
+        </Typography>
       </Box>
 
       <Menu
