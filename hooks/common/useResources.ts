@@ -55,8 +55,8 @@ export const useGetResources = () => {
         section,
         fileType
       );
-      if (response.data?.data) {
-        const resData = response.data.data;
+      if (response.data) {
+        const resData = response.data;
         setData(Array.isArray(resData.data) ? resData.data : []);
         setPagination(
           resData.pagination || {

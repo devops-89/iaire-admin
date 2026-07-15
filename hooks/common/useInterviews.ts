@@ -23,7 +23,7 @@ export const useInterviews = () => {
   const fetchTeachers = async (page = 1, limit = 10, status?: string) => {
     setLoading(true);
     try {
-      const currentStatus = status || TRAINING_NOMINATION_STATUS.SCHOOL_APPROVED;
+      const currentStatus = status === "ALL" ? undefined : (status || TRAINING_NOMINATION_STATUS.SCHOOL_APPROVED);
       const response: any = await TrainingControllers.getTrainingTeachers(page, limit, currentStatus);
       if (response.data.success || response.data.statusCode === 200) {
         // Robust array extraction
@@ -43,15 +43,17 @@ export const useInterviews = () => {
         setTeachers(sortedTeachers);
 
         // Extract pagination
-        const pag = response.data?.data?.pagination || response.data?.pagination;
-        setPagination(
-          pag || {
-            page: 1,
-            limit: 10,
-            total: 0,
-            totalPages: 1,
-          }
-        );
+        const pag = response.data?.data?.pagination || response.data?.pagination || response.data?.meta || response.data?.data?.meta;
+        
+        const totalRecords = pag?.total ?? dataArray.length;
+        const totalPages = pag?.totalPages ?? (Math.ceil(totalRecords / limit) || 1);
+
+        setPagination({
+          page: pag?.page || page,
+          limit: pag?.limit || limit,
+          total: totalRecords,
+          totalPages: totalPages,
+        });
       }
     } catch (error: any) {
       setSnackbar(error.response?.data?.message || "Failed to fetch training teachers", "error");

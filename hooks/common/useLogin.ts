@@ -37,7 +37,12 @@ export const useLogin = () => {
       });
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await AuthControllers.logout();
+    } catch (error) {
+      console.log("Logout API error", error);
+    }
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     router.push("/login");

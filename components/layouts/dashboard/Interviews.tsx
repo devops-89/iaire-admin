@@ -20,7 +20,8 @@ import {
   Tabs,
   Tab,
   CircularProgress,
-  Pagination as MuiPagination,
+  TablePagination,
+  alpha,
 } from "@mui/material";
 import {
   School,
@@ -32,6 +33,7 @@ import {
   Visibility,
   CheckCircle,
   Cancel,
+  Close,
 } from "@mui/icons-material";
 import { COLORS, TRAINING_NOMINATION_STATUS } from "@/utils/enum";
 import { poppins } from "@/utils/fonts";
@@ -62,6 +64,8 @@ const Interviews = () => {
     fetchTeachers,
     goToPage,
   } = useInterviews();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRecord, setActiveRecord] = useState<any>(null);
   const [activeStatus, setActiveStatus] = useState(
@@ -69,6 +73,10 @@ const Interviews = () => {
   );
 
   const STATUS_TABS = [
+    {
+      label: "All",
+      value: "ALL" as any,
+    },
     {
       label: "Self Nominated",
       value: TRAINING_NOMINATION_STATUS.SELF_NOMINATED,
@@ -97,7 +105,8 @@ const Interviews = () => {
     newValue: TRAINING_NOMINATION_STATUS,
   ) => {
     setActiveStatus(newValue);
-    fetchTeachers(1, pagination?.limit || 10, newValue);
+    setPage(0);
+    fetchTeachers(1, 1000, newValue);
   };
 
   const handleMenuOpen = (
@@ -119,11 +128,7 @@ const Interviews = () => {
         <ScheduleInterview
           selectedTeacher={activeRecord}
           onSuccess={() =>
-            fetchTeachers(
-              pagination?.page || 1,
-              pagination?.limit || 10,
-              activeStatus,
-            )
+            fetchTeachers(1, 1000, activeStatus)
           }
         />,
         { size: "sm" },
@@ -145,7 +150,8 @@ const Interviews = () => {
     if (!activeRecord) return;
     const id = activeRecord.id;
     handleMenuClose();
-    await approveInterview(id, activeStatus);
+    const success = await approveInterview(id, activeStatus);
+    if (success) fetchTeachers(1, 1000, activeStatus);
   };
 
   const handleOpenReject = () => {
@@ -155,11 +161,7 @@ const Interviews = () => {
           selectedTeacher={activeRecord}
           activeStatus={activeStatus}
           onSuccess={() =>
-            fetchTeachers(
-              pagination?.page || 1,
-              pagination?.limit || 10,
-              activeStatus,
-            )
+            fetchTeachers(1, 1000, activeStatus)
           }
         />,
         { size: "sm" },
@@ -293,9 +295,24 @@ const Interviews = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {teachers.map((record) => (
-              <TableRow
-                key={record.id}
+            {teachers.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
+                  <Stack spacing={1} sx={{ alignItems: "center", justifyContent: "center" }}>
+                    <CalendarMonth sx={{ fontSize: 48, color: alpha(COLORS.PRIMARY_NAVY, 0.2), mb: 1 }} />
+                    <Typography sx={{ ...FS, fontWeight: 700, color: COLORS.BLACK }}>
+                      No Interviews Found
+                    </Typography>
+                    <Typography sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY }}>
+                      No teacher records match the selected status.
+                    </Typography>
+                  </Stack>
+                </TableCell>
+              </TableRow>
+            ) : (
+              teachers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((record) => (
+                <TableRow
+                  key={record.id}
                 sx={{
                   "&:hover": { bgcolor: "rgba(11, 23, 39, 0.01)" },
                   transition: "background-color 0.2s",
@@ -591,9 +608,24 @@ const Interviews = () => {
                   </IconButton>
                 </TableCell>
               </TableRow>
-            ))}
+            )))}
           </TableBody>
         </Table>
+        <TablePagination
+          component="div"
+          count={teachers.length}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          onPageChange={(_, newPage) => {
+            setPage(newPage);
+          }}
+          onRowsPerPageChange={(event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+          }}
+          rowsPerPageOptions={[5, 10, 25]}
+          sx={{ borderTop: "1px solid rgba(0,0,0,0.05)" }}
+        />
       </TableContainer>
 
       {/* Action Menu */}

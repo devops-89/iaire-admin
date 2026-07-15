@@ -20,7 +20,7 @@ export const useCountries = ({
     CountriesControllers.getAllCountries(page, limit, search, status)
       .then((res) => {
         // console.log("res", res);
-        setCountryData(res.data.data.data);
+        setCountryData(res.data.data);
         setCountryLoading(false);
       })
       .catch((err) => {

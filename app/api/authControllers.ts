@@ -36,4 +36,13 @@ export const AuthControllers = {
       throw error;
     }
   },
+
+  logout: async () => {
+    try {
+      const result = await authApi.post("/logout");
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  },
 };

@@ -1,9 +1,9 @@
 "use client";
 
 import { ResearchControllers } from "@/app/api/researchControllers";
+import useSnackbar from "@/store/useSnackbar";
 import { ResearchSubmission } from "@/utils/type";
 import { useState } from "react";
-import useSnackbar from "@/store/useSnackbar";
 
 export const useResearch = () => {
   const [researchData, setResearchData] = useState<ResearchSubmission[]>([]);
@@ -23,14 +23,13 @@ export const useResearch = () => {
       setLoading(true);
       const params: any = { page, limit };
       if (search) params.search = search;
-      
+
       if (status && status !== "ALL") {
         params.search = params.search ? `${params.search} ${status}` : status;
       }
-      
+
       const res = await ResearchControllers.getAllResearchSubmissions(params);
 
-      // Extract pagination
       const pag = (res as any)?.data?.pagination || (res as any)?.pagination;
       if (pag) {
         setPagination({
@@ -41,14 +40,13 @@ export const useResearch = () => {
         });
       }
 
-      // Robust array extraction supporting direct payload, success wrapper, or raw arrays
       const dataArray = Array.isArray((res as any)?.data?.data)
         ? (res as any).data.data
         : Array.isArray(res?.data)
-        ? res.data
-        : Array.isArray(res)
-        ? res
-        : [];
+          ? res.data
+          : Array.isArray(res)
+            ? res
+            : [];
 
       setResearchData(dataArray);
     } catch (err: any) {

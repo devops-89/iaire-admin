@@ -37,7 +37,7 @@ export const usePlansList = () => {
     setPlanLoading(true);
     PlansControllers.getAllPlans(page, limit)
       .then((res) => {
-        setPlanList(res.data.data);
+        setPlanList(res.data);
         setPlanLoading(false);
       })
       .catch((err) => {
