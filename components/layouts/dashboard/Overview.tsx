@@ -141,18 +141,18 @@ const DashboardOverview = () => {
   // States
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
-    boards: 8,
-    schools: 28,
-    teachers: 450,
-    students: 12800,
-    innovations: 165,
-    approvedInnovations: 92,
-    attorneyReviews: 38,
-    patents: 34,
-    countries: 12,
-    batches: 18,
-    plans: 6,
-    interviews: 24,
+    boards: 0,
+    schools: 0,
+    teachers: 0,
+    students: 0,
+    innovations: 0,
+    approvedInnovations: 0,
+    attorneyReviews: 0,
+    patents: 0,
+    countries: 0,
+    batches: 0,
+    plans: 0,
+    interviews: 0,
   });
 
   useEffect(() => {
@@ -160,10 +160,10 @@ const DashboardOverview = () => {
       setLoading(true);
       try {
         // Fetch Board Analytics
-        let boardCount = 8;
-        let schoolCount = 28;
-        let teacherCount = 450;
-        let studentCount = 12800;
+        let boardCount = 0;
+        let schoolCount = 0;
+        let teacherCount = 0;
+        let studentCount = 0;
 
         try {
           const boardsRes = await SchoolsControllers.getBoardWiseAnalytics();
@@ -175,13 +175,13 @@ const DashboardOverview = () => {
             studentCount = data.reduce((acc, curr) => acc + (curr.totalStudents || 0), 0);
           }
         } catch (e) {
-          console.warn("Could not fetch board wise analytics, using mock fallbacks.", e);
+          console.warn("Could not fetch board wise analytics", e);
         }
 
         // Fetch Innovations
-        let innovationsCount = 165;
-        let approvedCount = 92;
-        let attorneyReviewCount = 38;
+        let innovationsCount = 0;
+        let approvedCount = 0;
+        let attorneyReviewCount = 0;
         try {
           const innovationsRes = await innovationControllers.getInnovations();
           if (innovationsRes?.success && Array.isArray(innovationsRes.data)) {
@@ -190,62 +190,78 @@ const DashboardOverview = () => {
             attorneyReviewCount = innovationsRes.data.filter((item: any) => item.status === "PATENT_PENDING").length;
           }
         } catch (e) {
-          console.warn("Could not fetch innovations, using mock fallbacks.", e);
+          console.warn("Could not fetch innovations", e);
         }
 
         // Fetch Patents Count
-        let patentsCount = 34;
+        let patentsCount = 0;
         try {
           const patentsRes = await PatentsControllers.getAllPatents(1, 1);
-          if (patentsRes?.data?.data?.pagination?.total !== undefined) {
-            patentsCount = patentsRes.data.data.pagination.total;
+          if (patentsRes?.data?.pagination?.total !== undefined) {
+            patentsCount = patentsRes.data.pagination.total;
+          } else if (patentsRes?.data?.data?.pagination?.total !== undefined) {
+             patentsCount = patentsRes.data.data.pagination.total;
           }
         } catch (e) {
-          console.warn("Could not fetch patents counts, using mock fallbacks.", e);
+          console.warn("Could not fetch patents counts", e);
         }
 
         // Fetch Countries Count
-        let countriesCount = 12;
+        let countriesCount = 0;
         try {
           const countriesRes = await CountriesControllers.getAllCountries(1, 1);
-          if (countriesRes?.data?.data?.pagination?.total !== undefined) {
+          if (countriesRes?.data?.pagination?.total !== undefined) {
+            countriesCount = countriesRes.data.pagination.total;
+          } else if (countriesRes?.data?.data?.pagination?.total !== undefined) {
             countriesCount = countriesRes.data.data.pagination.total;
           }
         } catch (e) {
-          console.warn("Could not fetch countries count, using mock fallbacks.", e);
+          console.warn("Could not fetch countries count", e);
         }
 
         // Fetch Batches Count
-        let batchesCount = 18;
+        let batchesCount = 0;
         try {
-          const batchesRes = await BatchControllers.getBatches(1, 1);
-          if (batchesRes?.data?.data?.meta?.total !== undefined) {
+          const batchesRes = await BatchControllers.getBatches(1, 1000);
+          if (batchesRes?.data?.pagination?.total !== undefined) {
+            batchesCount = batchesRes.data.pagination.total;
+          } else if (batchesRes?.data?.meta?.total !== undefined) {
+            batchesCount = batchesRes.data.meta.total;
+          } else if (batchesRes?.data?.data?.meta?.total !== undefined) {
             batchesCount = batchesRes.data.data.meta.total;
+          } else if (Array.isArray(batchesRes?.data?.data)) {
+            batchesCount = batchesRes.data.data.length;
           }
         } catch (e) {
-          console.warn("Could not fetch batches counts, using mock fallbacks.", e);
+          console.warn("Could not fetch batches counts", e);
         }
 
         // Fetch Plans Count
-        let plansCount = 6;
+        let plansCount = 0;
         try {
           const plansRes = await PlansControllers.getAllPlans(1, 1);
-          if (plansRes?.data?.data?.pagination?.total !== undefined) {
+          if (plansRes?.data?.pagination?.total !== undefined) {
+            plansCount = plansRes.data.pagination.total;
+          } else if (plansRes?.data?.data?.pagination?.total !== undefined) {
             plansCount = plansRes.data.data.pagination.total;
           }
         } catch (e) {
-          console.warn("Could not fetch plans counts, using mock fallbacks.", e);
+          console.warn("Could not fetch plans counts", e);
         }
 
         // Fetch Interviews Count
-        let interviewsCount = 24;
+        let interviewsCount = 0;
         try {
           const interviewsRes = await TrainingControllers.getTrainingTeachers(1, 1);
-          if (interviewsRes?.data?.data?.pagination?.total !== undefined) {
+          if (interviewsRes?.data?.pagination?.total !== undefined) {
+            interviewsCount = interviewsRes.data.pagination.total;
+          } else if (interviewsRes?.data?.data?.pagination?.total !== undefined) {
             interviewsCount = interviewsRes.data.data.pagination.total;
+          } else if (Array.isArray(interviewsRes?.data?.data)) {
+            interviewsCount = interviewsRes.data.data.length;
           }
         } catch (e) {
-          console.warn("Could not fetch training application count, using mock fallbacks.", e);
+          console.warn("Could not fetch training application count", e);
         }
 
         setStats({
@@ -254,8 +270,8 @@ const DashboardOverview = () => {
           teachers: teacherCount,
           students: studentCount,
           innovations: innovationsCount,
-          approvedInnovations: approvedCount || 92,
-          attorneyReviews: attorneyReviewCount || 38,
+          approvedInnovations: approvedCount,
+          attorneyReviews: attorneyReviewCount,
           patents: patentsCount,
           countries: countriesCount,
           batches: batchesCount,
@@ -263,7 +279,7 @@ const DashboardOverview = () => {
           interviews: interviewsCount,
         });
       } catch (error) {
-        console.error("Dashboard overview calculations failed", error);
+        console.error("Error loading dashboard data:", error);
       } finally {
         setLoading(false);
       }
