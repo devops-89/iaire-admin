@@ -68,8 +68,8 @@ const Interviews = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRecord, setActiveRecord] = useState<any>(null);
-  const [activeStatus, setActiveStatus] = useState(
-    TRAINING_NOMINATION_STATUS.SCHOOL_APPROVED,
+  const [activeStatus, setActiveStatus] = useState<any>(
+    "ALL",
   );
 
   const STATUS_TABS = [
@@ -102,7 +102,7 @@ const Interviews = () => {
 
   const handleStatusChange = (
     event: React.SyntheticEvent,
-    newValue: TRAINING_NOMINATION_STATUS,
+    newValue: any,
   ) => {
     setActiveStatus(newValue);
     setPage(0);

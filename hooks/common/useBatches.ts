@@ -5,38 +5,52 @@ import {
   Pagination,
   CREATE_BATCH_REQUEST,
   UPDATE_BATCH_REQUEST,
+  BATCHESLIST,
 } from "@/utils/type";
 import useSnackbar from "@/store/useSnackbar";
 import { useModal } from "@/store/useModal";
 
 export const useBatches = () => {
-  const [batches, setBatches] = useState<Batch[]>([]);
+  const [batches, setBatches] = useState<BATCHESLIST>({
+    data: [],
+    message: "",
+    pagination: {
+      page: 0,
+      limit: 0,
+      total: 0,
+      totalPages: 0,
+    },
+    statusCode: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [updating, setUpdating] = useState(false);
-  const [pagination, setPagination] = useState<Pagination>({
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 0,
-  });
 
   const { setSnackbar } = useSnackbar();
   const { hideModal } = useModal();
 
-  const fetchBatches = async (page = 1, limit = 10) => {
+  const fetchBatches = async ({
+    page,
+    limit,
+    search,
+  }: {
+    page: number;
+    limit: number;
+    search?: string;
+  }) => {
     setLoading(true);
     try {
-      const response: any = await BatchControllers.getBatches(page, limit);
+      if (page === 0) {
+        page = page + 1;
+      }
+      const response: any = await BatchControllers.getBatches(
+        page,
+        limit,
+        search,
+      );
       if (response.data.success) {
-        const payload = response.data.data;
-        if (Array.isArray(payload)) {
-          setBatches(payload);
-          setPagination({ page: 1, limit: payload.length, total: payload.length, totalPages: 1 });
-        } else {
-          setBatches(payload?.data || []);
-          setPagination(payload?.meta || { page: 1, limit: 10, total: 0, totalPages: 0 });
-        }
+        const payload = response.data;
+        setBatches(payload);
       }
     } catch (error: any) {
       setSnackbar(
@@ -55,7 +69,7 @@ export const useBatches = () => {
       if (response.data.success) {
         setSnackbar("Batch created successfully", "success");
         hideModal();
-        fetchBatches(pagination.page, pagination.limit);
+        // fetchBatches(pagination.page, pagination.limit);
         return true;
       }
     } catch (error: any) {
@@ -78,7 +92,7 @@ export const useBatches = () => {
       const response: any = await BatchControllers.updateBatch(id, data);
       if (response.data.success) {
         setSnackbar("Batch updated successfully", "success");
-        fetchBatches(pagination.page, pagination.limit);
+        // fetchBatches(pagination.page, pagination.limit);
         return true;
       }
     } catch (error: any) {
@@ -95,24 +109,14 @@ export const useBatches = () => {
     return false;
   };
 
-  const goToPage = (page: number) => {
-    fetchBatches(page, pagination.limit);
-  };
-
-  useEffect(() => {
-    fetchBatches();
-  }, []);
-
   return {
     batches,
     loading,
     creating,
     updating,
-    pagination,
+    // pagination,
     fetchBatches,
     createBatch,
     updateBatch,
-
-    goToPage,
   };
 };

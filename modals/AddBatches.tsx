@@ -171,7 +171,7 @@ const AddBatches = () => {
               />
             </LocalizationProvider>
           </Grid>
-          <Grid size={4}>
+          <Grid size={6}>
             <Autocomplete
               options={ROLES}
               getOptionLabel={(option) => option.label}
@@ -194,7 +194,7 @@ const AddBatches = () => {
               )}
             />
           </Grid>
-          <Grid size={4}>
+          <Grid size={6}>
             <Autocomplete
               options={CATEGORY_DATA}
               getOptionLabel={(option) => option.label}
@@ -217,7 +217,7 @@ const AddBatches = () => {
               )}
             />
           </Grid>
-          <Grid size={4}>
+          <Grid size={12}>
             <Autocomplete
               renderInput={(params) => (
                 <TextField

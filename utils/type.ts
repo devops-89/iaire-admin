@@ -1,3 +1,4 @@
+import { HttpStatusCode } from "axios";
 import { FILE_TYPE, RESOURCES_TYPE } from "./enum";
 
 export interface LOGIN_REQUEST {
@@ -188,6 +189,13 @@ export interface Batch {
   status: string;
   isActive: boolean;
   createdAt?: string;
+}
+
+export interface BATCHESLIST {
+  data: Batch[];
+  message: string;
+  pagination: Pagination;
+  statusCode: number;
 }
 
 export interface CREATE_BATCH_REQUEST {
@@ -584,5 +592,3 @@ export interface GET_RESEARCH_RESPONSE {
   data: ResearchSubmission[];
   pagination: Pagination;
 }
-
-

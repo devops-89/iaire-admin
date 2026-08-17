@@ -1213,7 +1213,7 @@ export const TRAINING_MODE_DATA = [
     value: TRAINING_MODE.ONLINE,
   },
   {
-    label: "Offline",
+    label: "On-Site",
     value: TRAINING_MODE.OFFLINE,
   },
   {
