@@ -119,6 +119,13 @@ export interface RESET_PASSWORD_REQUEST {
 }
 
 // Training & Interview Types
+
+export interface TEACHER_TRAINING_RESPONSE {
+  data: TrainingTeacher[];
+  message: string;
+  pagination: Pagination;
+  statusCode: number;
+}
 export interface TrainingTeacher {
   id: number;
   trainingId: number;
@@ -146,6 +153,7 @@ export interface Training {
   status: string;
   school: School;
   board: Board;
+  batch?: Batch;
 }
 
 export interface Teacher {
@@ -179,16 +187,30 @@ export interface SCHEDULE_INTERVIEW_REQUEST {
   interviewScheduledAt: string;
 }
 
+export interface BatchQuestion {
+  id: string;
+  type: string;
+  options: string[];
+  question: string;
+  required: boolean;
+}
+
 export interface Batch {
   id: number;
   name: string;
-  startDate: string;
-  endDate: string;
+  description: string | null;
   category: string;
   userRole: string;
+  startDate: string;
+  endDate: string;
   status: string;
+  mode: string;
   isActive: boolean;
-  createdAt?: string;
+  questions: BatchQuestion[];
+  createdBy: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 export interface BATCHESLIST {

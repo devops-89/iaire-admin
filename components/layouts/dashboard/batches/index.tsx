@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import { useBatches } from "@/hooks/common/useBatches";
+import { useDebounceCallback } from "@/hooks/common/useDebounce";
 import { useModal } from "@/store/useModal";
 import AddBatches from "@/modals/AddBatches";
 import { Batch } from "@/utils/type";
@@ -24,11 +25,13 @@ const BatchesManagement = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRecord, setActiveRecord] = useState<Batch | null>(null);
   const [openDetailsModal, setOpenDetailsModal] = useState(false);
-  const [role, setRole] = useState({
-    label: "",
-    value: "",
-  });
+  const [role, setRole] = useState("");
   const { showModal } = useModal();
+
+  const apiPayload = {
+    page: page === 0 ? 1 : page,
+    limit: rowsPerPage,
+  };
 
   const handleChangePage = (page: number) => {
     setPage(page);
@@ -41,25 +44,35 @@ const BatchesManagement = () => {
   };
 
   useEffect(() => {
-    fetchBatches({ page: page + 1, limit: rowsPerPage });
+    fetchBatches(apiPayload);
   }, [page, rowsPerPage]);
 
   const handleTabChange = (_: React.SyntheticEvent, value: string) => {
     setTabValue(value);
     if (value === "ALL") {
-      fetchBatches({ page: page + 1, limit: rowsPerPage });
+      fetchBatches(apiPayload);
     } else {
-      fetchBatches({ page: page + 1, limit: rowsPerPage, search: value });
+      fetchBatches({ ...apiPayload, category: value });
     }
   };
 
+  const debouncedFetchBatches = useDebounceCallback((value: string) => {
+    fetchBatches({
+      ...apiPayload,
+      search: value,
+      role: role,
+      ...(tabValue !== "ALL" && { category: tabValue }),
+    });
+  }, 500);
+
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
-    setPage(0);
+    debouncedFetchBatches(value);
   };
 
   const handleSelectRole = (newValue: string) => {
-    console.log("newvlaue", newValue);
+    setRole(newValue);
+    fetchBatches({ page: page + 1, limit: rowsPerPage, role: newValue });
   };
 
   const handleMenuOpen = (

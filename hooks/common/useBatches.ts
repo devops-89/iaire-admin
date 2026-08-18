@@ -10,6 +10,14 @@ import {
 import useSnackbar from "@/store/useSnackbar";
 import { useModal } from "@/store/useModal";
 
+export interface FETCH_BATCHES_API_INTERFACE {
+  page: number;
+  limit: number;
+  search?: string;
+  role?: string;
+  category?: string;
+}
+
 export const useBatches = () => {
   const [batches, setBatches] = useState<BATCHESLIST>({
     data: [],
@@ -33,21 +41,22 @@ export const useBatches = () => {
     page,
     limit,
     search,
-  }: {
-    page: number;
-    limit: number;
-    search?: string;
-  }) => {
+    role,
+    category,
+  }: FETCH_BATCHES_API_INTERFACE) => {
     setLoading(true);
     try {
-      if (page === 0) {
-        page = page + 1;
-      }
-      const response: any = await BatchControllers.getBatches(
+      const data: FETCH_BATCHES_API_INTERFACE = {
         page,
         limit,
         search,
-      );
+        role,
+        category,
+      };
+      if (page === 0) {
+        data.page = 1;
+      }
+      const response: any = await BatchControllers.getBatches(data);
       if (response.data.success) {
         const payload = response.data;
         setBatches(payload);

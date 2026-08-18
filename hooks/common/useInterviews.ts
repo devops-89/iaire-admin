@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { TrainingControllers } from "@/app/api/trainingControllers";
-import { TrainingTeacher, Pagination } from "@/utils/type";
+import {
+  TrainingTeacher,
+  Pagination,
+  TEACHER_TRAINING_RESPONSE,
+} from "@/utils/type";
 import useSnackbar from "@/store/useSnackbar";
 import { TRAINING_NOMINATION_STATUS } from "@/utils/enum";
 
 export const useInterviews = () => {
-  const [teachers, setTeachers] = useState<TrainingTeacher[]>([]);
+  const [teachers, setTeachers] = useState<TEACHER_TRAINING_RESPONSE>();
   const [teacherDetails, setTeacherDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [loadingDetails, setLoadingDetails] = useState(false);
@@ -14,8 +18,12 @@ export const useInterviews = () => {
 
   const { setSnackbar } = useSnackbar();
 
-  const fetchTeachers = async (page = 1, limit = 10, status?: string) => {
-    setLoading(true);
+  const fetchTeachers = async (
+    page: number,
+    limit: number,
+    status?: string,
+  ) => {
+    // setLoading(true);
     try {
       const currentStatus = status === "ALL" ? undefined : status;
       const response: any = await TrainingControllers.getTrainingTeachers(
@@ -23,34 +31,25 @@ export const useInterviews = () => {
         limit,
         currentStatus,
       );
-      if (response.data.success || response.data.statusCode === 200) {
-        // Robust array extraction
-        const dataArray = Array.isArray(response.data?.data?.data)
-          ? response.data.data.data
-          : Array.isArray(response.data?.data)
-            ? response.data.data
-            : Array.isArray(response.data)
-              ? response.data
-              : [];
 
-        const sortedTeachers = dataArray.sort((a: any, b: any) => {
-          if (a.interviewScheduledAt && !b.interviewScheduledAt) return -1;
-          if (!a.interviewScheduledAt && b.interviewScheduledAt) return 1;
-          return 0;
-        });
-        setTeachers(sortedTeachers);
-
-        // Extract pagination
-        const pag =
-          response.data?.data?.pagination ||
-          response.data?.pagination ||
-          response.data?.meta ||
-          response.data?.data?.meta;
-
-        const totalRecords = pag?.total ?? dataArray.length;
-        const totalPages =
-          pag?.totalPages ?? (Math.ceil(totalRecords / limit) || 1);
-      }
+      console.log("response", response);
+      // if (response.data.success || response.data.statusCode === 200) {
+      //   Robust array extraction
+      //   const dataArray = Array.isArray(response.data?.data?.data)
+      //     ? response.data.data.data
+      //     : Array.isArray(response.data?.data)
+      //       ? response.data.data
+      //       : Array.isArray(response.data)
+      //         ? response.data
+      //         : [];
+      //   const sortedTeachers = dataArray.sort((a: any, b: any) => {
+      //     if (a.interviewScheduledAt && !b.interviewScheduledAt) return -1;
+      //     if (!a.interviewScheduledAt && b.interviewScheduledAt) return 1;
+      //     return 0;
+      //   });
+      //   setTeachers(sortedTeachers);
+      // }
+      setTeachers(response?.data);
     } catch (error: any) {
       setSnackbar(
         error.response?.data?.message || "Failed to fetch training teachers",
@@ -155,14 +154,6 @@ export const useInterviews = () => {
     return false;
   };
 
-  const goToPage = (page: number, status?: string) => {
-    // fetchTeachers(page, pagination?.limit || 10, status);
-  };
-
-  useEffect(() => {
-    fetchTeachers();
-  }, []);
-
   return {
     teachers,
     teacherDetails,
@@ -177,6 +168,5 @@ export const useInterviews = () => {
     rejectInterview,
     fetchTeachers,
     fetchTeacherDetails,
-    goToPage,
   };
 };

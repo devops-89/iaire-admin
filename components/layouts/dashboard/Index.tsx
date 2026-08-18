@@ -42,7 +42,13 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   };
 
   const drawer = (
-    <Box sx={{ height: "100%", backgroundColor: COLORS.PRIMARY_NAVY, color: "white" }}>
+    <Box
+      sx={{
+        height: "100%",
+        backgroundColor: COLORS.PRIMARY_NAVY,
+        color: "white",
+      }}
+    >
       <Toolbar>
         <Typography
           variant="h6"
@@ -115,7 +121,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   );
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#F8FAFC" }}>
+    <Box
+      sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#F8FAFC" }}
+    >
       {/* Header */}
       <AppBar
         position="fixed"
@@ -137,7 +145,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           >
             <MenuIcon />
           </IconButton>
-          
+
           <Typography
             variant="h6"
             noWrap
@@ -160,11 +168,22 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             </IconButton>
             <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
             <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-              <Box sx={{ display: { xs: "none", md: "block" }, textAlign: "right" }}>
-                <Typography variant="body2" sx={{ fontWeight: 600, fontSize: "0.85rem" }}>
+              <Box
+                sx={{
+                  display: { xs: "none", md: "block" },
+                  textAlign: "right",
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{ fontWeight: 600, fontSize: "0.85rem" }}
+                >
                   Admin User
                 </Typography>
-                <Typography variant="caption" sx={{ color: COLORS.TEXT_SECONDARY }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: COLORS.TEXT_SECONDARY }}
+                >
                   Super Admin
                 </Typography>
               </Box>
@@ -193,7 +212,10 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           ModalProps={{ keepMounted: true }}
           sx={{
             display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+            },
           }}
         >
           {drawer}
@@ -202,7 +224,11 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           variant="permanent"
           sx={{
             display: { xs: "none", sm: "block" },
-            "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth, border: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              border: "none",
+            },
           }}
           open
         >

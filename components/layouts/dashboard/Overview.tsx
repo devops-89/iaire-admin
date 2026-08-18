@@ -79,7 +79,14 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         },
       }}
     >
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          mb: 2,
+        }}
+      >
         <Box>
           <Typography
             sx={{
@@ -170,9 +177,18 @@ const DashboardOverview = () => {
           if (boardsRes?.data?.success && Array.isArray(boardsRes.data.data)) {
             const data: BoardAnalytics[] = boardsRes.data.data;
             boardCount = data.length;
-            schoolCount = data.reduce((acc, curr) => acc + (curr.totalSchools || 0), 0);
-            teacherCount = data.reduce((acc, curr) => acc + (curr.totalTeachers || 0), 0);
-            studentCount = data.reduce((acc, curr) => acc + (curr.totalStudents || 0), 0);
+            schoolCount = data.reduce(
+              (acc, curr) => acc + (curr.totalSchools || 0),
+              0,
+            );
+            teacherCount = data.reduce(
+              (acc, curr) => acc + (curr.totalTeachers || 0),
+              0,
+            );
+            studentCount = data.reduce(
+              (acc, curr) => acc + (curr.totalStudents || 0),
+              0,
+            );
           }
         } catch (e) {
           console.warn("Could not fetch board wise analytics", e);
@@ -186,8 +202,12 @@ const DashboardOverview = () => {
           const innovationsRes = await innovationControllers.getInnovations();
           if (innovationsRes?.success && Array.isArray(innovationsRes.data)) {
             innovationsCount = innovationsRes.data.length;
-            approvedCount = innovationsRes.data.filter((item: any) => item.status === "PATENT_GRANTED").length;
-            attorneyReviewCount = innovationsRes.data.filter((item: any) => item.status === "PATENT_PENDING").length;
+            approvedCount = innovationsRes.data.filter(
+              (item: any) => item.status === "PATENT_GRANTED",
+            ).length;
+            attorneyReviewCount = innovationsRes.data.filter(
+              (item: any) => item.status === "PATENT_PENDING",
+            ).length;
           }
         } catch (e) {
           console.warn("Could not fetch innovations", e);
@@ -200,7 +220,7 @@ const DashboardOverview = () => {
           if (patentsRes?.data?.pagination?.total !== undefined) {
             patentsCount = patentsRes.data.pagination.total;
           } else if (patentsRes?.data?.data?.pagination?.total !== undefined) {
-             patentsCount = patentsRes.data.data.pagination.total;
+            patentsCount = patentsRes.data.data.pagination.total;
           }
         } catch (e) {
           console.warn("Could not fetch patents counts", e);
@@ -212,17 +232,22 @@ const DashboardOverview = () => {
           const countriesRes = await CountriesControllers.getAllCountries(1, 1);
           if (countriesRes?.data?.pagination?.total !== undefined) {
             countriesCount = countriesRes.data.pagination.total;
-          } else if (countriesRes?.data?.data?.pagination?.total !== undefined) {
+          } else if (
+            countriesRes?.data?.data?.pagination?.total !== undefined
+          ) {
             countriesCount = countriesRes.data.data.pagination.total;
           }
         } catch (e) {
           console.warn("Could not fetch countries count", e);
         }
 
-        // Fetch Batches Count
         let batchesCount = 0;
         try {
-          const batchesRes = await BatchControllers.getBatches(1, 1000);
+          const data = {
+            page: 1,
+            limit: 10000,
+          };
+          const batchesRes = await BatchControllers.getBatches(data);
           if (batchesRes?.data?.pagination?.total !== undefined) {
             batchesCount = batchesRes.data.pagination.total;
           } else if (batchesRes?.data?.meta?.total !== undefined) {
@@ -252,10 +277,15 @@ const DashboardOverview = () => {
         // Fetch Interviews Count
         let interviewsCount = 0;
         try {
-          const interviewsRes = await TrainingControllers.getTrainingTeachers(1, 1);
+          const interviewsRes = await TrainingControllers.getTrainingTeachers(
+            1,
+            1,
+          );
           if (interviewsRes?.data?.pagination?.total !== undefined) {
             interviewsCount = interviewsRes.data.pagination.total;
-          } else if (interviewsRes?.data?.data?.pagination?.total !== undefined) {
+          } else if (
+            interviewsRes?.data?.data?.pagination?.total !== undefined
+          ) {
             interviewsCount = interviewsRes.data.data.pagination.total;
           } else if (Array.isArray(interviewsRes?.data?.data)) {
             interviewsCount = interviewsRes.data.data.length;
@@ -376,9 +406,19 @@ const DashboardOverview = () => {
   ];
 
   return (
-    <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 4 }}>
+    <Box
+      sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 4 }}
+    >
       {/* Welcome & Overview Header */}
-      <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: { xs: "flex-start", sm: "center" }, gap: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", sm: "center" },
+          gap: 2,
+        }}
+      >
         <Box>
           <Typography
             variant="h4"
@@ -393,8 +433,15 @@ const DashboardOverview = () => {
           </Typography>
         </Box>
         <Chip
-          icon={<Schedule sx={{ color: `${COLORS.PRIMARY_NAVY} !important` }} />}
-          label={new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "short", day: "numeric" })}
+          icon={
+            <Schedule sx={{ color: `${COLORS.PRIMARY_NAVY} !important` }} />
+          }
+          label={new Date().toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
           sx={{
             bgcolor: COLORS.WHITE,
             border: "1px solid rgba(0,0,0,0.05)",

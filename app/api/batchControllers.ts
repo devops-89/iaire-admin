@@ -1,13 +1,20 @@
+import { FETCH_BATCHES_API_INTERFACE } from "@/hooks/common/useBatches";
 import { batchesApi } from "./config";
 import { CREATE_BATCH_REQUEST, UPDATE_BATCH_REQUEST } from "@/utils/type";
 
 export const BatchControllers = {
-  getBatches: async (page: number, limit: number, search?: string) => {
+  getBatches: async (data: FETCH_BATCHES_API_INTERFACE) => {
     const params = new URLSearchParams();
-    params.set("page", page.toString());
-    params.set("limit", limit.toString());
-    if (search) {
-      params.set("search", search);
+    params.set("page", data.page.toString());
+    params.set("limit", data.limit.toString());
+    if (data.search) {
+      params.set("search", data.search);
+    }
+    if (data.role) {
+      params.set("role", data.role);
+    }
+    if (data.category) {
+      params.set("category", data.category);
     }
     return await batchesApi.get(`/all?${params.toString()}`);
   },
