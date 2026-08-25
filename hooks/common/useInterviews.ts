@@ -105,7 +105,10 @@ export const useInterviews = () => {
   const approveInterview = async (id: number, currentStatus: string) => {
     setApproving(true);
     try {
-      const response: any = await TrainingControllers.approveTraining(id);
+      const response: any = await TrainingControllers.approveTraining(
+        id,
+        currentStatus,
+      );
       if (response.data.success) {
         setSnackbar("Teacher approved successfully", "success");
         // fetchTeachers(

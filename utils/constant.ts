@@ -2,6 +2,7 @@ import {
   BILLING_CYCLE,
   CATEGORY,
   FILE_TYPE,
+  INNOVATION_STATUS,
   PLAN_BENEFITS,
   RESOURCES_TYPE,
   TRAINING_MODE,
@@ -1280,5 +1281,68 @@ export const FILE_DATA = [
   {
     label: "Images",
     value: FILE_TYPE.IMAGES,
+  },
+];
+
+export const INNOVATION_STATUS_DATA = [
+  {
+    label: "Approved By Admin",
+    value: INNOVATION_STATUS.APPROVED_BY_ADMIN,
+  },
+  {
+    label: "Rejected By Admin",
+    value: INNOVATION_STATUS.REJECTED_BY_ADMIN,
+  },
+  {
+    label: "Under Review By Attorney",
+    value: INNOVATION_STATUS.UNDER_REVIEW_BY_ATTORNEY,
+  },
+  {
+    label: "Approved By Attorney",
+    value: INNOVATION_STATUS.APPROVED_BY_ATTORNEY,
+  },
+  {
+    label: "Rejected By Attorney",
+    value: INNOVATION_STATUS.REJECTED_BY_ATTORNEY,
+  },
+  {
+    label: "Patent Filed in India",
+    value: INNOVATION_STATUS.PATENT_FILED_INDIA,
+  },
+  {
+    label: "Patent Filed in USA",
+    value: INNOVATION_STATUS.PATENT_FILED_USA,
+  },
+  {
+    label: "Patent Under Prosecution",
+    value: INNOVATION_STATUS.PATENT_UNDER_PROSECUTION,
+  },
+  {
+    label: "Patent Granted",
+    value: INNOVATION_STATUS.PATENT_GRANTED,
+  },
+  {
+    label: "Patent Rejected",
+    value: INNOVATION_STATUS.PATENT_REJECTED,
+  },
+  {
+    label: "Patent Pending",
+    value: INNOVATION_STATUS.PATENT_PENDING,
+  },
+  {
+    label: "Rejected",
+    value: INNOVATION_STATUS.REJECTED,
+  },
+  {
+    label: "Archived",
+    value: INNOVATION_STATUS.ARCHIVED,
+  },
+  {
+    label: "Draft",
+    value: INNOVATION_STATUS.DRAFT,
+  },
+  {
+    label: "Pending",
+    value: INNOVATION_STATUS.PENDING,
   },
 ];

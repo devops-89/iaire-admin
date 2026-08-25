@@ -32,10 +32,10 @@ export const TrainingControllers = {
     }
   },
 
-  approveTraining: async (id: number) => {
+  approveTraining: async (id: number, status: string) => {
     try {
       const response = await trainingApi.patch(`/iaire/decision/${id}`, {
-        action: "IAIRE_APPROVED",
+        action: status,
       });
       return response;
     } catch (error) {

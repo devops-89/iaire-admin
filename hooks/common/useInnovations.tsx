@@ -1,93 +1,64 @@
-"use client";
-
-import { innovationControllers } from "@/app/api/innovationControllers";
-import { INNOVATION_RESPONSE_DATA_PROPS } from "@/utils/type";
+import {
+  INNOVATION_LIST_API_REQUEST_DATA,
+  innovationControllers,
+} from "@/app/api/innovationControllers";
 import { useState } from "react";
 import useSnackbar from "@/store/useSnackbar";
 
-export const useInnovations = () => {
-  const [innovationData, setInnovationData] = useState<INNOVATION_RESPONSE_DATA_PROPS[]>([]);
-  const [innovationDetails, setInnovationDetails] = useState<INNOVATION_RESPONSE_DATA_PROPS | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [loadingDetails, setLoadingDetails] = useState(false);
-  const [updatingStatus, setUpdatingStatus] = useState(false);
+export const useInnovationList = () => {
+  const [innovationData, setInnovationData] = useState<any>({});
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
   const { setSnackbar } = useSnackbar();
 
-  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 0 });
-
-  const fetchData = async (search?: string, page: number = 1, limit: number = 10, status?: string) => {
+  const getInnovationList = async ({
+    page,
+    limit,
+    status,
+    search,
+  }: INNOVATION_LIST_API_REQUEST_DATA) => {
     try {
       setLoading(true);
-      const res = await innovationControllers.getInnovations(search, page, limit, status);
-      console.log("innovation", res);
-      const payload = res?.data;
-      if (Array.isArray(payload)) {
-        setInnovationData(payload);
-        if (res?.pagination) {
-          setPagination(res.pagination);
-        }
-      } else {
-        setInnovationData(payload?.data || []);
-        if (payload?.pagination) {
-          setPagination(payload.pagination);
-        } else if (res?.pagination) {
-          setPagination(res.pagination);
-        }
-      }
-    } catch (err) {
-      console.error("error in innovation list", err);
+      const result = await innovationControllers.getInnovations({
+        page,
+        limit,
+        status,
+        search,
+      });
+
+      setInnovationData(result);
+    } catch (error) {
+      console.log(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchDetails = async (id: number | string) => {
+  const updateInnovationStatus = async (
+    id: number | string,
+    status: string,
+  ) => {
     try {
-      setLoadingDetails(true);
-      const res = await innovationControllers.getInnovationDetails(id);
-      console.log("innovation details", res);
-      const details = res?.data?.data || res?.data || res;
-      setInnovationDetails(details);
-      return details;
-    } catch (err) {
-      console.error("error in fetching innovation details", err);
-    } finally {
-      setLoadingDetails(false);
-    }
-  };
-
-  const updateStatus = async (id: number | string, status: string, reviewComments?: string) => {
-    try {
-      setUpdatingStatus(true);
-      const res = await innovationControllers.updateInnovation(id, { status, reviewComments });
-      if (res?.success) {
-        setSnackbar("Innovation status updated successfully", "success");
-        // Refetch list and details
-        await fetchDetails(id);
-        await fetchData();
-        return true;
-      }
-      return false;
-    } catch (err: any) {
-      console.error("error in updating innovation status", err);
-      const errorMessage = err?.response?.data?.message || "Failed to update innovation status";
+      setUpdating(true);
+      await innovationControllers.updateInnovation(id, { status });
+      setSnackbar("Innovation status updated successfully", "success");
+      return true;
+    } catch (error: any) {
+      console.log("error in updating innovation status", error);
+      const errorMessage =
+        error?.response?.data?.message || "Failed to update innovation status";
       setSnackbar(errorMessage, "error");
       return false;
     } finally {
-      setUpdatingStatus(false);
+      setUpdating(false);
     }
   };
 
   return {
+    getInnovationList,
     innovationData,
-    innovationDetails,
     loading,
-    loadingDetails,
-    updatingStatus,
-    pagination,
-    fetchData,
-    fetchDetails,
-    updateStatus,
-    setInnovationDetails,
+    updating,
+    updateInnovationStatus,
   };
 };

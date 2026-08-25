@@ -99,8 +99,25 @@ const InterviewTable = ({
   const handleApprove = async () => {
     if (!activeRecord) return;
     const id = activeRecord.id;
+
     handleMenuClose();
-    const success = await approveInterview(id, activeStatus);
+    const success = await approveInterview(
+      id,
+      activeRecord?.status === TRAINING_NOMINATION_STATUS.INTERVIEW_SCHEDULED
+        ? TRAINING_NOMINATION_STATUS.IAIRE_APPROVED
+        : "",
+    );
+    if (success) fetchTeachers(1, 1000, activeStatus);
+  };
+
+  const handleTrainingCompleted = async () => {
+    if (!activeRecord) return;
+    const id = activeRecord.id;
+    handleMenuClose();
+    const success = await approveInterview(
+      id,
+      TRAINING_NOMINATION_STATUS.TRAINING_COMPLETED,
+    );
     if (success) fetchTeachers(1, 1000, activeStatus);
   };
 
@@ -256,9 +273,12 @@ const InterviewTable = ({
             Schedule Interview
           </MenuItem>
         )}
-        {activeStatus === TRAINING_NOMINATION_STATUS.INTERVIEW_SCHEDULED && (
+        {(activeStatus === TRAINING_NOMINATION_STATUS.INTERVIEW_SCHEDULED ||
+          activeRecord?.status ===
+            TRAINING_NOMINATION_STATUS.INTERVIEW_SCHEDULED) && (
           <>
             <Divider sx={{ my: 0.5, borderStyle: "dashed" }} />
+
             <MenuItem
               onClick={handleApprove}
               disabled={approving}
@@ -290,6 +310,26 @@ const InterviewTable = ({
             >
               <Cancel sx={{ fontSize: 20 }} />
               Reject Teacher
+            </MenuItem>
+          </>
+        )}
+
+        {activeRecord?.status === TRAINING_NOMINATION_STATUS.IAIRE_APPROVED && (
+          <>
+            <Divider sx={{ my: 0.5, borderStyle: "dashed" }} />
+            <MenuItem
+              onClick={handleTrainingCompleted}
+              sx={{
+                fontSize: 14,
+                fontWeight: 600,
+                py: 1.5,
+                color: COLORS.PRIMARY_NAVY,
+                display: "flex",
+                gap: 1.5,
+                "&:hover": { bgcolor: "rgba(11, 23, 39, 0.04)" },
+              }}
+            >
+              Training Completed
             </MenuItem>
           </>
         )}

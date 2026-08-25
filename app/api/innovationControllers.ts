@@ -1,14 +1,29 @@
 import { innovationAPI } from "./config";
 
+export interface INNOVATION_LIST_API_REQUEST_DATA {
+  limit: string | number;
+  page: string | number;
+  search?: string;
+  status?: string;
+}
+
 export const innovationControllers = {
-  getInnovations: async (search?: string, page: number = 1, limit: number = 10, status?: string) => {
+  getInnovations: async ({
+    limit,
+    page,
+    search,
+    status,
+  }: INNOVATION_LIST_API_REQUEST_DATA) => {
     try {
-      const params: any = { page, limit };
-      if (search) params.search = search;
-      if (status && status !== 'ALL') params.status = status;
-      
-      const response = await innovationAPI.get("/all", { params });
-      return response.data;
+      const result = await innovationAPI.get("/all", {
+        params: {
+          limit,
+          page,
+          search,
+          status,
+        },
+      });
+      return result.data;
     } catch (error) {
       throw error;
     }
@@ -23,7 +38,10 @@ export const innovationControllers = {
     }
   },
 
-  updateInnovation: async (id: number | string, data: { status: string; reviewComments?: string }) => {
+  updateInnovation: async (
+    id: number | string,
+    data: { status: string; reviewComments?: string },
+  ) => {
     try {
       const response = await innovationAPI.patch(`/update/${id}`, data);
       return response.data;

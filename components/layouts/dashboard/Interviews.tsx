@@ -92,6 +92,10 @@ const Interviews = () => {
       value: TRAINING_NOMINATION_STATUS.IAIRE_APPROVED,
     },
     { label: "Rejected", value: TRAINING_NOMINATION_STATUS.REJECTED },
+    {
+      label: "Training Completed",
+      value: TRAINING_NOMINATION_STATUS.TRAINING_COMPLETED,
+    },
   ];
 
   const handleStatusChange = (event: React.SyntheticEvent, newValue: any) => {
