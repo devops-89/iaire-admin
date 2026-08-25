@@ -199,7 +199,7 @@ const DashboardOverview = () => {
         let approvedCount = 0;
         let attorneyReviewCount = 0;
         try {
-          const innovationsRes = await innovationControllers.getInnovations();
+          const innovationsRes = await innovationControllers.getInnovations({ page: 1, limit: 10000 });
           if (innovationsRes?.success && Array.isArray(innovationsRes.data)) {
             innovationsCount = innovationsRes.data.length;
             approvedCount = innovationsRes.data.filter(
