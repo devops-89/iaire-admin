@@ -37,10 +37,15 @@ export const useInnovationList = () => {
   const updateInnovationStatus = async (
     id: number | string,
     status: string,
+    reason?: string,
   ) => {
     try {
       setUpdating(true);
-      await innovationControllers.updateInnovation(id, { status });
+      const payload: { status: string; reviewComments?: string } = { status };
+      if (reason) {
+        payload.reviewComments = reason;
+      }
+      await innovationControllers.updateInnovation(id, payload);
       setSnackbar("Innovation status updated successfully", "success");
       return true;
     } catch (error: any) {

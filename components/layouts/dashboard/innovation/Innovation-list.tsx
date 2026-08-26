@@ -10,26 +10,50 @@ import {
   TablePagination,
   TextField,
   Typography,
+  InputAdornment,
+  CircularProgress,
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import React, { useEffect, useState } from "react";
 import InnovationTable from "./Innovation_table";
 
 const InnovationList = () => {
-  const { innovationData, getInnovationList, updateInnovationStatus } =
+  const { innovationData, getInnovationList, updateInnovationStatus, loading } =
     useInnovationList();
 
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
+  const [status, setStatus] = useState<any>(null);
+  const [search, setSearch] = useState("");
+  const [statusLoading, setStatusLoading] = useState<number | string | null>(
+    null,
+  );
 
   useEffect(() => {
-    getInnovationList({ page: page === 0 ? 1 : page, limit });
-  }, []);
+    const delayDebounceFn = setTimeout(() => {
+      getInnovationList({
+        page: page === 0 ? 1 : page,
+        limit,
+        status: status?.value || undefined,
+        search: search || undefined,
+      });
+    }, 400);
 
-  const handleStatusChange = async (id: number | string, status: string) => {
-    const success = await updateInnovationStatus(id, status);
+    return () => clearTimeout(delayDebounceFn);
+  }, [page, limit, status, search]);
+
+  const handleStatusChange = async (id: number | string, newStatus: string, reason?: string) => {
+    setStatusLoading(id);
+    const success = await updateInnovationStatus(id, newStatus, reason);
     if (success) {
-      getInnovationList({ page: page === 0 ? 1 : page, limit });
+      await getInnovationList({
+        page: page === 0 ? 1 : page,
+        limit,
+        status: status?.value || undefined,
+        search: search || undefined,
+      });
     }
+    setStatusLoading(null);
   };
 
   return (
@@ -50,6 +74,11 @@ const InnovationList = () => {
         <Grid container sx={{ mt: 2 }} spacing={4}>
           <Grid size={4}>
             <Autocomplete
+              value={status}
+              onChange={(e, newValue) => {
+                setStatus(newValue);
+                setPage(0);
+              }}
               renderInput={(params) => (
                 <TextField {...params} placeholder="Select Status" />
               )}
@@ -58,13 +87,36 @@ const InnovationList = () => {
             />
           </Grid>
           <Grid size={8}>
-            <TextField placeholder="Search.." fullWidth />
+            <TextField
+              placeholder="Search.."
+              fullWidth
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(0);
+              }}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                  endAdornment: loading ? (
+                    <InputAdornment position="end">
+                      <CircularProgress size={20} />
+                    </InputAdornment>
+                  ) : null,
+                },
+              }}
+            />
           </Grid>
         </Grid>
 
         <InnovationTable
           innovationData={innovationData}
           onStatusChange={handleStatusChange}
+          statusLoading={statusLoading}
         />
         <TablePagination
           component="div"
@@ -73,18 +125,10 @@ const InnovationList = () => {
           rowsPerPage={innovationData?.pagination?.limit || 10}
           onPageChange={(e, newPage) => {
             setPage(newPage);
-            getInnovationList({
-              page: newPage,
-              limit: innovationData?.pagination?.limit || 10,
-            });
           }}
           onRowsPerPageChange={(e) => {
             setLimit(Number(e.target.value));
             setPage(0);
-            getInnovationList({
-              page: 1,
-              limit: Number(e.target.value),
-            });
           }}
         />
       </Card>

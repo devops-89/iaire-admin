@@ -5,16 +5,19 @@ import { poppins } from "@/utils/fonts";
 import {
   Dashboard,
   EventAvailable,
-  ExpandLess,
-  ExpandMore,
-  KeyboardArrowDown,
+  Groups,
+  AccountBalance,
+  Lightbulb,
+  Science,
+  RocketLaunch,
+  CardMembership,
   Public,
-  RocketLaunch
+  Folder,
+  KeyboardArrowDown
 } from "@mui/icons-material";
 import {
   Avatar,
   Box,
-  Collapse,
   Divider,
   Drawer,
   List,
@@ -31,68 +34,23 @@ import React from "react";
 
 const DRAWER_WIDTH = 280;
 
-interface SubMenuItem {
-  text: string;
-  path: string;
-}
-
-interface MenuGroupItem {
-  type: "group";
-  id: string;
-  text: string;
-  icon: React.ReactNode;
-  subItems: SubMenuItem[];
-}
-
 interface MenuFlatItem {
-  type: "item";
   text: string;
   icon: React.ReactNode;
   path: string;
 }
 
-type MenuItemType = MenuFlatItem | MenuGroupItem;
-
-const MENU_ITEMS: MenuItemType[] = [
-  {
-    type: "item",
-    text: "Dashboard",
-    icon: <Dashboard />,
-    path: "/dashboard",
-  },
-  {
-    type: "group",
-    id: "programs",
-    text: "Programs & Training",
-    icon: <EventAvailable />,
-    subItems: [
-      { text: "Training Management", path: "/dashboard/interviews" },
-      { text: "Batch Management", path: "/dashboard/batches" },
-      { text: "Board Management", path: "/dashboard/schools" },
-    ],
-  },
-  {
-    type: "group",
-    id: "innovation",
-    text: "Innovation & Research",
-    icon: <RocketLaunch />,
-    subItems: [
-      { text: "Innovation Management", path: "/dashboard/innovation-management" },
-      { text: "Research Management", path: "/dashboard/research" },
-      { text: "Startup Management", path: "/dashboard/startups" },
-    ],
-  },
-  {
-    type: "group",
-    id: "system",
-    text: "System Admin",
-    icon: <Public />,
-    subItems: [
-      { text: "Plan Management", path: "/dashboard/plans" },
-      { text: "Country Management", path: "/dashboard/countries" },
-      { text: "Resource Management", path: "/dashboard/resources" },
-    ],
-  },
+const MENU_ITEMS: MenuFlatItem[] = [
+  { text: "Dashboard", icon: <Dashboard />, path: "/dashboard" },
+  { text: "Training Management", icon: <EventAvailable />, path: "/dashboard/interviews" },
+  { text: "Batch Management", icon: <Groups />, path: "/dashboard/batches" },
+  { text: "Board Management", icon: <AccountBalance />, path: "/dashboard/schools" },
+  { text: "Innovation Management", icon: <Lightbulb />, path: "/dashboard/innovation-management" },
+  { text: "Research Management", icon: <Science />, path: "/dashboard/research" },
+  { text: "Startup Management", icon: <RocketLaunch />, path: "/dashboard/startups" },
+  { text: "Plan Management", icon: <CardMembership />, path: "/dashboard/plans" },
+  { text: "Country Management", icon: <Public />, path: "/dashboard/countries" },
+  { text: "Resource Management", icon: <Folder />, path: "/dashboard/resources" },
 ];
 
 const Sidebar = () => {
@@ -113,18 +71,6 @@ const Sidebar = () => {
   const handleLogout = () => {
     handleMenuClose();
     logout();
-  };
-
-  // Pre-expand group if current path matches one of its sub-items
-  const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(() => {
-    const activeGroup = MENU_ITEMS.find(
-      (item) => item.type === "group" && item.subItems.some((sub) => sub.path === pathname)
-    );
-    return activeGroup && activeGroup.type === "group" ? { [activeGroup.id]: true } : {};
-  });
-
-  const handleGroupToggle = (id: string) => {
-    setOpenGroups((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   return (
@@ -166,151 +112,51 @@ const Sidebar = () => {
 
       <List sx={{ px: 2, flexGrow: 1, overflowY: "auto" }}>
         {MENU_ITEMS.map((item) => {
-          if (item.type === "item") {
-            const isActive = pathname === item.path;
-            return (
-              <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
-                <ListItemButton
-                  onClick={() => router.push(item.path)}
+          const isActive = pathname === item.path;
+          return (
+            <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
+              <ListItemButton
+                onClick={() => router.push(item.path)}
+                sx={{
+                  borderRadius: "12px",
+                  backgroundColor: isActive
+                    ? COLORS.WHITE
+                    : "transparent",
+                  color: isActive
+                    ? COLORS.PRIMARY_NAVY
+                    : COLORS.WHITE,
+                  "&:hover": {
+                    backgroundColor: isActive ? COLORS.WHITE : "rgba(255, 255, 255, 0.04)",
+                    color: isActive ? COLORS.PRIMARY_NAVY : COLORS.WHITE,
+                  },
+                  py: 1,
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <ListItemIcon
                   sx={{
-                    borderRadius: "12px",
-                    backgroundColor: isActive
-                      ? COLORS.WHITE
-                      : "transparent",
                     color: isActive
                       ? COLORS.PRIMARY_NAVY
                       : COLORS.WHITE,
-                    "&:hover": {
-                      backgroundColor: isActive ? COLORS.WHITE : "rgba(255, 255, 255, 0.04)",
-                      color: isActive ? COLORS.PRIMARY_NAVY : COLORS.WHITE,
-                    },
-                    py: 1,
-                    transition: "all 0.2s ease",
+                    minWidth: 40,
                   }}
                 >
-                  <ListItemIcon
-                    sx={{
-                      color: isActive
-                        ? COLORS.PRIMARY_NAVY
-                        : COLORS.WHITE,
-                      minWidth: 40,
-                    }}
-                  >
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.text}
-                    sx={{
-                      "& .MuiListItemText-primary": {
-                        fontSize: FONT_SIZE.FS14,
-                        fontWeight: isActive ? 600 : 400,
-                        fontFamily: poppins.style.fontFamily,
-                        color: "inherit",
-                      },
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            );
-          } else {
-            const isOpen = !!openGroups[item.id];
-            const isAnySubActive = item.subItems.some((sub) => sub.path === pathname);
-
-            return (
-              <Box key={item.text} sx={{ mb: 0.5 }}>
-                <ListItem disablePadding>
-                  <ListItemButton
-                    onClick={() => handleGroupToggle(item.id)}
-                    sx={{
-                      borderRadius: "12px",
-                      color: COLORS.WHITE,
-                      "&:hover": {
-                        backgroundColor: "rgba(255, 255, 255, 0.04)",
-                        color: COLORS.WHITE,
-                      },
-                      py: 1,
-                      transition: "all 0.2s ease",
-                    }}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        color: COLORS.WHITE,
-                        minWidth: 40,
-                      }}
-                    >
-                      {item.icon}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={item.text}
-                      sx={{
-                        "& .MuiListItemText-primary": {
-                          fontSize: FONT_SIZE.FS14,
-                          fontWeight: isAnySubActive ? 600 : 400,
-                          fontFamily: poppins.style.fontFamily,
-                          color: "inherit",
-                        },
-                      }}
-                    />
-                    {isOpen ? (
-                      <ExpandLess sx={{ fontSize: 18 }} />
-                    ) : (
-                      <ExpandMore sx={{ fontSize: 18 }} />
-                    )}
-                  </ListItemButton>
-                </ListItem>
-                <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                  <List
-                    component="div"
-                    disablePadding
-                    sx={{
-                      pl: 3.5,
-                      mt: 0.5,
-                      borderLeft: "1px solid rgba(255, 255, 255, 0.06)",
-                      ml: 2.5,
-                    }}
-                  >
-                    {item.subItems.map((sub) => {
-                      const isSubActive = pathname === sub.path;
-                      return (
-                        <ListItem key={sub.text} disablePadding sx={{ mb: 0.5 }}>
-                          <ListItemButton
-                            onClick={() => router.push(sub.path)}
-                            sx={{
-                              borderRadius: "8px",
-                              backgroundColor: isSubActive
-                                ? COLORS.WHITE
-                                : "transparent",
-                              color: isSubActive
-                                ? COLORS.PRIMARY_NAVY
-                                : COLORS.WHITE,
-                              "&:hover": {
-                                color: isSubActive ? COLORS.PRIMARY_NAVY : COLORS.WHITE,
-                                backgroundColor: isSubActive ? COLORS.WHITE : "rgba(255, 255, 255, 0.02)",
-                              },
-                              py: 0.6,
-                              transition: "all 0.2s ease",
-                            }}
-                          >
-                            <ListItemText
-                              primary={sub.text}
-                              sx={{
-                                "& .MuiListItemText-primary": {
-                                  fontSize: "13px",
-                                  fontWeight: isSubActive ? 500 : 400,
-                                  fontFamily: poppins.style.fontFamily,
-                                  color: "inherit",
-                                },
-                              }}
-                            />
-                          </ListItemButton>
-                        </ListItem>
-                      );
-                    })}
-                  </List>
-                </Collapse>
-              </Box>
-            );
-          }
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.text}
+                  sx={{
+                    "& .MuiListItemText-primary": {
+                      fontSize: FONT_SIZE.FS14,
+                      fontWeight: isActive ? 600 : 400,
+                      fontFamily: poppins.style.fontFamily,
+                      color: "inherit",
+                    },
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          );
         })}
       </List>
 
