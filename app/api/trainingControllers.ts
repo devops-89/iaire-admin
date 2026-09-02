@@ -47,7 +47,7 @@ export const TrainingControllers = {
     try {
       const response = await trainingApi.patch(`/iaire/decision/${id}`, {
         action: "REJECTED",
-        ...(reason && { reason }),
+        ...(reason && { rejectionReason: reason }),
       });
       return response;
     } catch (error) {

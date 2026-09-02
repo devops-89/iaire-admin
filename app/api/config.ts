@@ -29,6 +29,7 @@ const innovationAPI = createSecuredUrl(serverConstants.innovations);
 const resourcesAPI = createSecuredUrl(serverConstants.resources);
 const researchAPI = createSecuredUrl(serverConstants.research);
 const startupsApi = createSecuredUrl(serverConstants.startups);
+const platformAPI = createSecuredUrl(serverConstants.platform);
 
 export {
   userPublicApi,
@@ -46,4 +47,5 @@ export {
   resourcesAPI,
   researchAPI,
   startupsApi,
+  platformAPI,
 };

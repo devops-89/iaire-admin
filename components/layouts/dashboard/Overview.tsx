@@ -31,17 +31,7 @@ import {
 import { poppins } from "@/utils/fonts";
 import { COLORS } from "@/utils/enum";
 
-// API Controllers
-import { SchoolsControllers } from "@/app/api/schoolsControllers";
-import { innovationControllers } from "@/app/api/innovationControllers";
-import { PatentsControllers } from "@/app/api/patentsControllers";
-import { BatchControllers } from "@/app/api/batchControllers";
-import { PlansControllers } from "@/app/api/plansControllers";
-import { CountriesControllers } from "@/app/api/countriesControllers";
-import { TrainingControllers } from "@/app/api/trainingControllers";
-
-// Types
-import { BoardAnalytics } from "@/utils/type";
+import { useDashboardCount } from "@/hooks/common/useDashboard";
 
 interface SummaryCardProps {
   title: string;
@@ -146,7 +136,6 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
 
 const DashboardOverview = () => {
   // States
-  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     boards: 0,
     schools: 0,
@@ -162,160 +151,64 @@ const DashboardOverview = () => {
     interviews: 0,
   });
 
+  const { getDashboardCount, loading } = useDashboardCount();
+
   useEffect(() => {
     const loadDashboardData = async () => {
-      setLoading(true);
       try {
-        // Fetch Board Analytics
-        let boardCount = 0;
-        let schoolCount = 0;
-        let teacherCount = 0;
-        let studentCount = 0;
+        const data = await getDashboardCount();
+        if (data) {
+          const extractCount = (val: any, fallbackKey?: string): number => {
+            let actualVal = val;
+            if (actualVal === undefined && fallbackKey) {
+              actualVal = data[fallbackKey];
+            }
+            
+            if (Array.isArray(actualVal)) {
+              if (actualVal.length > 0 && typeof actualVal[0] === "object" && "count" in actualVal[0]) {
+                return Number(actualVal[0].count) || 0;
+              }
+              return actualVal.length;
+            }
 
-        try {
-          const boardsRes = await SchoolsControllers.getBoardWiseAnalytics();
-          if (boardsRes?.data?.success && Array.isArray(boardsRes.data.data)) {
-            const data: BoardAnalytics[] = boardsRes.data.data;
-            boardCount = data.length;
-            schoolCount = data.reduce(
-              (acc, curr) => acc + (curr.totalSchools || 0),
-              0,
-            );
-            teacherCount = data.reduce(
-              (acc, curr) => acc + (curr.totalTeachers || 0),
-              0,
-            );
-            studentCount = data.reduce(
-              (acc, curr) => acc + (curr.totalStudents || 0),
-              0,
-            );
-          }
-        } catch (e) {
-          console.warn("Could not fetch board wise analytics", e);
-        }
-
-        // Fetch Innovations
-        let innovationsCount = 0;
-        let approvedCount = 0;
-        let attorneyReviewCount = 0;
-        try {
-          const innovationsRes = await innovationControllers.getInnovations({ page: 1, limit: 10000 });
-          if (innovationsRes?.success && Array.isArray(innovationsRes.data)) {
-            innovationsCount = innovationsRes.data.length;
-            approvedCount = innovationsRes.data.filter(
-              (item: any) => item.status === "PATENT_GRANTED",
-            ).length;
-            attorneyReviewCount = innovationsRes.data.filter(
-              (item: any) => item.status === "PATENT_PENDING",
-            ).length;
-          }
-        } catch (e) {
-          console.warn("Could not fetch innovations", e);
-        }
-
-        // Fetch Patents Count
-        let patentsCount = 0;
-        try {
-          const patentsRes = await PatentsControllers.getAllPatents(1, 1);
-          if (patentsRes?.data?.pagination?.total !== undefined) {
-            patentsCount = patentsRes.data.pagination.total;
-          } else if (patentsRes?.data?.data?.pagination?.total !== undefined) {
-            patentsCount = patentsRes.data.data.pagination.total;
-          }
-        } catch (e) {
-          console.warn("Could not fetch patents counts", e);
-        }
-
-        // Fetch Countries Count
-        let countriesCount = 0;
-        try {
-          const countriesRes = await CountriesControllers.getAllCountries(1, 1);
-          if (countriesRes?.data?.pagination?.total !== undefined) {
-            countriesCount = countriesRes.data.pagination.total;
-          } else if (
-            countriesRes?.data?.data?.pagination?.total !== undefined
-          ) {
-            countriesCount = countriesRes.data.data.pagination.total;
-          }
-        } catch (e) {
-          console.warn("Could not fetch countries count", e);
-        }
-
-        let batchesCount = 0;
-        try {
-          const data = {
-            page: 1,
-            limit: 10000,
+            if (actualVal && typeof actualVal === "object") {
+              if ("count" in actualVal) {
+                return Number(actualVal.count) || 0;
+              }
+              if ("total" in actualVal) {
+                return Number(actualVal.total) || 0;
+              }
+              if ("value" in actualVal) {
+                return Number(actualVal.value) || 0;
+              }
+              return 0;
+            }
+            
+            return Number(actualVal) || 0;
           };
-          const batchesRes = await BatchControllers.getBatches(data);
-          if (batchesRes?.data?.pagination?.total !== undefined) {
-            batchesCount = batchesRes.data.pagination.total;
-          } else if (batchesRes?.data?.meta?.total !== undefined) {
-            batchesCount = batchesRes.data.meta.total;
-          } else if (batchesRes?.data?.data?.meta?.total !== undefined) {
-            batchesCount = batchesRes.data.data.meta.total;
-          } else if (Array.isArray(batchesRes?.data?.data)) {
-            batchesCount = batchesRes.data.data.length;
-          }
-        } catch (e) {
-          console.warn("Could not fetch batches counts", e);
-        }
 
-        // Fetch Plans Count
-        let plansCount = 0;
-        try {
-          const plansRes = await PlansControllers.getAllPlans(1, 1);
-          if (plansRes?.data?.pagination?.total !== undefined) {
-            plansCount = plansRes.data.pagination.total;
-          } else if (plansRes?.data?.data?.pagination?.total !== undefined) {
-            plansCount = plansRes.data.data.pagination.total;
-          }
-        } catch (e) {
-          console.warn("Could not fetch plans counts", e);
+          setStats({
+            boards: extractCount(data.boards, 'totalBoards'),
+            schools: extractCount(data.schools, 'totalSchools'),
+            teachers: extractCount(data.teachers, 'totalTeachers'),
+            students: extractCount(data.students, 'totalStudents'),
+            innovations: extractCount(data.innovations, 'totalInnovations'),
+            approvedInnovations: extractCount(data.approvedInnovations, 'totalApprovedInnovations'),
+            attorneyReviews: extractCount(data.attorneyReviews, 'totalAttorneyReviews'),
+            patents: extractCount(data.patents, 'totalPatents'),
+            countries: extractCount(data.countries, 'totalCountries'),
+            batches: extractCount(data.batches, 'totalBatches'),
+            plans: extractCount(data.plans, 'totalPlans'),
+            interviews: extractCount(data.interviews, 'totalInterviews'),
+          });
         }
-
-        // Fetch Interviews Count
-        let interviewsCount = 0;
-        try {
-          const interviewsRes = await TrainingControllers.getTrainingTeachers(
-            1,
-            1,
-          );
-          if (interviewsRes?.data?.pagination?.total !== undefined) {
-            interviewsCount = interviewsRes.data.pagination.total;
-          } else if (
-            interviewsRes?.data?.data?.pagination?.total !== undefined
-          ) {
-            interviewsCount = interviewsRes.data.data.pagination.total;
-          } else if (Array.isArray(interviewsRes?.data?.data)) {
-            interviewsCount = interviewsRes.data.data.length;
-          }
-        } catch (e) {
-          console.warn("Could not fetch training application count", e);
-        }
-
-        setStats({
-          boards: boardCount,
-          schools: schoolCount,
-          teachers: teacherCount,
-          students: studentCount,
-          innovations: innovationsCount,
-          approvedInnovations: approvedCount,
-          attorneyReviews: attorneyReviewCount,
-          patents: patentsCount,
-          countries: countriesCount,
-          batches: batchesCount,
-          plans: plansCount,
-          interviews: interviewsCount,
-        });
       } catch (error) {
         console.error("Error loading dashboard data:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
     loadDashboardData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const statsCards = [

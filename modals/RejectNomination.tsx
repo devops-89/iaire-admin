@@ -39,7 +39,7 @@ const RejectNomination: React.FC<RejectNominationProps> = ({
     try {
       const success: any = await TrainingControllers.rejectTraining(
         selectedTeacher.id,
-        rejectReason || undefined
+        rejectReason || undefined,
       );
       if (success.data.success) {
         setSnackbar("Teacher rejected", "success");
@@ -55,15 +55,38 @@ const RejectNomination: React.FC<RejectNominationProps> = ({
 
   return (
     <Box sx={{ p: 0.5 }}>
-      <Typography sx={{ ...FS, fontWeight: 700, fontSize: 18, pb: 1.5, display: "flex", alignItems: "center", gap: 1.5 }}>
-        <Box sx={{ width: 36, height: 36, borderRadius: "10px", bgcolor: "rgba(239, 68, 68, 0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <Typography
+        sx={{
+          ...FS,
+          fontWeight: 700,
+          fontSize: 18,
+          pb: 1.5,
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+        }}
+      >
+        <Box
+          sx={{
+            width: 36,
+            height: 36,
+            borderRadius: "10px",
+            bgcolor: "rgba(239, 68, 68, 0.1)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <Cancel sx={{ color: COLORS.ERROR, fontSize: 20 }} />
         </Box>
         Reject Teacher
       </Typography>
 
-      <Typography sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY, mb: 2.5 }}>
-        You are about to reject this teacher's nomination. Optionally provide a reason for the rejection.
+      <Typography
+        sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY, mb: 2.5 }}
+      >
+        You are about to reject this teacher's nomination. Optionally provide a
+        reason for the rejection.
       </Typography>
 
       <TextField
@@ -81,15 +104,21 @@ const RejectNomination: React.FC<RejectNominationProps> = ({
             fontSize: 14,
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
               borderColor: COLORS.ERROR,
-            }
-          }
+            },
+          },
         }}
       />
 
       <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1.5 }}>
         <Button
           onClick={hideModal}
-          sx={{ ...FS, textTransform: "none", color: COLORS.TEXT_SECONDARY, borderRadius: "10px", fontWeight: 600 }}
+          sx={{
+            ...FS,
+            textTransform: "none",
+            color: COLORS.TEXT_SECONDARY,
+            borderRadius: "10px",
+            fontWeight: 600,
+          }}
         >
           Cancel
         </Button>
@@ -104,10 +133,14 @@ const RejectNomination: React.FC<RejectNominationProps> = ({
             borderRadius: "10px",
             px: 3,
             fontWeight: 600,
-            "&:hover": { backgroundColor: "#DC2626" }
+            "&:hover": { backgroundColor: "#DC2626" },
           }}
         >
-          {loading ? <CircularProgress size={18} color="inherit" /> : "Confirm Reject"}
+          {loading ? (
+            <CircularProgress size={18} color="inherit" />
+          ) : (
+            "Confirm Reject"
+          )}
         </Button>
       </Box>
     </Box>
