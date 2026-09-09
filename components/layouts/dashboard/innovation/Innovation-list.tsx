@@ -12,8 +12,11 @@ import {
   Typography,
   InputAdornment,
   CircularProgress,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import React, { useEffect, useState } from "react";
 import InnovationTable from "./Innovation_table";
 
@@ -29,29 +32,32 @@ const InnovationList = () => {
     null,
   );
 
+  const fetchList = () => {
+    getInnovationList({
+      page: page === 0 ? 1 : page,
+      limit,
+      status: status?.value || undefined,
+      search: search || undefined,
+    });
+  };
+
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      getInnovationList({
-        page: page === 0 ? 1 : page,
-        limit,
-        status: status?.value || undefined,
-        search: search || undefined,
-      });
+      fetchList();
     }, 400);
 
     return () => clearTimeout(delayDebounceFn);
   }, [page, limit, status, search]);
 
-  const handleStatusChange = async (id: number | string, newStatus: string, reason?: string) => {
+  const handleStatusChange = async (
+    id: number | string,
+    newStatus: string,
+    reason?: string,
+  ) => {
     setStatusLoading(id);
     const success = await updateInnovationStatus(id, newStatus, reason);
     if (success) {
-      await getInnovationList({
-        page: page === 0 ? 1 : page,
-        limit,
-        status: status?.value || undefined,
-        search: search || undefined,
-      });
+      await fetchList();
     }
     setStatusLoading(null);
   };
@@ -59,7 +65,7 @@ const InnovationList = () => {
   return (
     <div>
       <Card sx={{ p: 2 }}>
-        <Stack sx={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <Stack sx={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
           <Typography
             sx={{
               fontSize: 20,
@@ -70,6 +76,11 @@ const InnovationList = () => {
           >
             Innovation Management
           </Typography>
+          <Tooltip title="Refresh List">
+            <IconButton onClick={fetchList} disabled={loading} color="primary">
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
         </Stack>
         <Grid container sx={{ mt: 2 }} spacing={4}>
           <Grid size={4}>

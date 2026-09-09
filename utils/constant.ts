@@ -1230,7 +1230,7 @@ export const TRAINING_MODE_DATA = [
 export const INNOVATION_TABLE_HEADER = [
   "Id",
   "Innovation Title",
-  "Board",
+  "Submited By",
   "School",
   "Status",
   "Date Added",
@@ -1345,4 +1345,21 @@ export const INNOVATION_STATUS_DATA = [
     label: "Pending",
     value: INNOVATION_STATUS.PENDING,
   },
+];
+
+export const HEADBOYNOMINATIONHEADER = [
+  "User Id",
+  "Name",
+  "Email",
+  "Category",
+  "School",
+];
+
+export const BOARD_LIST_HEADER = [
+  "Board Name",
+  "Status",
+  "Schools",
+  "Teachers",
+  "Students",
+  "",
 ];

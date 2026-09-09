@@ -155,7 +155,9 @@ const InterviewTable = ({
               <TableRow key={i}>
                 <TableCell sx={{ width: 200 }}>
                   <Typography sx={{ fontSize: 14 }}>
-                    {val?.teacher?.fullName || "--"}
+                    {val?.teacher?.fullName ||
+                      val?.teacher?.firstName + " " + val?.teacher?.lastName ||
+                      "--"}
                   </Typography>
                 </TableCell>
                 <TableCell>

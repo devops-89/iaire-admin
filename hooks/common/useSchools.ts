@@ -16,7 +16,10 @@ export const useSchools = () => {
         setBoardAnalytics(response.data.data);
       }
     } catch (error: any) {
-      setSnackbar(error.response?.data?.message || "Failed to fetch board analytics", "error");
+      setSnackbar(
+        error.response?.data?.message || "Failed to fetch board analytics",
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -30,5 +33,30 @@ export const useSchools = () => {
     boardAnalytics,
     loading,
     fetchBoardAnalytics,
+  };
+};
+
+export const getSchoolByBoardId = () => {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<any[]>([]);
+
+  async function fetchSchoolByBoardId(id: string) {
+    try {
+      setLoading(true);
+      let response: any = await SchoolsControllers.getSchoolByBoardsId(id);
+      if (response.data && response.data.data) {
+        setData(response.data.data);
+      }
+    } catch (error: any) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return {
+    data,
+    loading,
+    fetchSchoolByBoardId,
   };
 };

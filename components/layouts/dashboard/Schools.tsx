@@ -8,11 +8,28 @@ import {
   Avatar,
   Chip,
   Skeleton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  IconButton,
 } from "@mui/material";
-import { School, Business, People } from "@mui/icons-material";
-import { poppins } from "@/utils/fonts";
+import {
+  School,
+  Business,
+  People,
+  ArrowForward,
+  Visibility,
+} from "@mui/icons-material";
+import { poppins, roboto } from "@/utils/fonts";
 import { COLORS } from "@/utils/enum";
 import { useSchools } from "@/hooks/common/useSchools";
+import { BOARD_LIST_HEADER } from "@/utils/constant";
+import { useRouter } from "next/navigation";
 
 const BOARD_COLORS = [
   "#4CAF50",
@@ -26,6 +43,7 @@ const BOARD_COLORS = [
 
 const SchoolsManagement = () => {
   const { boardAnalytics, loading } = useSchools();
+  const router = useRouter();
 
   const totalStats = boardAnalytics.reduce(
     (acc, curr) => ({
@@ -78,238 +96,145 @@ const SchoolsManagement = () => {
         </Typography>
       </Box>
 
-      {/* Top Stats Overview */}
-      <Grid container spacing={3} sx={{ mb: 5 }}>
-        {statsCards.map((stat, idx) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={idx}>
-            <Card
-              sx={{
-                p: 3,
-                borderRadius: "20px",
-                boxShadow: "0px 10px 20px rgba(0,0,0,0.02)",
-                display: "flex",
-                alignItems: "center",
-                gap: 2,
-                border: "1px solid rgba(0,0,0,0.03)",
-                height: "100%",
-              }}
-            >
-              <Avatar
+      <Box sx={{ width: "100%" }}>
+        <TableContainer
+          component={Paper}
+          sx={{
+            borderRadius: "16px",
+            boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
+            border: "1px solid #d7d7d7",
+          }}
+        >
+          <Table>
+            <TableHead sx={{ border: "1px solid #d7d7d7" }}>
+              <TableRow
                 sx={{
-                  bgcolor: `${stat.color}15`,
-                  color: stat.color,
-                  width: 60,
-                  height: 60,
-                  borderRadius: "15px",
+                  bgcolor: "rgba(0,0,0,0.02)",
+                  border: "1px solid #d7d7d7",
                 }}
               >
-                {stat.icon}
-              </Avatar>
-              <Box>
-                <Typography
-                  sx={{
-                    color: COLORS.TEXT_SECONDARY,
-                    fontSize: 14,
-                    fontFamily: poppins.style.fontFamily,
-                  }}
-                >
-                  {stat.label}
-                </Typography>
-                {loading ? (
-                  <Skeleton width={60} height={40} />
-                ) : (
-                  <Typography
+                {BOARD_LIST_HEADER.map((val, i) => (
+                  <TableCell
                     sx={{
-                      fontSize: 28,
-                      fontWeight: 700,
                       fontFamily: poppins.style.fontFamily,
+                      fontWeight: 600,
+                      color: COLORS.TEXT_SECONDARY,
+                      textAlign: "center",
                     }}
+                    align="center"
                   >
-                    {stat.value}
-                  </Typography>
-                )}
-              </Box>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-
-      {/* Boards Grid */}
-      <Typography
-        variant="h6"
-        sx={{ mb: 3, fontWeight: 600, fontFamily: poppins.style.fontFamily }}
-      >
-        Educational Boards Hierarchy
-      </Typography>
-
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(4, 1fr)",
-          },
-          gap: 3,
-          alignItems: "stretch",
-          width: "100%",
-        }}
-      >
-        {loading
-          ? Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton
-                key={i}
-                variant="rectangular"
-                height={200}
-                sx={{ borderRadius: "24px" }}
-              />
-            ))
-          : boardAnalytics.map((board, idx) => (
-              <Card
-                key={board.boardId}
-                sx={{
-                  p: 0,
-                  borderRadius: "24px",
-                  overflow: "hidden",
-                  boxShadow: "0px 10px 25px rgba(0,0,0,0.04)",
-                  border: "1px solid rgba(0,0,0,0.03)",
-                  transition: "all 0.3s ease",
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  "&:hover": {
-                    transform: "translateY(-5px)",
-                    boxShadow: "0px 20px 40px rgba(0,0,0,0.08)",
-                  },
-                }}
-              >
-                <Box
-                  sx={{
-                    p: 3,
-                    flexGrow: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      mb: 2,
-                      minHeight: 60,
-                    }}
-                  >
-                    <Box
+                    {val}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loading
+                ? Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell>
+                        <Skeleton variant="text" width="60%" />
+                      </TableCell>
+                      <TableCell align="center">
+                        <Skeleton
+                          variant="rounded"
+                          width={60}
+                          height={24}
+                          sx={{ mx: "auto" }}
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Skeleton
+                          variant="text"
+                          width="40%"
+                          sx={{ ml: "auto" }}
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Skeleton
+                          variant="text"
+                          width="40%"
+                          sx={{ ml: "auto" }}
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Skeleton
+                          variant="text"
+                          width="40%"
+                          sx={{ ml: "auto" }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                : boardAnalytics.map((board) => (
+                    <TableRow
+                      key={board.boardId}
                       sx={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: 1.5,
+                        "&:last-child td, &:last-child th": { border: 0 },
+                        "&:hover": { bgcolor: "rgba(0,0,0,0.01)" },
                       }}
                     >
-                      <Box
+                      <TableCell
+                        component="th"
+                        scope="row"
                         sx={{
-                          width: 10,
-                          height: 10,
-                          borderRadius: "50%",
-                          bgcolor: COLORS.PRIMARY_NAVY,
-                          flexShrink: 0,
-                          mt: 0.8,
-                        }}
-                      />
-                      <Typography
-                        sx={{
-                          fontSize: 16,
-                          fontWeight: 700,
                           fontFamily: poppins.style.fontFamily,
-                          lineHeight: 1.2,
+                          fontWeight: 500,
+                          color: COLORS.PRIMARY_NAVY,
+                          // textAlign: "center",
                         }}
                       >
                         {board.boardName}
-                      </Typography>
-                    </Box>
-                    <Chip
-                      label="Active"
-                      size="small"
-                      sx={{
-                        bgcolor: "rgba(76, 175, 80, 0.1)",
-                        color: "#4CAF50",
-                        fontWeight: 600,
-                        fontSize: 10,
-                      }}
-                    />
-                  </Box>
-
-                  <Grid
-                    container
-                    spacing={2}
-                    sx={{ pt: 2, borderTop: "1px solid rgba(0,0,0,0.03)" }}
-                  >
-                    <Grid size={{ xs: 4 }}>
-                      <Typography
+                      </TableCell>
+                      <TableCell align="center">
+                        <Chip
+                          label="Active"
+                          size="small"
+                          sx={{
+                            bgcolor: "rgba(76, 175, 80, 0.1)",
+                            color: "#4CAF50",
+                            fontWeight: 600,
+                            fontSize: 11,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell
                         sx={{
-                          color: COLORS.TEXT_SECONDARY,
-                          fontSize: 11,
-                          mb: 0.5,
+                          fontFamily: poppins.style.fontFamily,
+                          fontWeight: 600,
+                          textAlign: "center",
                         }}
                       >
-                        Schools
-                      </Typography>
-                      <Typography
+                        {board.totalSchools.toLocaleString()}
+                      </TableCell>
+                      <TableCell
                         sx={{
-                          fontWeight: 800,
-                          fontSize: 16,
-                          color: COLORS.PRIMARY_NAVY,
+                          fontFamily: poppins.style.fontFamily,
+                          fontWeight: 600,
+                          textAlign: "center",
                         }}
                       >
-                        {board.totalSchools}
-                      </Typography>
-                    </Grid>
-                    <Grid size={{ xs: 4 }}>
-                      <Typography
+                        {board.totalTeachers.toLocaleString()}
+                      </TableCell>
+                      <TableCell
                         sx={{
-                          color: COLORS.TEXT_SECONDARY,
-                          fontSize: 11,
-                          mb: 0.5,
+                          fontFamily: poppins.style.fontFamily,
+                          fontWeight: 600,
+                          textAlign: "center",
                         }}
                       >
-                        Teachers
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontWeight: 800,
-                          fontSize: 16,
-                          color: COLORS.PRIMARY_NAVY,
-                        }}
-                      >
-                        {board.totalTeachers}
-                      </Typography>
-                    </Grid>
-                    <Grid size={{ xs: 4 }}>
-                      <Typography
-                        sx={{
-                          color: COLORS.TEXT_SECONDARY,
-                          fontSize: 11,
-                          mb: 0.5,
-                        }}
-                      >
-                        Students
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontWeight: 800,
-                          fontSize: 16,
-                          color: COLORS.PRIMARY_NAVY,
-                        }}
-                      >
-                        {board.totalStudents}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </Card>
-            ))}
+                        {board.totalStudents.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <IconButton onClick={() => router.push(`/dashboard/schools/${board.boardId}`)}>
+                          <Visibility />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Box>
     </Box>
   );

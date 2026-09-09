@@ -67,3 +67,30 @@ export const useInnovationList = () => {
     updateInnovationStatus,
   };
 };
+
+export const useInnovationDetails = () => {
+  const [innovationDetails, setInnovationDetails] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const { setSnackbar } = useSnackbar();
+
+  const getInnovationDetails = async (id: number | string) => {
+    try {
+      setLoading(true);
+      const result = await innovationControllers.getInnovationDetails(id);
+      setInnovationDetails(result.data || result);
+    } catch (error: any) {
+      console.log("error in fetching innovation details", error);
+      const errorMessage =
+        error?.response?.data?.message || "Failed to fetch innovation details";
+      setSnackbar(errorMessage, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    getInnovationDetails,
+    innovationDetails,
+    loading,
+  };
+};

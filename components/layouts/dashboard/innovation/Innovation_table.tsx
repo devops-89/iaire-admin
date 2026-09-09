@@ -2,6 +2,7 @@ import {
   INNOVATION_STATUS_DATA,
   INNOVATION_TABLE_HEADER,
 } from "@/utils/constant";
+import Link from "next/link";
 import { roboto } from "@/utils/fonts";
 import {
   Table,
@@ -34,7 +35,10 @@ const RejectionForm = ({
   const [reason, setReason] = useState("");
   return (
     <Box>
-      <Typography variant="h6" sx={{ mb: 2, fontFamily: roboto.style.fontFamily, fontWeight: 600 }}>
+      <Typography
+        variant="h6"
+        sx={{ mb: 2, fontFamily: roboto.style.fontFamily, fontWeight: 600 }}
+      >
         Reason for Rejection
       </Typography>
       <TextField
@@ -46,8 +50,19 @@ const RejectionForm = ({
         onChange={(e) => setReason(e.target.value)}
         placeholder="Please provide a reason for rejecting this innovation..."
       />
-      <Stack direction="row" spacing={2} sx={{ mt: 3, justifyContent: "flex-end" }}>
-        <Button onClick={onCancel} sx={{ color: "#6B7280", fontWeight: 600, fontFamily: roboto.style.fontFamily }}>
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{ mt: 3, justifyContent: "flex-end" }}
+      >
+        <Button
+          onClick={onCancel}
+          sx={{
+            color: "#6B7280",
+            fontWeight: 600,
+            fontFamily: roboto.style.fontFamily,
+          }}
+        >
           Cancel
         </Button>
         <Button
@@ -75,7 +90,11 @@ interface InnovationTableProps {
   innovationData?: {
     data?: INNOVATION_RESPONSE_DATA_PROPS[];
   };
-  onStatusChange?: (id: number | string, status: string, reason?: string) => void;
+  onStatusChange?: (
+    id: number | string,
+    status: string,
+    reason?: string,
+  ) => void;
   statusLoading?: number | string | null;
 }
 
@@ -112,9 +131,23 @@ const InnovationTable = ({
               data.map((item, index) => (
                 <TableRow key={item.id || index}>
                   <TableCell>{item.id}</TableCell>
-                  <TableCell>{item.title || "N/A"}</TableCell>
-                  <TableCell>{item.school?.board?.name || "N/A"}</TableCell>
-                  <TableCell>{item.school?.name || "N/A"}</TableCell>
+                  <TableCell sx={{ textTransform: "capitalize" }}>
+                    <Link
+                      href={`/dashboard/innovation-management/${item.id}`}
+                      style={{ textDecoration: "none", color: "#1976d2", fontWeight: 500 }}
+                    >
+                      {item.title || "N/A"}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    {item.teamId
+                      ? item?.team?.title
+                      : item?.creator?.fullName ||
+                        `${item?.creator?.firstName} ${item?.creator?.lastName}`}
+                  </TableCell>
+                  <TableCell sx={{ textTransform: "capitalize" }}>
+                    {item.school?.name || "N/A"}
+                  </TableCell>
                   <TableCell>
                     {statusLoading === item.id ? (
                       <Stack
@@ -158,7 +191,7 @@ const InnovationTable = ({
                                 }}
                                 onCancel={hideModal}
                               />,
-                              { size: "sm" }
+                              { size: "sm" },
                             );
                           } else {
                             if (onStatusChange) {

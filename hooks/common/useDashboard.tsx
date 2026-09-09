@@ -1,8 +1,21 @@
 import { platformControllers } from "@/app/api/platformControllers";
 import { useState } from "react";
 
+export interface StatItem {
+  title: string;
+  count: number;
+}
+
+export interface DashboardData {
+  users: StatItem[];
+  patents: StatItem[];
+  researchPublications: StatItem[];
+  startups: StatItem[];
+}
+
 export const useDashboardCount = () => {
   const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<DashboardData | undefined>();
 
   const getDashboardCount = async () => {
     setLoading(true);
@@ -10,7 +23,7 @@ export const useDashboardCount = () => {
     try {
       const result = await platformControllers.getDashboardCount();
       setLoading(false);
-      return result.data;
+      setData(result.data);
     } catch (error) {
       setLoading(false);
       console.log("error in fetching dashboard count", error);
@@ -20,5 +33,6 @@ export const useDashboardCount = () => {
   return {
     getDashboardCount,
     loading,
+    data,
   };
 };
