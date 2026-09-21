@@ -5,6 +5,7 @@ import {
   INNOVATION_STATUS,
   PLAN_BENEFITS,
   RESOURCES_TYPE,
+  SUPPORT_TICKET_STATUS,
   TRAINING_MODE,
   USER_ROLES,
 } from "./enum";
@@ -1362,4 +1363,41 @@ export const BOARD_LIST_HEADER = [
   "Teachers",
   "Students",
   "",
+];
+
+export const SUPPORT_TICKETS_HEADER_DATA = [
+  "Id",
+  "User",
+  "Category",
+  "Priority",
+  "Date Added",
+  "Status",
+  "Actions",
+];
+
+export const SUPPORT_TICKET_STATUS_DATA = [
+  {
+    label: "Pending",
+    value: SUPPORT_TICKET_STATUS.PENDING,
+  },
+  {
+    label: "Open",
+    value: SUPPORT_TICKET_STATUS.OPEN,
+  },
+  {
+    label: "In Progress",
+    value: SUPPORT_TICKET_STATUS.IN_PROGRESS,
+  },
+  {
+    label: "Resolved",
+    value: SUPPORT_TICKET_STATUS.RESOLVED,
+  },
+  {
+    label: "Closed",
+    value: SUPPORT_TICKET_STATUS.CLOSED,
+  },
+  {
+    label: "Reopened",
+    value: SUPPORT_TICKET_STATUS.REOPENED,
+  },
 ];

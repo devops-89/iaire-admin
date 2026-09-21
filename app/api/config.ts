@@ -30,7 +30,8 @@ const resourcesAPI = createSecuredUrl(serverConstants.resources);
 const researchAPI = createSecuredUrl(serverConstants.research);
 const startupsApi = createSecuredUrl(serverConstants.startups);
 const platformAPI = createSecuredUrl(serverConstants.platform);
-
+const schoolSecuredAPI = createSecuredUrl(serverConstants.school);
+const needAssistance = createSecuredUrl(serverConstants.needAssistance);
 export {
   userPublicApi,
   userSecuredApi,
@@ -48,4 +49,6 @@ export {
   researchAPI,
   startupsApi,
   platformAPI,
+  schoolSecuredAPI,
+  needAssistance,
 };

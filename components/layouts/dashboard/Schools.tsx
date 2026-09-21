@@ -1,12 +1,15 @@
 "use client";
-import React from "react";
+import { useSchools } from "@/hooks/common/useSchools";
+import { useUpdateTicketStatus } from "@/hooks/school/useUpdateTicketStatus";
+import { BOARD_LIST_HEADER } from "@/utils/constant";
+import { COLORS } from "@/utils/enum";
+import { poppins } from "@/utils/fonts";
+import { ArrowRightAlt } from "@mui/icons-material";
 import {
   Box,
-  Typography,
-  Grid,
-  Card,
-  Avatar,
+  Button,
   Chip,
+  Paper,
   Skeleton,
   Table,
   TableBody,
@@ -14,72 +17,40 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Button,
-  IconButton,
+  Typography,
+  TablePagination,
 } from "@mui/material";
-import {
-  School,
-  Business,
-  People,
-  ArrowForward,
-  Visibility,
-} from "@mui/icons-material";
-import { poppins, roboto } from "@/utils/fonts";
-import { COLORS } from "@/utils/enum";
-import { useSchools } from "@/hooks/common/useSchools";
-import { BOARD_LIST_HEADER } from "@/utils/constant";
 import { useRouter } from "next/navigation";
-
-const BOARD_COLORS = [
-  "#4CAF50",
-  "#2196F3",
-  "#FF9800",
-  "#9C27B0",
-  "#F44336",
-  "#00BCD4",
-  "#673AB7",
-];
+import { useEffect, useState } from "react";
 
 const SchoolsManagement = () => {
-  const { boardAnalytics, loading } = useSchools();
+  const { boardAnalytics, loading, pagination, fetchBoardAnalytics } =
+    useSchools();
   const router = useRouter();
 
-  const totalStats = boardAnalytics.reduce(
-    (acc, curr) => ({
-      schools: acc.schools + curr.totalSchools,
-      teachers: acc.teachers + curr.totalTeachers,
-      students: acc.students + curr.totalStudents,
-    }),
-    { schools: 0, teachers: 0, students: 0 },
-  );
+  const [page, setPage] = useState(0);
+  const [limit, setLimit] = useState(10);
 
-  const statsCards = [
-    {
-      label: "Total Boards",
-      value: boardAnalytics.length,
-      icon: <Business />,
-      color: COLORS.PRIMARY_NAVY,
-    },
-    {
-      label: "Active Schools",
-      value: totalStats.schools.toLocaleString(),
-      icon: <School />,
-      color: COLORS.PRIMARY_NAVY,
-    },
-    {
-      label: "Total Teachers",
-      value: totalStats.teachers.toLocaleString(),
-      icon: <People />,
-      color: COLORS.PRIMARY_NAVY,
-    },
-    {
-      label: "Total Students",
-      value: totalStats.students.toLocaleString(),
-      icon: <People />,
-      color: COLORS.PRIMARY_NAVY,
-    },
-  ];
+  useEffect(() => {
+    fetchBoardAnalytics(page + 1, limit);
+  }, [page, limit]);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const { updateTicketStatus } = useUpdateTicketStatus();
+  const handleUpdateTicketStatus = async (id: string, status: string) => {
+    await updateTicketStatus(id, status);
+    fetchBoardAnalytics(page + 1, limit);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setLimit(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     <Box>
@@ -226,14 +197,40 @@ const SchoolsManagement = () => {
                         {board.totalStudents.toLocaleString()}
                       </TableCell>
                       <TableCell>
-                        <IconButton onClick={() => router.push(`/dashboard/schools/${board.boardId}`)}>
-                          <Visibility />
-                        </IconButton>
+                        <Button
+                          variant="text"
+                          endIcon={<ArrowRightAlt />}
+                          sx={{
+                            fontFamily: poppins.style.fontFamily,
+                            fontWeight: 600,
+                            color: COLORS.PRIMARY_NAVY,
+                            textTransform: "none",
+                            fontSize: 12,
+                            "&:hover": {
+                              textDecoration: "underline",
+                            },
+                          }}
+                          onClick={() =>
+                            router.push(`/dashboard/boards/${board.boardId}`)
+                          }
+                        >
+                          View Details
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
             </TableBody>
           </Table>
+          {pagination && (
+            <TablePagination
+              component="div"
+              count={pagination.total}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={limit}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          )}
         </TableContainer>
       </Box>
     </Box>

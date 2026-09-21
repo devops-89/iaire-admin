@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -15,9 +15,15 @@ import {
   IconButton,
   Chip,
   Avatar,
-  Button
+  Button,
+  TablePagination,
 } from "@mui/material";
-import { ArrowBack, Visibility, LocationOn } from "@mui/icons-material";
+import {
+  ArrowBack,
+  Visibility,
+  LocationOn,
+  ArrowRightAltOutlined,
+} from "@mui/icons-material";
 import { poppins } from "@/utils/fonts";
 import { COLORS } from "@/utils/enum";
 import { getSchoolByBoardId } from "@/hooks/common/useSchools";
@@ -27,22 +33,53 @@ interface BoardDetailsProps {
   boardId: string;
 }
 
-const SCHOOLS_LIST_HEADER = ["School Name", "Code", "Location", "Status", "Actions"];
+const SCHOOLS_LIST_HEADER = [
+  "School Name",
+  "Teachers",
+  "Students",
+  "Research",
+  "Patents",
+  "Startups",
+  "Status",
+  "Actions",
+];
 
 const BoardDetails: React.FC<BoardDetailsProps> = ({ boardId }) => {
-  const { data: schools, loading, fetchSchoolByBoardId } = getSchoolByBoardId();
+  const {
+    data: schools,
+    loading,
+    pagination,
+    fetchSchoolByBoardId,
+  } = getSchoolByBoardId();
   const router = useRouter();
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     if (boardId) {
-      fetchSchoolByBoardId(boardId);
+      fetchSchoolByBoardId(boardId, page + 1, rowsPerPage);
     }
-  }, [boardId]);
+  }, [boardId, page, rowsPerPage]);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     <Box>
       <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
-        <IconButton onClick={() => router.back()} sx={{ bgcolor: "rgba(0,0,0,0.04)" }}>
+        <IconButton
+          onClick={() => router.back()}
+          sx={{ bgcolor: "rgba(0,0,0,0.04)" }}
+        >
           <ArrowBack />
         </IconButton>
         <Typography
@@ -69,7 +106,7 @@ const BoardDetails: React.FC<BoardDetailsProps> = ({ boardId }) => {
         >
           Associated Schools
         </Typography>
-        
+
         <TableContainer
           component={Paper}
           sx={{
@@ -101,90 +138,190 @@ const BoardDetails: React.FC<BoardDetailsProps> = ({ boardId }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {loading
-                ? Array.from({ length: 5 }).map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                          <Skeleton variant="circular" width={40} height={40} />
-                          <Skeleton variant="text" width={120} />
-                        </Box>
-                      </TableCell>
-                      <TableCell><Skeleton variant="text" width={80} /></TableCell>
-                      <TableCell><Skeleton variant="text" width={100} /></TableCell>
-                      <TableCell><Skeleton variant="rounded" width={60} height={24} /></TableCell>
-                      <TableCell><Skeleton variant="circular" width={32} height={32} /></TableCell>
-                    </TableRow>
-                  ))
-                : schools && schools.length > 0 ? (
-                  schools.map((school) => (
-                    <TableRow
-                      key={school.id}
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                        "&:hover": { bgcolor: "rgba(0,0,0,0.01)" },
-                      }}
-                    >
-                      <TableCell>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                          <Avatar src={school.logo} alt={school.name} sx={{ width: 40, height: 40 }} />
-                          <Typography
-                            sx={{
-                              fontFamily: poppins.style.fontFamily,
-                              fontWeight: 500,
-                              color: COLORS.PRIMARY_NAVY,
-                            }}
-                          >
-                            {school.name}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          fontFamily: poppins.style.fontFamily,
-                          fontWeight: 500,
-                        }}
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 2 }}
                       >
-                        {school.code || "N/A"}
-                      </TableCell>
-                      <TableCell>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, color: COLORS.TEXT_SECONDARY }}>
-                          <LocationOn sx={{ fontSize: 16 }} />
-                          <Typography sx={{ fontSize: 14, fontFamily: poppins.style.fontFamily }}>
-                            {school.city}, {school.state}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={school.isActive !== false ? "Active" : "Inactive"}
-                          size="small"
-                          sx={{
-                            bgcolor: school.isActive !== false ? "rgba(76, 175, 80, 0.1)" : "rgba(244, 67, 54, 0.1)",
-                            color: school.isActive !== false ? "#4CAF50" : "#F44336",
-                            fontWeight: 600,
-                            fontSize: 11,
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <IconButton>
-                          <Visibility />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                      <Typography sx={{ fontFamily: poppins.style.fontFamily, color: COLORS.TEXT_SECONDARY }}>
-                        No schools found for this board.
-                      </Typography>
+                        <Skeleton variant="circular" width={40} height={40} />
+                        <Skeleton variant="text" width={120} />
+                      </Box>
+                    </TableCell>
+
+                    <TableCell>
+                      <Skeleton variant="text" width={40} />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton variant="text" width={40} />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton variant="text" width={40} />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton variant="text" width={40} />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton variant="text" width={40} />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton variant="rounded" width={60} height={24} />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton variant="circular" width={32} height={32} />
                     </TableCell>
                   </TableRow>
-                )}
+                ))
+              ) : schools && schools.length > 0 ? (
+                schools.map((school) => (
+                  <TableRow
+                    key={school.id}
+                    sx={{
+                      "&:last-child td, &:last-child th": { border: 0 },
+                      "&:hover": { bgcolor: "rgba(0,0,0,0.01)" },
+                    }}
+                  >
+                    <TableCell>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                      >
+                        <Avatar
+                          src={school.logo}
+                          alt={school.name}
+                          sx={{ width: 40, height: 40 }}
+                        />
+                        <Typography
+                          sx={{
+                            fontFamily: poppins.style.fontFamily,
+                            fontWeight: 500,
+                            color: COLORS.PRIMARY_NAVY,
+                            textTransform: "capitalize",
+                            fontSize: 14,
+                          }}
+                        >
+                          {school.name}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+
+                    <TableCell
+                      sx={{
+                        fontFamily: poppins.style.fontFamily,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {school.teacherCount || 0}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontFamily: poppins.style.fontFamily,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {school.studentCount || 0}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontFamily: poppins.style.fontFamily,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {school.researchCount || 0}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontFamily: poppins.style.fontFamily,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {school.patentGrantedCount || 0}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontFamily: poppins.style.fontFamily,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {school.startupCount || 0}
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={
+                          school.isActive !== false ? "Active" : "Inactive"
+                        }
+                        size="small"
+                        sx={{
+                          bgcolor:
+                            school.isActive !== false
+                              ? "rgba(76, 175, 80, 0.1)"
+                              : "rgba(244, 67, 54, 0.1)",
+                          color:
+                            school.isActive !== false ? "#4CAF50" : "#F44336",
+                          fontWeight: 600,
+                          fontSize: 11,
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {/* <IconButton
+                        onClick={() =>
+                          router.push(
+                            `/dashboard/boards/${boardId}/schools/${school.id}`,
+                          )
+                        }
+                      >
+                        <Visibility />
+                      </IconButton> */}
+                      <Button
+                        onClick={() =>
+                          router.push(
+                            `/dashboard/boards/${boardId}/schools/${school.id}`,
+                          )
+                        }
+                        size="small"
+                        sx={{
+                          color: COLORS.PRIMARY_NAVY,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          textTransform: "capitalize",
+                          "&:hover": {
+                            textDecoration: "underline",
+                          },
+                        }}
+                        endIcon={<ArrowRightAltOutlined />}
+                      >
+                        View Details
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
+                    <Typography
+                      sx={{
+                        fontFamily: poppins.style.fontFamily,
+                        color: COLORS.TEXT_SECONDARY,
+                      }}
+                    >
+                      No schools found for this board.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
+          {pagination && (
+            <TablePagination
+              component="div"
+              count={pagination.total}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          )}
         </TableContainer>
       </Box>
     </Box>

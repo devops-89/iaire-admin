@@ -13,7 +13,8 @@ import {
   CardMembership,
   Public,
   Folder,
-  KeyboardArrowDown
+  KeyboardArrowDown,
+  QuestionMark,
 } from "@mui/icons-material";
 import {
   Avatar,
@@ -42,15 +43,52 @@ interface MenuFlatItem {
 
 const MENU_ITEMS: MenuFlatItem[] = [
   { text: "Dashboard", icon: <Dashboard />, path: "/dashboard" },
-  { text: "Training Management", icon: <EventAvailable />, path: "/dashboard/interviews" },
+  {
+    text: "Training Management",
+    icon: <EventAvailable />,
+    path: "/dashboard/interviews",
+  },
   { text: "Batch Management", icon: <Groups />, path: "/dashboard/batches" },
-  { text: "Board Management", icon: <AccountBalance />, path: "/dashboard/schools" },
-  { text: "Innovation Management", icon: <Lightbulb />, path: "/dashboard/innovation-management" },
-  { text: "Research Management", icon: <Science />, path: "/dashboard/research" },
-  { text: "Startup Management", icon: <RocketLaunch />, path: "/dashboard/startups" },
-  { text: "Plan Management", icon: <CardMembership />, path: "/dashboard/plans" },
-  { text: "Country Management", icon: <Public />, path: "/dashboard/countries" },
-  { text: "Resource Management", icon: <Folder />, path: "/dashboard/resources" },
+  {
+    text: "Board Management",
+    icon: <AccountBalance />,
+    path: "/dashboard/boards",
+  },
+  {
+    text: "Innovation Management",
+    icon: <Lightbulb />,
+    path: "/dashboard/innovation-management",
+  },
+  {
+    text: "Research Management",
+    icon: <Science />,
+    path: "/dashboard/research",
+  },
+  {
+    text: "Startup Management",
+    icon: <RocketLaunch />,
+    path: "/dashboard/startups",
+  },
+  {
+    text: "Plan Management",
+    icon: <CardMembership />,
+    path: "/dashboard/plans",
+  },
+  {
+    text: "Country Management",
+    icon: <Public />,
+    path: "/dashboard/countries",
+  },
+  {
+    text: "Resource Management",
+    icon: <Folder />,
+    path: "/dashboard/resources",
+  },
+  {
+    text: "Support Tickets",
+    icon: <QuestionMark />,
+    path: "/dashboard/support-tickets",
+  },
 ];
 
 const Sidebar = () => {
@@ -95,7 +133,15 @@ const Sidebar = () => {
         },
       }}
     >
-      <Box sx={{ p: 3, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <Box
+        sx={{
+          p: 3,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Box
           component="img"
           src="/logo.png"
@@ -119,14 +165,12 @@ const Sidebar = () => {
                 onClick={() => router.push(item.path)}
                 sx={{
                   borderRadius: "12px",
-                  backgroundColor: isActive
-                    ? COLORS.WHITE
-                    : "transparent",
-                  color: isActive
-                    ? COLORS.PRIMARY_NAVY
-                    : COLORS.WHITE,
+                  backgroundColor: isActive ? COLORS.WHITE : "transparent",
+                  color: isActive ? COLORS.PRIMARY_NAVY : COLORS.WHITE,
                   "&:hover": {
-                    backgroundColor: isActive ? COLORS.WHITE : "rgba(255, 255, 255, 0.04)",
+                    backgroundColor: isActive
+                      ? COLORS.WHITE
+                      : "rgba(255, 255, 255, 0.04)",
                     color: isActive ? COLORS.PRIMARY_NAVY : COLORS.WHITE,
                   },
                   py: 1,
@@ -135,9 +179,7 @@ const Sidebar = () => {
               >
                 <ListItemIcon
                   sx={{
-                    color: isActive
-                      ? COLORS.PRIMARY_NAVY
-                      : COLORS.WHITE,
+                    color: isActive ? COLORS.PRIMARY_NAVY : COLORS.WHITE,
                     minWidth: 40,
                   }}
                 >
@@ -160,7 +202,13 @@ const Sidebar = () => {
         })}
       </List>
 
-      <Box sx={{ mt: "auto", p: 2, borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
+      <Box
+        sx={{
+          mt: "auto",
+          p: 2,
+          borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+        }}
+      >
         <Box
           onClick={handleProfileMenuOpen}
           sx={{
@@ -176,7 +224,14 @@ const Sidebar = () => {
           }}
         >
           <Avatar
-            sx={{ width: 35, height: 35, bgcolor: "white", color: COLORS.PRIMARY_NAVY, fontWeight: 700, fontSize: "14px" }}
+            sx={{
+              width: 35,
+              height: 35,
+              bgcolor: "white",
+              color: COLORS.PRIMARY_NAVY,
+              fontWeight: 700,
+              fontSize: "14px",
+            }}
           >
             AD
           </Avatar>
@@ -203,16 +258,18 @@ const Sidebar = () => {
               Super Admin
             </Typography>
           </Box>
-          <KeyboardArrowDown sx={{ color: "rgba(255, 255, 255, 0.4)", fontSize: 18 }} />
+          <KeyboardArrowDown
+            sx={{ color: "rgba(255, 255, 255, 0.4)", fontSize: 18 }}
+          />
         </Box>
-        <Typography 
-          sx={{ 
-            fontSize: "15px", 
-            color: "rgba(255, 255, 255, 0.3)", 
-            fontFamily: poppins.style.fontFamily, 
-            textAlign: "right", 
+        <Typography
+          sx={{
+            fontSize: "15px",
+            color: "rgba(255, 255, 255, 0.3)",
+            fontFamily: poppins.style.fontFamily,
+            textAlign: "right",
             mt: 1.5,
-            letterSpacing: "1px"
+            letterSpacing: "1px",
           }}
         >
           v1
@@ -248,7 +305,9 @@ const Sidebar = () => {
       >
         <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
         <Divider sx={{ backgroundColor: "rgba(255, 255, 255, 0.08)" }} />
-        <MenuItem onClick={handleLogout} sx={{ color: COLORS.ERROR }}>Logout</MenuItem>
+        <MenuItem onClick={handleLogout} sx={{ color: COLORS.ERROR }}>
+          Logout
+        </MenuItem>
       </Menu>
     </Drawer>
   );

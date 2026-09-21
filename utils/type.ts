@@ -25,36 +25,6 @@ export interface UPDATE_COUNTRIES_REQUEST {
   currencyCode?: string;
 }
 
-export interface Country {
-  id: number;
-  name: string;
-  code: string;
-  phoneCode: string;
-  currencyCode: string;
-  isActive?: boolean;
-  createdAt?: string;
-}
-
-export interface Pagination {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
-
-export interface Plan {
-  id: number;
-  name: string;
-  code: string;
-  target: string;
-  price: number;
-  currency: string;
-  billingCycle: string;
-  trialDays: number;
-  isActive: boolean;
-  createdAt?: string;
-}
-
 export interface CREATE_PLAN_REQUEST {
   name: string;
   // code: string;
@@ -175,12 +145,6 @@ export interface School {
   logo: string;
   city: string;
   state: string;
-}
-
-export interface Board {
-  id: number;
-  name: string;
-  code: string;
 }
 
 export interface SCHEDULE_INTERVIEW_REQUEST {
@@ -614,3 +578,196 @@ export interface GET_RESEARCH_RESPONSE {
   data: ResearchSubmission[];
   pagination: Pagination;
 }
+
+export interface SpocDetails {
+  name: string;
+  email: string;
+  phone: string;
+}
+
+export interface Board {
+  id: number;
+  name: string;
+  code: string;
+  description: string | null;
+  logo: string | null;
+  isActive: boolean;
+  state: string | null;
+  city: string | null;
+  isdCode: string | null;
+  countryId: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  boardLogoDownloadUrl: string | null;
+}
+
+export interface Country {
+  id: number;
+  name: string;
+  code: string;
+  phoneCode: string;
+  currencyCode: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+export interface Plan {
+  id: number;
+  code: string;
+  name: string;
+  target: string;
+  price: number;
+  currency: string;
+  billingCycle: string;
+  trialDays: number;
+  isActive: boolean;
+  countryId: number;
+  stripeProductId: string;
+  stripePriceId: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+export interface Payment {
+  id: number;
+  membershipId: number | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  membership: any | null;
+  membershipUpgradeId: number | null;
+  subscriptionId: number | null;
+  userId: number;
+  planId: number;
+  plan: Plan;
+  amount: number;
+  currency: string;
+  gateway: string;
+  stripeSessionId: string | null;
+  stripePaymentIntentId: string | null;
+  stripeChargeId: string | null;
+  status: string;
+  failureReason: string | null;
+  paidAt: string;
+  expiresAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface User {
+  id: number;
+  email: string;
+  username: string;
+  phone: string | null;
+  countryCode: string | null;
+  isdCode: string | null;
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
+  isBoardAdminManuallyVerfied: boolean;
+  fullName: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  bio: string | null;
+  profileImage: string | null;
+  hashedRefreshToken: string;
+  lastLoginAt: string;
+  tokenVersion: number;
+  role: string;
+  status: string;
+  schoolId: number | null;
+  grade: string | null;
+  state: string | null;
+  dob: string | null;
+  spocDetails: SpocDetails | null;
+  city: string | null;
+  totalSchools: number | null;
+  totalStudents: number | null;
+  totalTeachers: number | null;
+  noOfStudents: number | null;
+  noOfTeachers: number | null;
+  category: string | null;
+  gender: string | null;
+  approvalStatus: string;
+  isSchoolPay: boolean;
+  primarySubjects: string[];
+  experienceYears: number | null;
+  experienceinYears: number | null;
+  experienceMonths: number | null;
+  fatherName: string | null;
+  fatherEmail: string | null;
+  fatherPhone: string | null;
+  fatherProfession: string | null;
+  motherName: string | null;
+  motherEmail: string | null;
+  motherPhone: string | null;
+  motherProfession: string | null;
+  school: any | null;
+  oldSchoolId: number | null;
+  previousSchoolIds: number[];
+  boardId: number | null;
+  board: Board | null;
+  oldBoardId: number | null;
+  previousBoardIds: number[];
+  oldApprovalStatus: string | null;
+  schoolHistory: any[];
+  countryId: number | null;
+  country: Country | null;
+  payments: Payment[];
+  memberships: any[];
+  membershipTier: string | null;
+  tierProgress: number;
+  membershipCode: string | null;
+  tierProgressDetails: any | null;
+  approvedAt: string | null;
+  rejectedAt: string | null;
+  rejectReason: string | null;
+  isHead: boolean;
+  headNominationStatus: string | null;
+  headNominationCategory: string | null;
+  headNominationMessage: string | null;
+  headRejectReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  isNominated: boolean;
+  currentApprovalStatus: string;
+  isMigrated: boolean;
+  userId: string;
+  isMembershipActive: boolean;
+  profileImageDownloadUrl: string | null;
+}
+
+export interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface BOARDS_LIST_RESPONSE {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: User[];
+  pagination: Pagination;
+}
+
+export interface NEED_ASSISTANCE_RESPONSE {
+  id: number;
+  subject: string;
+  description: string;
+  category: string;
+  priority: string;
+  status: string;
+  addedBy: number;
+  addedByUser: User;
+  solvedBy: number | null;
+  solvedByUser: User | null;
+  solvedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
