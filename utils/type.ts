@@ -742,8 +742,8 @@ export interface User {
 export interface Pagination {
   page: number;
   limit: number;
-  total: number;
-  totalPages: number;
+  total?: number;
+  totalPages?: number;
 }
 
 export interface BOARDS_LIST_RESPONSE {
@@ -771,3 +771,10 @@ export interface NEED_ASSISTANCE_RESPONSE {
   deletedAt: string | null;
 }
 
+export interface SCHOOL_HEAD_NOMINATION_LIST_RESPONSE {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: User[];
+  pagination: Pagination;
+}

@@ -2,6 +2,7 @@ import {
   BILLING_CYCLE,
   CATEGORY,
   FILE_TYPE,
+  HEAD_NOMINATION_STATUS,
   INNOVATION_STATUS,
   PLAN_BENEFITS,
   RESOURCES_TYPE,
@@ -1399,5 +1400,24 @@ export const SUPPORT_TICKET_STATUS_DATA = [
   {
     label: "Reopened",
     value: SUPPORT_TICKET_STATUS.REOPENED,
+  },
+];
+
+export const SCHOOL_HEAD_NOMINATION_TABLE_HEADER_DATA = [
+  "User",
+  "School",
+  "Category",
+  "Status",
+  "Actions",
+];
+
+export const SCHOOL_HEAD_NOMINATION_STATUS_DATA = [
+  {
+    label: "Approved",
+    value: HEAD_NOMINATION_STATUS.APPROVED,
+  },
+  {
+    label: "Rejected",
+    value: HEAD_NOMINATION_STATUS.REJECTED,
   },
 ];

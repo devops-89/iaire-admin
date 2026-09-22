@@ -1,6 +1,7 @@
 "use client";
 import { useDeleteSupportTickets } from "@/hooks/school/useDeleteSupportTickets";
 import { useGetAllNeedAssistance } from "@/hooks/school/useNeedAssistance";
+import { useUpdateTicketStatus } from "@/hooks/school/useUpdateTicketStatus";
 import DeleteSupportTickets from "@/modals/needAssistance/DeleteSupportTickets";
 import { useModal } from "@/store/useModal";
 import {
@@ -54,6 +55,13 @@ const SupportTicketsLayout = () => {
     showModal(
       <DeleteSupportTickets onDelete={() => handleDeleteSupportTicket(id)} />,
     );
+  };
+
+  const { updateTicketStatus } = useUpdateTicketStatus();
+
+  const handleUpdateStatus = async (id: string | number, status: string) => {
+    await updateTicketStatus(id.toString(), status);
+    getAllSupportTickets();
   };
 
   return (
@@ -147,7 +155,9 @@ const SupportTicketsLayout = () => {
                       <TableCell>
                         <Select
                           value={val.status}
-                          onChange={(e) => {}}
+                          onChange={(e) =>
+                            handleUpdateStatus(val.id, e.target.value as string)
+                          }
                           sx={{
                             height: 30,
                             fontSize: 12,

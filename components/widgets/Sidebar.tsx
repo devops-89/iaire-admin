@@ -15,6 +15,9 @@ import {
   Folder,
   KeyboardArrowDown,
   QuestionMark,
+  Person,
+  MenuOpen,
+  Menu as MenuIcon,
 } from "@mui/icons-material";
 import {
   Avatar,
@@ -29,11 +32,13 @@ import {
   Menu,
   MenuItem,
   Typography,
+  IconButton,
 } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
 const DRAWER_WIDTH = 280;
+const COLLAPSED_WIDTH = 80;
 
 interface MenuFlatItem {
   text: string;
@@ -89,6 +94,11 @@ const MENU_ITEMS: MenuFlatItem[] = [
     icon: <QuestionMark />,
     path: "/dashboard/support-tickets",
   },
+  {
+    text: "School Head Boy/Girl Nomination",
+    icon: <Person />,
+    path: "/dashboard/school-head-nomination",
+  },
 ];
 
 const Sidebar = () => {
@@ -97,6 +107,8 @@ const Sidebar = () => {
   const { logout } = useLogin();
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const currentWidth = isCollapsed ? COLLAPSED_WIDTH : DRAWER_WIDTH;
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -115,10 +127,12 @@ const Sidebar = () => {
     <Drawer
       variant="permanent"
       sx={{
-        width: DRAWER_WIDTH,
+        width: currentWidth,
         flexShrink: 0,
+        transition: "width 0.3s ease",
         "& .MuiDrawer-paper": {
-          width: DRAWER_WIDTH,
+          width: currentWidth,
+          transition: "width 0.3s ease",
           height: "100vh",
           top: 0,
           left: 0,
@@ -130,28 +144,37 @@ const Sidebar = () => {
           boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
           display: "flex",
           flexDirection: "column",
+          overflowX: "hidden",
         },
       }}
     >
       <Box
         sx={{
-          p: 3,
+          p: 2,
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: isCollapsed ? "center" : "space-between",
+          minHeight: 70,
         }}
       >
-        <Box
-          component="img"
-          src="/logo.png"
-          alt="IAIRE Logo"
-          sx={{
-            maxHeight: 45,
-            maxWidth: "80%",
-            objectFit: "contain",
-          }}
-        />
+        {!isCollapsed && (
+          <Box
+            component="img"
+            src="/logo.png"
+            alt="IAIRE Logo"
+            sx={{
+              maxHeight: 40,
+              maxWidth: "70%",
+              objectFit: "contain",
+            }}
+          />
+        )}
+        <IconButton
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          sx={{ color: COLORS.WHITE }}
+        >
+          {isCollapsed ? <MenuIcon /> : <MenuOpen />}
+        </IconButton>
       </Box>
 
       <Divider sx={{ backgroundColor: "rgba(255, 255, 255, 0.08)", mb: 2 }} />
@@ -165,6 +188,7 @@ const Sidebar = () => {
                 onClick={() => router.push(item.path)}
                 sx={{
                   borderRadius: "12px",
+                  justifyContent: isCollapsed ? "center" : "initial",
                   backgroundColor: isActive ? COLORS.WHITE : "transparent",
                   color: isActive ? COLORS.PRIMARY_NAVY : COLORS.WHITE,
                   "&:hover": {
@@ -174,28 +198,35 @@ const Sidebar = () => {
                     color: isActive ? COLORS.PRIMARY_NAVY : COLORS.WHITE,
                   },
                   py: 1,
+                  px: isCollapsed ? 1 : 2,
                   transition: "all 0.2s ease",
                 }}
               >
                 <ListItemIcon
                   sx={{
                     color: isActive ? COLORS.PRIMARY_NAVY : COLORS.WHITE,
-                    minWidth: 40,
+                    minWidth: isCollapsed ? 0 : 40,
+                    justifyContent: "center",
                   }}
                 >
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  sx={{
-                    "& .MuiListItemText-primary": {
-                      fontSize: FONT_SIZE.FS14,
-                      fontWeight: isActive ? 600 : 400,
-                      fontFamily: poppins.style.fontFamily,
-                      color: "inherit",
-                    },
-                  }}
-                />
+                {!isCollapsed && (
+                  <ListItemText
+                    primary={item.text}
+                    sx={{
+                      "& .MuiListItemText-primary": {
+                        fontSize: FONT_SIZE.FS14,
+                        fontWeight: isActive ? 600 : 400,
+                        fontFamily: poppins.style.fontFamily,
+                        color: "inherit",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      },
+                    }}
+                  />
+                )}
               </ListItemButton>
             </ListItem>
           );
@@ -214,6 +245,7 @@ const Sidebar = () => {
           sx={{
             display: "flex",
             alignItems: "center",
+            justifyContent: isCollapsed ? "center" : "space-between",
             gap: 1.5,
             cursor: "pointer",
             backgroundColor: "rgba(255, 255, 255, 0.04)",
@@ -235,45 +267,57 @@ const Sidebar = () => {
           >
             AD
           </Avatar>
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography
-              sx={{
-                fontSize: "13px",
-                fontWeight: 600,
-                fontFamily: poppins.style.fontFamily,
-                lineHeight: 1.2,
-                color: COLORS.WHITE,
-              }}
-            >
-              Admin User
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: "11px",
-                color: "rgba(255, 255, 255, 0.4)",
-                fontFamily: poppins.style.fontFamily,
-                mt: 0.2,
-              }}
-            >
-              Super Admin
-            </Typography>
-          </Box>
-          <KeyboardArrowDown
-            sx={{ color: "rgba(255, 255, 255, 0.4)", fontSize: 18 }}
-          />
+          {!isCollapsed && (
+            <>
+              <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                <Typography
+                  sx={{
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    fontFamily: poppins.style.fontFamily,
+                    lineHeight: 1.2,
+                    color: COLORS.WHITE,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  Admin User
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "11px",
+                    color: "rgba(255, 255, 255, 0.4)",
+                    fontFamily: poppins.style.fontFamily,
+                    mt: 0.2,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  Super Admin
+                </Typography>
+              </Box>
+              <KeyboardArrowDown
+                sx={{ color: "rgba(255, 255, 255, 0.4)", fontSize: 18 }}
+              />
+            </>
+          )}
         </Box>
-        <Typography
-          sx={{
-            fontSize: "15px",
-            color: "rgba(255, 255, 255, 0.3)",
-            fontFamily: poppins.style.fontFamily,
-            textAlign: "right",
-            mt: 1.5,
-            letterSpacing: "1px",
-          }}
-        >
-          v1
-        </Typography>
+        {!isCollapsed && (
+          <Typography
+            sx={{
+              fontSize: "15px",
+              color: "rgba(255, 255, 255, 0.3)",
+              fontFamily: poppins.style.fontFamily,
+              textAlign: "right",
+              mt: 1.5,
+              letterSpacing: "1px",
+            }}
+          >
+            v1
+          </Typography>
+        )}
       </Box>
 
       <Menu

@@ -1,3 +1,4 @@
+import { Pagination } from "@/utils/type";
 import {
   boardsApi,
   needAssistance,
@@ -108,6 +109,36 @@ export const SchoolsControllers = {
       let result = await needAssistance.patch(`/${id}/status`, {
         status: status,
       });
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getHeadNominationList: async ({ page, limit }: Pagination) => {
+    try {
+      let result = await userSecuredApi.get(
+        `/head-nominations/list?page=${page}&limit=${limit}`,
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  updateHeadNominationStatus: async (
+    id: number | string,
+    status: string,
+    rejectReason?: string,
+  ) => {
+    try {
+      let result = await userSecuredApi.patch(
+        `/${id}/review-head-nomination/status`,
+        {
+          status: status,
+          ...(rejectReason && { rejectReason }),
+        },
+      );
       return result;
     } catch (error) {
       throw error;
