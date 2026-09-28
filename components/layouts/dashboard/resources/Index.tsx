@@ -534,7 +534,7 @@ const ResourceManagement = () => {
 
         <TablePagination
           component="div"
-          count={pagination.total}
+          count={pagination.total || 0}
           page={pagination.page - 1}
           rowsPerPage={pagination.limit}
           onPageChange={(_, newPage) => {

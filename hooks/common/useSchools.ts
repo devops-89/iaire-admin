@@ -9,10 +9,16 @@ export const useSchools = () => {
   const [loading, setLoading] = useState(true);
   const { setSnackbar } = useSnackbar();
 
-  const fetchBoardAnalytics = async (page: number | string = 1, limit: number | string = 10) => {
+  const fetchBoardAnalytics = async (
+    page: number | string = 1,
+    limit: number | string = 10,
+  ) => {
     setLoading(true);
     try {
-      const response: any = await SchoolsControllers.getBoardWiseAnalytics(page, limit);
+      const response: any = await SchoolsControllers.getBoardWiseAnalytics(
+        page,
+        limit,
+      );
       if (response.data.success) {
         setBoardAnalytics(response.data.data);
         if (response.data.pagination) {

@@ -5,6 +5,7 @@ import {
   HEAD_NOMINATION_STATUS,
   INNOVATION_STATUS,
   PLAN_BENEFITS,
+  RESEARCH_STATUS,
   RESOURCES_TYPE,
   SUPPORT_TICKET_STATUS,
   TRAINING_MODE,
@@ -1408,7 +1409,7 @@ export const SCHOOL_HEAD_NOMINATION_TABLE_HEADER_DATA = [
   "School",
   "Category",
   "Status",
-  "Actions",
+  // "Actions",
 ];
 
 export const SCHOOL_HEAD_NOMINATION_STATUS_DATA = [
@@ -1419,5 +1420,58 @@ export const SCHOOL_HEAD_NOMINATION_STATUS_DATA = [
   {
     label: "Rejected",
     value: HEAD_NOMINATION_STATUS.REJECTED,
+  },
+];
+
+export const RESEARCH_TABLE_HEADER_DATA = [
+  "Id",
+  "Title",
+  "Topic",
+  "Submited By",
+  "School",
+  "Status",
+  "Action",
+];
+
+export const RESEARCH_STATUS_DATA = [
+  {
+    label: "Pending",
+    value: RESEARCH_STATUS.PENDING,
+  },
+  {
+    label: "Approved By Admin",
+    value: RESEARCH_STATUS.APPROVED_BY_ADMIN,
+  },
+  {
+    label: "Final Manuscript to Publication",
+    value: RESEARCH_STATUS.FINAL_MANUSCRIPT_TO_PUBLICATION,
+  },
+  {
+    label: "Rejected By Admin",
+    value: RESEARCH_STATUS.REJECTED_BY_ADMIN,
+  },
+  {
+    label: "PR Reviewed",
+    value: RESEARCH_STATUS.PR_REVIEWED,
+  },
+  {
+    label: "PR Accepted",
+    value: RESEARCH_STATUS.ACCEPTED,
+  },
+  {
+    label: "PR Rejected",
+    value: RESEARCH_STATUS.REJECTED,
+  },
+  {
+    label: "Published",
+    value: RESEARCH_STATUS.PUBLISHED,
+  },
+  {
+    label: "Not Published",
+    value: RESEARCH_STATUS.NOT_PUBLISHED,
+  },
+  {
+    label: "Archived",
+    value: RESEARCH_STATUS.ARCHIVED,
   },
 ];

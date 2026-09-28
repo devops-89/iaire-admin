@@ -132,13 +132,10 @@ export const SchoolsControllers = {
     rejectReason?: string,
   ) => {
     try {
-      let result = await userSecuredApi.patch(
-        `/${id}/review-head-nomination/status`,
-        {
-          status: status,
-          ...(rejectReason && { rejectReason }),
-        },
-      );
+      let result = await userSecuredApi.patch(`/${id}/review-head-nomination`, {
+        status: status,
+        ...(rejectReason && { rejectReason }),
+      });
       return result;
     } catch (error) {
       throw error;

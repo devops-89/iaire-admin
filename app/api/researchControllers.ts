@@ -1,15 +1,15 @@
 import { researchAPI } from "./config";
-import { GET_RESEARCH_RESPONSE } from "@/utils/type";
+import { API_REQUEST, GET_RESEARCH_RESPONSE } from "@/utils/type";
 
 export const ResearchControllers = {
-  getAllResearchSubmissions: async (params?: {
-    search?: string;
-    page?: number;
-    limit?: number;
-  }) => {
+  getAllResearchSubmissions: async ({ search, page, limit }: API_REQUEST) => {
     try {
       const response = await researchAPI.get<GET_RESEARCH_RESPONSE>("/all", {
-        params,
+        params: {
+          search: search,
+          page: page,
+          limit: limit,
+        },
       });
       return response.data;
     } catch (error) {
@@ -19,7 +19,7 @@ export const ResearchControllers = {
 
   updateResearchStatus: async (
     id: number | string,
-    data: { status: string; reviewComments?: string }
+    data: { status: string; reviewComments?: string },
   ) => {
     try {
       const response = await researchAPI.patch(`/update/${id}`, data);

@@ -553,6 +553,32 @@ export interface ResearchCountry {
   deletedAt: string | null;
 }
 
+export interface ResearchSchool {
+  id: number;
+  name: string;
+  code: string | null;
+  address: string | null;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  logo: string | null;
+  affiliationCertificate: string;
+  affiliationNumber: string;
+  website: string;
+  registrationYear: number;
+  contactPersonName: string;
+  contactPersonEmail: string;
+  contactPersonPhone: string;
+  isActive: boolean;
+  boardId: number;
+  countryId: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
 export interface ResearchSubmission {
   id: number;
   title: string;
@@ -570,6 +596,7 @@ export interface ResearchSubmission {
   archiveReason: string | null;
   createdAt: string;
   updatedAt: string;
+  school: ResearchSchool;
 }
 
 export interface GET_RESEARCH_RESPONSE {
@@ -777,4 +804,10 @@ export interface SCHOOL_HEAD_NOMINATION_LIST_RESPONSE {
   message: string;
   data: User[];
   pagination: Pagination;
+}
+
+export interface API_REQUEST {
+  page?: string | number;
+  limit?: string | number;
+  search?: string;
 }

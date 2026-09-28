@@ -12,6 +12,7 @@ import { poppins } from "@/utils/fonts";
 import {
   Box,
   Card,
+  IconButton,
   MenuItem,
   Select,
   Table,
@@ -24,6 +25,9 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { Visibility } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const SchoolHeadNominationLayout = () => {
   const { data, getSchoolHeadNominationList, loading } =
@@ -52,6 +56,7 @@ const SchoolHeadNominationLayout = () => {
   useEffect(() => {
     getSchoolHeadNominationList({ page: page + 1, limit });
   }, [limit, page]);
+  const router = useRouter();
 
   return (
     <div>
@@ -93,7 +98,12 @@ const SchoolHeadNominationLayout = () => {
               </TableHead>
               <TableBody>
                 {data?.data.map((val, i) => (
-                  <TableRow>
+                  <TableRow
+                    key={i}
+                    component={Link}
+                    href={`/dashboard/school-head-nomination/${val.id}`}
+                    sx={{ textDecoration: "none", color: "black" }}
+                  >
                     <TableCell>
                       <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
                         {val.fullName || val.firstName + " " + val.lastName}
@@ -130,21 +140,40 @@ const SchoolHeadNominationLayout = () => {
                         onChange={(e) =>
                           handleStatusChange(val.id, e.target.value as string)
                         }
+                        sx={{
+                          borderRadius: "100px",
+                          height: "100%",
+                          fontSize: 14,
+                        }}
                       >
-                        {val.headNominationStatus === "PENDING" && (
-                          <MenuItem value="PENDING" disabled>
-                            Pending
+                        {val.headNominationStatus ===
+                          HEAD_NOMINATION_STATUS.PENDING && (
+                          <MenuItem
+                            value={HEAD_NOMINATION_STATUS.PENDING}
+                            disabled
+                            sx={{ fontSize: 14, fontWeight: 600 }}
+                          >
+                            {HEAD_NOMINATION_STATUS.PENDING}
                           </MenuItem>
                         )}
                         {SCHOOL_HEAD_NOMINATION_STATUS_DATA.map(
                           (status, index) => (
-                            <MenuItem key={index} value={status.value}>
+                            <MenuItem
+                              key={index}
+                              value={status.value}
+                              sx={{ fontSize: 14, fontWeight: 500 }}
+                            >
                               {status.label}
                             </MenuItem>
                           ),
                         )}
                       </Select>
                     </TableCell>
+                    {/* <TableCell>
+                      <IconButton>
+                        <Visibility sx={{ width: 15 }} />
+                      </IconButton>
+                    </TableCell> */}
                   </TableRow>
                 ))}
               </TableBody>
