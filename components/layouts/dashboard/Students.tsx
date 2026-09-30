@@ -16,7 +16,7 @@ const StudentsManagement = () => {
     <Box>
       <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Box>
-          <Typography variant="h4" sx={{ fontFamily: poppins.style.fontFamily, fontWeight: 700, color: COLORS.BLACK }}>
+          <Typography variant="h4" sx={{ fontFamily: poppins.style.fontFamily, fontSize: "34px", fontWeight: 700, color: COLORS.PRIMARY_NAVY, letterSpacing: -0.5 }}>
             Student Community
           </Typography>
         </Box>

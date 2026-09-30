@@ -36,8 +36,10 @@ const TeachersManagement = () => {
             variant="h4"
             sx={{
               fontFamily: poppins.style.fontFamily,
+              fontSize: "34px",
               fontWeight: 700,
-              color: COLORS.BLACK,
+              color: COLORS.PRIMARY_NAVY,
+              letterSpacing: -0.5,
             }}
           >
             Teacher Management

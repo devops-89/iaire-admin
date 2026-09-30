@@ -1,58 +1,77 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Chip, Typography } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { poppins } from "@/utils/fonts";
-import { COLORS } from "@/utils/enum";
+import { COLORS, TYPOGRAPHY } from "@/utils/enum";
 
 const FS = { fontFamily: poppins.style.fontFamily };
 
 interface BatchesHeaderProps {
   onCreateBatch: () => void;
+  totalCount?: number;
 }
 
-const BatchesHeader = ({ onCreateBatch }: BatchesHeaderProps) => (
+const BatchesHeader = ({ onCreateBatch, totalCount }: BatchesHeaderProps) => (
   <Box
     sx={{
       display: "flex",
       flexDirection: { xs: "column", sm: "row" },
       justifyContent: "space-between",
       alignItems: { xs: "flex-start", sm: "center" },
-      gap: 2,
+      gap: 1.5,
     }}
   >
-    <Typography
-      variant="h4"
-      sx={{
-        fontFamily: poppins.style.fontFamily,
-        fontWeight: 800,
-        color: COLORS.TEXT_PRIMARY,
-        letterSpacing: -0.5,
-      }}
-    >
-      Batch Management
-    </Typography>
+    <Box>
+      <Typography
+        variant="h4"
+        sx={{
+          ...TYPOGRAPHY.PAGE_TITLE,
+        }}
+      >
+        Batch Management
+      </Typography>
+    </Box>
 
-    <Button
-      variant="contained"
-      startIcon={<Add />}
-      onClick={onCreateBatch}
-      sx={{
-        background: `linear-gradient(135deg, ${COLORS.PRIMARY_NAVY} 0%, #1A293D 100%)`,
-        borderRadius: "14px",
-        textTransform: "none",
-        ...FS,
-        px: 3,
-        py: 1.5,
-        fontWeight: 600,
-        boxShadow: "0 8px 20px 0 rgba(11, 23, 39, 0.15)",
-        transition: "all 0.3s",
-        "&:hover": {
-          boxShadow: "0 10px 24px 0 rgba(11, 23, 39, 0.25)",
-          transform: "translateY(-2px)",
-        },
-      }}
-    >
-      Create Batch
-    </Button>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+      {totalCount !== undefined && (
+        <Chip
+          label={`${totalCount} Batches`}
+          size="small"
+          sx={{
+            bgcolor: COLORS.WHITE,
+            border: `1px solid ${COLORS.BORDER_GRAY}`,
+            fontFamily: poppins.style.fontFamily,
+            fontWeight: 600,
+            color: COLORS.TEXT_PRIMARY,
+            height: "32px",
+            borderRadius: "8px",
+            px: 0.5,
+          }}
+        />
+      )}
+
+      <Button
+        variant="contained"
+        startIcon={<Add />}
+        onClick={onCreateBatch}
+        sx={{
+          bgcolor: COLORS.PRIMARY_NAVY,
+          borderRadius: "8px",
+          textTransform: "none",
+          ...FS,
+          px: 2.5,
+          py: 1,
+          fontSize: "13.5px",
+          fontWeight: 600,
+          boxShadow: "none",
+          "&:hover": {
+            bgcolor: COLORS.SECONDARY_NAVY,
+            boxShadow: "none",
+          },
+        }}
+      >
+        Create Batch
+      </Button>
+    </Box>
   </Box>
 );
 

@@ -117,10 +117,11 @@ const ResourceManagement = () => {
       >
         <Box>
           <Typography
+            variant="h4"
             sx={{
-              fontSize: 20,
+              fontSize: "34px",
               fontFamily: poppins.style.fontFamily,
-              fontWeight: 800,
+              fontWeight: 700,
               color: COLORS.TEXT_PRIMARY,
               letterSpacing: -0.5,
             }}

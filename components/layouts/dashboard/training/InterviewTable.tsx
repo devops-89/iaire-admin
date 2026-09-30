@@ -1,8 +1,9 @@
 import { useInterviews } from "@/hooks/common/useInterviews";
 import RejectNomination from "@/modals/RejectNomination";
 import ScheduleInterview from "@/modals/ScheduleInterview";
+import ViewInterviewDetails from "@/modals/ViewInterviewDetails";
 import { useModal } from "@/store/useModal";
-import { COLORS, TRAINING_NOMINATION_STATUS } from "@/utils/enum";
+import { COLORS, TRAINING_NOMINATION_STATUS, TYPOGRAPHY } from "@/utils/enum";
 import { poppins } from "@/utils/fonts";
 import { TEACHER_TRAINING_RESPONSE, TrainingTeacher } from "@/utils/type";
 import {
@@ -29,7 +30,96 @@ import {
   Typography,
 } from "@mui/material";
 import moment from "moment";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+
+const STATUS_CONFIG: Record<
+  string,
+  { label: string; bgcolor: string; color: string; border: string }
+> = {
+  [TRAINING_NOMINATION_STATUS.TRAINING_COMPLETED]: {
+    label: "Training Completed",
+    bgcolor: COLORS.STATUS_SUCCESS_BG,
+    color: COLORS.STATUS_SUCCESS_TEXT,
+    border: `1px solid ${COLORS.STATUS_SUCCESS_BORDER}`,
+  },
+  [TRAINING_NOMINATION_STATUS.SCHOOL_APPROVED]: {
+    label: "School Approved",
+    bgcolor: COLORS.STATUS_INFO_BG,
+    color: COLORS.STATUS_INFO_TEXT,
+    border: `1px solid ${COLORS.STATUS_INFO_BORDER}`,
+  },
+  [TRAINING_NOMINATION_STATUS.IAIRE_APPROVED]: {
+    label: "IAIRE Approved",
+    bgcolor: COLORS.STATUS_INDIGO_BG,
+    color: COLORS.STATUS_INDIGO_TEXT,
+    border: `1px solid ${COLORS.STATUS_INDIGO_BORDER}`,
+  },
+  [TRAINING_NOMINATION_STATUS.INTERVIEW_SCHEDULED]: {
+    label: "Interview Scheduled",
+    bgcolor: COLORS.STATUS_PURPLE_BG,
+    color: COLORS.STATUS_PURPLE_TEXT,
+    border: `1px solid ${COLORS.STATUS_PURPLE_BORDER}`,
+  },
+  [TRAINING_NOMINATION_STATUS.INTERVIEW_COMPLETED]: {
+    label: "Interview Completed",
+    bgcolor: COLORS.STATUS_PURPLE_BG,
+    color: COLORS.STATUS_PURPLE_TEXT,
+    border: `1px solid ${COLORS.STATUS_PURPLE_BORDER}`,
+  },
+  [TRAINING_NOMINATION_STATUS.SELF_NOMINATED]: {
+    label: "Self Nominated",
+    bgcolor: COLORS.STATUS_WARNING_BG,
+    color: COLORS.STATUS_WARNING_TEXT,
+    border: `1px solid ${COLORS.STATUS_WARNING_BORDER}`,
+  },
+  [TRAINING_NOMINATION_STATUS.SCHOOL_ASSIGNED]: {
+    label: "School Assigned",
+    bgcolor: COLORS.STATUS_TEAL_BG,
+    color: COLORS.STATUS_TEAL_TEXT,
+    border: `1px solid ${COLORS.STATUS_TEAL_BORDER}`,
+  },
+  [TRAINING_NOMINATION_STATUS.PENDING]: {
+    label: "Pending",
+    bgcolor: COLORS.INPUT_BG,
+    color: COLORS.TEXT_SECONDARY,
+    border: `1px solid ${COLORS.BORDER_GRAY}`,
+  },
+  [TRAINING_NOMINATION_STATUS.REJECTED]: {
+    label: "Rejected",
+    bgcolor: COLORS.STATUS_ERROR_BG,
+    color: COLORS.STATUS_ERROR_TEXT,
+    border: `1px solid ${COLORS.STATUS_ERROR_BORDER}`,
+  },
+};
+
+const getStatusBadge = (status?: string) => {
+  if (!status) {
+    return {
+      label: "--",
+      bgcolor: COLORS.INPUT_BG,
+      color: COLORS.TEXT_SECONDARY,
+      border: `1px solid ${COLORS.BORDER_GRAY}`,
+    };
+  }
+
+  if (STATUS_CONFIG[status]) {
+    return STATUS_CONFIG[status];
+  }
+
+  const formatted = status
+    .toLowerCase()
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+
+  return {
+    label: formatted,
+    bgcolor: COLORS.INPUT_BG,
+    color: COLORS.TEXT_SECONDARY,
+    border: `1px solid ${COLORS.BORDER_GRAY}`,
+  };
+};
 
 const InterviewTable = ({
   data,
@@ -47,7 +137,7 @@ const InterviewTable = ({
   onRowsPerPageChange: (limit: number) => void;
 }) => {
   const COLUMNS = [
-    { label: "Teacher Info" },
+    { label: "Mentor Name" },
     { label: "Batch" },
     {
       label: "School",
@@ -67,6 +157,7 @@ const InterviewTable = ({
   } = useInterviews();
 
   const { showModal } = useModal();
+  const router = useRouter();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRecord, setActiveRecord] = useState<any>(null);
@@ -81,6 +172,13 @@ const InterviewTable = ({
   const handleMenuClose = () => {
     setAnchorEl(null);
     setActiveRecord(null);
+  };
+
+  const handleViewDetails = () => {
+    if (activeRecord?.id) {
+      router.push(`/dashboard/interviews/${activeRecord.id}`);
+    }
+    handleMenuClose();
   };
 
   const handleOpenSchedule = () => {
@@ -135,15 +233,50 @@ const InterviewTable = ({
     handleMenuClose();
   };
 
+  const canSchedule =
+    activeRecord?.status === TRAINING_NOMINATION_STATUS.SCHOOL_APPROVED ||
+    activeRecord?.status === TRAINING_NOMINATION_STATUS.SCHOOL_ASSIGNED ||
+    activeStatus === TRAINING_NOMINATION_STATUS.SCHOOL_APPROVED ||
+    activeStatus === TRAINING_NOMINATION_STATUS.SCHOOL_ASSIGNED;
+
+  const canApproveOrReject =
+    activeRecord?.status === TRAINING_NOMINATION_STATUS.INTERVIEW_SCHEDULED ||
+    activeRecord?.status === TRAINING_NOMINATION_STATUS.INTERVIEW_COMPLETED ||
+    activeStatus === TRAINING_NOMINATION_STATUS.INTERVIEW_SCHEDULED ||
+    activeStatus === TRAINING_NOMINATION_STATUS.INTERVIEW_COMPLETED;
+
+  const canCompleteTraining =
+    activeRecord?.status === TRAINING_NOMINATION_STATUS.IAIRE_APPROVED ||
+    activeStatus === TRAINING_NOMINATION_STATUS.IAIRE_APPROVED;
+
   return (
     <Box>
-      <TableContainer>
+      <TableContainer
+        sx={{
+          bgcolor: COLORS.WHITE,
+          borderRadius: "14px",
+          border: `1px solid ${COLORS.BORDER_GRAY}`,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.02)",
+          overflow: "hidden",
+        }}
+      >
         <Table>
-          <TableHead>
+          <TableHead sx={{ bgcolor: COLORS.BG_LIGHT }}>
             <TableRow>
               {COLUMNS.map((val, i) => (
-                <TableCell key={i}>
-                  <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
+                <TableCell
+                  key={i}
+                  sx={{
+                    py: 1.75,
+                    px: 2.5,
+                    borderBottom: `1px solid ${COLORS.BORDER_GRAY}`,
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      ...TYPOGRAPHY.TABLE_HEADER,
+                    }}
+                  >
                     {val.label}
                   </Typography>
                 </TableCell>
@@ -151,58 +284,173 @@ const InterviewTable = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.data.map((val, i) => (
-              <TableRow key={i}>
-                <TableCell sx={{ width: 200 }}>
-                  <Typography sx={{ fontSize: 14 }}>
-                    {val?.teacher?.fullName ||
-                      val?.teacher?.firstName + " " + val?.teacher?.lastName ||
-                      "--"}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography sx={{ fontSize: 14 }}>
-                    {val?.training?.batch?.name || "--"}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography
-                    sx={{ fontSize: 14, textTransform: "capitalize" }}
-                  >
-                    {val?.training?.school?.name || "--"}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={val?.status?.replaceAll("_", " ") || "--"}
+            {data?.data && data.data.length > 0 ? (
+              data.data.map((val, i) => (
+                <TableRow
+                  key={val.id || i}
+                  onClick={() => {
+                    if (val?.id) {
+                      router.push(`/dashboard/interviews/${val.id}`);
+                    }
+                  }}
+                  sx={{
+                    cursor: "pointer",
+                    "&:hover": { bgcolor: COLORS.HOVER_BG_LIGHT },
+                    transition: "background-color 0.15s ease",
+                    "&:last-child td": { borderBottom: 0 },
+                  }}
+                >
+                  <TableCell
                     sx={{
-                      textTransform: "capitalize",
+                      py: 1.75,
+                      px: 2.5,
+                      borderBottom: `1px solid ${COLORS.INPUT_BG}`,
+                      width: 220,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontFamily: poppins.style.fontFamily,
+                        fontSize: "13.5px",
+                        fontWeight: 600,
+                        color: COLORS.PRIMARY_NAVY,
+                      }}
+                    >
+                      {val?.teacher?.fullName ||
+                        (val?.teacher?.firstName
+                          ? `${val?.teacher?.firstName} ${val?.teacher?.lastName || ""}`
+                          : "--")}
+                    </Typography>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      py: 1.75,
+                      px: 2.5,
+                      borderBottom: `1px solid ${COLORS.INPUT_BG}`,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontFamily: poppins.style.fontFamily,
+                        fontSize: "13.5px",
+                        fontWeight: 500,
+                        color: COLORS.TEXT_PRIMARY,
+                      }}
+                    >
+                      {val?.training?.batch?.name || "--"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      py: 1.75,
+                      px: 2.5,
+                      borderBottom: `1px solid ${COLORS.INPUT_BG}`,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontFamily: poppins.style.fontFamily,
+                        fontSize: "13.5px",
+                        color: COLORS.TEXT_SECONDARY,
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {val?.training?.school?.name || "--"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      py: 1.75,
+                      px: 2.5,
+                      borderBottom: `1px solid ${COLORS.INPUT_BG}`,
+                    }}
+                  >
+                    {(() => {
+                      const badge = getStatusBadge(val?.status);
+                      return (
+                        <Chip
+                          label={badge.label}
+                          size="small"
+                          sx={{
+                            fontFamily: poppins.style.fontFamily,
+                            fontSize: 12,
+                            fontWeight: 500,
+                            height: 24,
+                            borderRadius: "6px",
+                            bgcolor: badge.bgcolor,
+                            color: badge.color,
+                            border: badge.border,
+                            "& .MuiChip-label": {
+                              px: 1,
+                            },
+                          }}
+                        />
+                      );
+                    })()}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      py: 1.75,
+                      px: 2.5,
+                      borderBottom: `1px solid ${COLORS.INPUT_BG}`,
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontFamily: poppins.style.fontFamily,
+                        fontSize: "13.5px",
+                        color: COLORS.TEXT_SECONDARY,
+                      }}
+                    >
+                      {val.interviewScheduledAt
+                        ? moment(val?.interviewScheduledAt).format("DD MMM YYYY")
+                        : "--"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      py: 1.75,
+                      px: 2.5,
+                      borderBottom: `1px solid ${COLORS.INPUT_BG}`,
+                    }}
+                  >
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleMenuOpen(e, val);
+                      }}
+                      disabled={
+                        val.status === TRAINING_NOMINATION_STATUS.REJECTED
+                      }
+                      sx={{
+                        color: COLORS.TEXT_SECONDARY,
+                        "&:hover": {
+                          color: COLORS.PRIMARY_NAVY,
+                          bgcolor: COLORS.HOVER_BG,
+                        },
+                      }}
+                    >
+                      <MoreVert sx={{ fontSize: 20 }} />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} sx={{ textAlign: "center", py: 6 }}>
+                  <Typography
+                    sx={{
+                      color: COLORS.TEXT_SECONDARY,
                       fontFamily: poppins.style.fontFamily,
                       fontSize: 14,
                     }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Typography
-                    sx={{ fontSize: 14, textTransform: "capitalize" }}
                   >
-                    {val.interviewScheduledAt
-                      ? moment(val?.interviewScheduledAt).format("DD MMM YYYY")
-                      : "--"}
+                    No teacher records found for the selected status or search filter.
                   </Typography>
                 </TableCell>
-                <TableCell>
-                  <IconButton
-                    onClick={(e) => handleMenuOpen(e, val)}
-                    disabled={
-                      val.status === TRAINING_NOMINATION_STATUS.REJECTED
-                    }
-                  >
-                    <MoreVert />
-                  </IconButton>
-                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
         <TablePagination
@@ -217,7 +465,14 @@ const InterviewTable = ({
             onRowsPerPageChange(parseInt(event.target.value));
           }}
           rowsPerPageOptions={[5, 10, 25]}
-          sx={{ borderTop: "1px solid rgba(0,0,0,0.05)" }}
+          sx={{
+            borderTop: `1px solid ${COLORS.BORDER_GRAY}`,
+            fontFamily: poppins.style.fontFamily,
+            "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows, & .MuiTablePagination-select": {
+              fontFamily: poppins.style.fontFamily,
+              fontSize: "13px",
+            },
+          }}
         />
       </TableContainer>
 
@@ -228,11 +483,12 @@ const InterviewTable = ({
         slotProps={{
           paper: {
             sx: {
-              borderRadius: "16px",
-              boxShadow: "0px 10px 30px rgba(0,0,0,0.1)",
-              border: "1px solid rgba(0,0,0,0.05)",
-              mt: 1,
-              minWidth: 200,
+              borderRadius: "10px",
+              boxShadow:
+                "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04)",
+              border: `1px solid ${COLORS.BORDER_GRAY}`,
+              p: 0.75,
+              minWidth: 190,
             },
           },
         }}
@@ -240,97 +496,116 @@ const InterviewTable = ({
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <MenuItem
-          // onClick={handleViewDetails}
+          onClick={handleViewDetails}
           sx={{
-            fontSize: 14,
-            fontWeight: 600,
-            py: 1.5,
-            color: COLORS.BLACK,
+            fontFamily: poppins.style.fontFamily,
+            fontSize: "13px",
+            fontWeight: 500,
+            py: 1,
+            px: 1.5,
+            borderRadius: "6px",
+            color: COLORS.TEXT_PRIMARY,
             display: "flex",
-            gap: 1.5,
-            "&:hover": { bgcolor: "rgba(11, 23, 39, 0.04)" },
+            alignItems: "center",
+            gap: 1.25,
+            "&:hover": { bgcolor: COLORS.HOVER_BG },
           }}
         >
-          <Visibility sx={{ fontSize: 20, color: COLORS.TEXT_SECONDARY }} />
+          <Visibility sx={{ fontSize: 18, color: COLORS.TEXT_SECONDARY }} />
           View Profile Details
         </MenuItem>
-        <Divider sx={{ my: 0.5, borderStyle: "dashed" }} />
-        {(activeStatus === TRAINING_NOMINATION_STATUS.SCHOOL_APPROVED ||
-          activeStatus === TRAINING_NOMINATION_STATUS.SCHOOL_ASSIGNED ||
-          activeRecord?.status ===
-            TRAINING_NOMINATION_STATUS.SCHOOL_ASSIGNED) && (
-          <MenuItem
-            onClick={handleOpenSchedule}
-            sx={{
-              fontSize: 14,
-              fontWeight: 600,
-              py: 1.5,
-              color: COLORS.PRIMARY_NAVY,
-              display: "flex",
-              gap: 1.5,
-              "&:hover": { bgcolor: "rgba(11, 23, 39, 0.04)" },
-            }}
-          >
-            <CalendarMonth sx={{ fontSize: 20 }} />
-            Schedule Interview
-          </MenuItem>
-        )}
-        {(activeStatus === TRAINING_NOMINATION_STATUS.INTERVIEW_SCHEDULED ||
-          activeRecord?.status ===
-            TRAINING_NOMINATION_STATUS.INTERVIEW_SCHEDULED) && (
-          <>
-            <Divider sx={{ my: 0.5, borderStyle: "dashed" }} />
 
+        {canSchedule && (
+          <>
+            <Divider sx={{ my: 0.5, borderColor: COLORS.INPUT_BG }} />
+            <MenuItem
+              onClick={handleOpenSchedule}
+              sx={{
+                fontFamily: poppins.style.fontFamily,
+                fontSize: "13px",
+                fontWeight: 500,
+                py: 1,
+                px: 1.5,
+                borderRadius: "6px",
+                color: COLORS.PRIMARY_NAVY,
+                display: "flex",
+                alignItems: "center",
+                gap: 1.25,
+                "&:hover": { bgcolor: COLORS.HOVER_BG },
+              }}
+            >
+              <CalendarMonth sx={{ fontSize: 18, color: COLORS.TEXT_SECONDARY }} />
+              Schedule Interview
+            </MenuItem>
+          </>
+        )}
+
+        {canApproveOrReject && (
+          <>
+            <Divider sx={{ my: 0.5, borderColor: COLORS.INPUT_BG }} />
             <MenuItem
               onClick={handleApprove}
               disabled={approving}
               sx={{
-                fontSize: 14,
-                fontWeight: 600,
-                py: 1.5,
-                color: "#059669",
+                fontFamily: poppins.style.fontFamily,
+                fontSize: "13px",
+                fontWeight: 500,
+                py: 1,
+                px: 1.5,
+                borderRadius: "6px",
+                color: COLORS.SUCCESS_DARK,
                 display: "flex",
-                gap: 1.5,
-                "&:hover": { bgcolor: "rgba(5, 150, 105, 0.06)" },
+                alignItems: "center",
+                gap: 1.25,
+                "&:hover": { bgcolor: COLORS.STATUS_SUCCESS_BG },
               }}
             >
-              <CheckCircle sx={{ fontSize: 20 }} />
+              <CheckCircle sx={{ fontSize: 18, color: COLORS.SUCCESS_DARK }} />
               {approving ? "Processing..." : "Approve Teacher"}
             </MenuItem>
             <MenuItem
               onClick={handleOpenReject}
               disabled={approving}
               sx={{
-                fontSize: 14,
-                fontWeight: 600,
-                py: 1.5,
+                fontFamily: poppins.style.fontFamily,
+                fontSize: "13px",
+                fontWeight: 500,
+                py: 1,
+                px: 1.5,
+                borderRadius: "6px",
                 color: COLORS.ERROR,
                 display: "flex",
-                gap: 1.5,
-                "&:hover": { bgcolor: "rgba(239, 68, 68, 0.06)" },
+                alignItems: "center",
+                gap: 1.25,
+                "&:hover": { bgcolor: COLORS.STATUS_ERROR_BG },
               }}
             >
-              <Cancel sx={{ fontSize: 20 }} />
+              <Cancel sx={{ fontSize: 18, color: COLORS.ERROR }} />
               Reject Teacher
             </MenuItem>
           </>
         )}
 
-        {activeRecord?.status === TRAINING_NOMINATION_STATUS.IAIRE_APPROVED && (
+        {canCompleteTraining && (
           <>
-            <Divider sx={{ my: 0.5, borderStyle: "dashed" }} />
+            <Divider sx={{ my: 0.5, borderColor: COLORS.INPUT_BG }} />
             <MenuItem
               onClick={handleTrainingCompleted}
               sx={{
-                fontSize: 14,
-                fontWeight: 600,
-                py: 1.5,
+                fontFamily: poppins.style.fontFamily,
+                fontSize: "13px",
+                fontWeight: 500,
+                py: 1,
+                px: 1.5,
+                borderRadius: "6px",
                 color: COLORS.PRIMARY_NAVY,
                 display: "flex",
-                gap: 1.5,
-                "&:hover": { bgcolor: "rgba(11, 23, 39, 0.04)" },
+                alignItems: "center",
+                gap: 1.25,
+                "&:hover": { bgcolor: COLORS.HOVER_BG },
               }}
             >
+              <CheckCircle sx={{ fontSize: 18, color: COLORS.SUCCESS_DARK }} />
               Training Completed
             </MenuItem>
           </>

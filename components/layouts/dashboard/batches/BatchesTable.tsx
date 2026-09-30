@@ -1,11 +1,6 @@
 import {
-  Box,
-  Card,
-  Chip,
   IconButton,
   Skeleton,
-  Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
@@ -13,70 +8,66 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  Tabs,
   Typography,
-  alpha,
 } from "@mui/material";
-import { CalendarMonth, MoreVert } from "@mui/icons-material";
+import { MoreVert } from "@mui/icons-material";
+import { COLORS, TYPOGRAPHY } from "@/utils/enum";
 import { poppins } from "@/utils/fonts";
-import { COLORS } from "@/utils/enum";
-import { BATCH_TABLE_TABS } from "@/utils/constant";
 import { Batch } from "@/utils/type";
 import moment from "moment";
 import BatchStatusChip from "./BatchStatusChip";
 
 const FS = { fontFamily: poppins.style.fontFamily };
 
-const TABLE_HEADERS = [
-  "Id",
-  "Batch Name",
-  "Start Date",
-  "End Date",
-  "Category",
-  "Status",
-  "Actions",
+const COLUMNS = [
+  { label: "Id", width: 70 },
+  { label: "Batch Name", minWidth: 200 },
+  { label: "Start Date", width: 140 },
+  { label: "End Date", width: 140 },
+  { label: "Category", width: 140 },
+  { label: "Status", width: 130 },
+  { label: "Actions", width: 80, align: "right" as const },
 ];
 
 interface BatchesTableProps {
   loading: boolean;
   batches: Batch[];
   totalCount: number;
-  tabValue: string;
   page: number;
   rowsPerPage: number;
-  onTabChange: (event: React.SyntheticEvent, value: string) => void;
   onPageChange: (page: number) => void;
   onRowsPerPageChange: (rows: number) => void;
   onMenuOpen: (event: React.MouseEvent<HTMLButtonElement>, row: Batch) => void;
+  onRowClick?: (row: Batch) => void;
 }
 
 const SkeletonRows = () => (
   <>
     {Array.from({ length: 5 }).map((_, idx) => (
       <TableRow key={idx}>
-        <TableCell sx={{ pl: 4 }}>
+        <TableCell sx={{ py: 1.75, px: 2.5 }}>
           <Skeleton width="30px" height="24px" />
         </TableCell>
-        <TableCell>
+        <TableCell sx={{ py: 1.75, px: 2.5 }}>
           <Skeleton width="180px" height="24px" />
         </TableCell>
-        <TableCell>
-          <Skeleton width="120px" height="20px" />
+        <TableCell sx={{ py: 1.75, px: 2.5 }}>
+          <Skeleton width="100px" height="20px" />
         </TableCell>
-        <TableCell>
-          <Skeleton width="120px" height="20px" />
+        <TableCell sx={{ py: 1.75, px: 2.5 }}>
+          <Skeleton width="100px" height="20px" />
         </TableCell>
-        <TableCell>
-          <Skeleton width="100px" height="24px" />
+        <TableCell sx={{ py: 1.75, px: 2.5 }}>
+          <Skeleton width="90px" height="24px" />
         </TableCell>
-        <TableCell>
+        <TableCell sx={{ py: 1.75, px: 2.5 }}>
           <Skeleton width="80px" height="24px" />
         </TableCell>
-        <TableCell align="right" sx={{ pr: 4 }}>
+        <TableCell align="right" sx={{ py: 1.75, px: 2.5 }}>
           <Skeleton
             variant="circular"
-            width={30}
-            height={30}
+            width={28}
+            height={28}
             sx={{ ml: "auto" }}
           />
         </TableCell>
@@ -87,21 +78,16 @@ const SkeletonRows = () => (
 
 const EmptyState = () => (
   <TableRow>
-    <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
-      <Stack
-        spacing={1}
-        sx={{ alignItems: "center", justifyContent: "center" }}
+    <TableCell colSpan={7} sx={{ textAlign: "center", py: 6 }}>
+      <Typography
+        sx={{
+          color: COLORS.TEXT_SECONDARY,
+          fontFamily: poppins.style.fontFamily,
+          fontSize: 14,
+        }}
       >
-        <CalendarMonth
-          sx={{ fontSize: 48, color: alpha(COLORS.PRIMARY_NAVY, 0.2), mb: 1 }}
-        />
-        <Typography sx={{ ...FS, fontWeight: 700, color: COLORS.TEXT_PRIMARY }}>
-          No Batches Found
-        </Typography>
-        <Typography sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY }}>
-          No records match the selected category or search filters.
-        </Typography>
-      </Stack>
+        No batch records found matching your filters.
+      </Typography>
     </TableCell>
   </TableRow>
 );
@@ -110,160 +96,194 @@ const BatchesTable = ({
   loading,
   batches,
   totalCount,
-  tabValue,
   page,
   rowsPerPage,
-  onTabChange,
   onPageChange,
   onRowsPerPageChange,
   onMenuOpen,
+  onRowClick,
 }: BatchesTableProps) => (
-  <Card
+  <TableContainer
     sx={{
-      borderRadius: "28px",
-      boxShadow: "0px 15px 50px rgba(0,0,0,0.02)",
-      border: "1px solid rgba(0,0,0,0.04)",
       bgcolor: COLORS.WHITE,
+      borderRadius: "14px",
+      border: `1px solid ${COLORS.BORDER_GRAY}`,
+      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.02)",
       overflow: "hidden",
     }}
   >
-    {/* Tabs + count */}
-    <Box
-      sx={{
-        borderBottom: "1px solid rgba(0,0,0,0.05)",
-        px: 3,
-        pt: 1,
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      <Tabs
-        value={tabValue}
-        onChange={onTabChange}
-        sx={{
-          "& .MuiTabs-indicator": {
-            height: 3,
-            borderRadius: "3px 3px 0 0",
-            bgcolor: COLORS.PRIMARY_NAVY,
-          },
-          "& .MuiTab-root": {
-            ...FS,
-            textTransform: "none",
-            fontSize: 14,
-            fontWeight: 600,
-            minWidth: 100,
-            color: COLORS.TEXT_SECONDARY,
-            py: 2,
-            "&.Mui-selected": { color: COLORS.PRIMARY_NAVY },
-          },
-        }}
-      >
-        {BATCH_TABLE_TABS.map((tab) => (
-          <Tab key={tab.value} label={tab.label} value={tab.value} />
-        ))}
-      </Tabs>
-
-      <Typography
-        sx={{
-          ...FS,
-          fontSize: 13,
-          color: COLORS.TEXT_SECONDARY,
-          fontWeight: 500,
-          display: { xs: "none", md: "block" },
-        }}
-      >
-        Total Batches:{" "}
-        <strong style={{ color: COLORS.PRIMARY_NAVY }}>{totalCount}</strong>
-      </Typography>
-    </Box>
-
-    {/* Table */}
-    <TableContainer sx={{ minWidth: 900 }}>
-      <Table>
-        <TableHead sx={{ backgroundColor: "rgba(11, 23, 39, 0.02)" }}>
-          <TableRow>
-            {TABLE_HEADERS.map((label) => (
-              <TableCell
-                key={label}
+    <Table>
+      <TableHead sx={{ bgcolor: COLORS.BG_LIGHT }}>
+        <TableRow>
+          {COLUMNS.map((col, i) => (
+            <TableCell
+              key={i}
+              align={col.align || "left"}
+              sx={{
+                py: 1.75,
+                px: 2.5,
+                borderBottom: `1px solid ${COLORS.BORDER_GRAY}`,
+                ...(col.width && { width: col.width }),
+                ...(col.minWidth && { minWidth: col.minWidth }),
+              }}
+            >
+              <Typography
                 sx={{
-                  ...FS,
-                  fontWeight: 700,
-                  color: COLORS.PRIMARY_NAVY,
-                  pl: 4,
+                  ...TYPOGRAPHY.TABLE_HEADER,
                 }}
               >
-                {label}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
+                {col.label}
+              </Typography>
+            </TableCell>
+          ))}
+        </TableRow>
+      </TableHead>
 
-        <TableBody>
-          {loading ? (
-            <SkeletonRows />
-          ) : batches.length === 0 ? (
-            <EmptyState />
-          ) : (
-            batches.map((row) => (
-              <TableRow
-                key={row.id}
-                hover
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+      <TableBody>
+        {loading ? (
+          <SkeletonRows />
+        ) : !batches || batches.length === 0 ? (
+          <EmptyState />
+        ) : (
+          batches.map((row) => (
+            <TableRow
+              key={row.id}
+              onClick={() => onRowClick && onRowClick(row)}
+              sx={{
+                cursor: "pointer",
+                "&:hover": { bgcolor: COLORS.HOVER_BG_LIGHT },
+                transition: "background-color 0.15s ease",
+                "&:last-child td": { borderBottom: 0 },
+              }}
+            >
+              <TableCell
+                sx={{
+                  py: 1.75,
+                  px: 2.5,
+                  borderBottom: `1px solid ${COLORS.INPUT_BG}`,
+                }}
               >
-                <TableCell sx={{ ...FS, pl: 4, fontWeight: 600 }}>
+                <Typography
+                  sx={{
+                    ...TYPOGRAPHY.TABLE_CELL_PRIMARY,
+                  }}
+                >
                   {row.id}
-                </TableCell>
-                <TableCell
-                  sx={{ ...FS, fontWeight: 700, color: COLORS.TEXT_PRIMARY }}
+                </Typography>
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  py: 1.75,
+                  px: 2.5,
+                  borderBottom: `1px solid ${COLORS.INPUT_BG}`,
+                }}
+              >
+                <Typography
+                  sx={{
+                    ...TYPOGRAPHY.TABLE_CELL_PRIMARY,
+                  }}
                 >
                   {row.name || "Unnamed Batch"}
-                </TableCell>
-                <TableCell
-                  sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY }}
+                </Typography>
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  py: 1.75,
+                  px: 2.5,
+                  borderBottom: `1px solid ${COLORS.INPUT_BG}`,
+                }}
+              >
+                <Typography
+                  sx={{
+                    ...TYPOGRAPHY.TABLE_CELL_SECONDARY,
+                  }}
                 >
-                  {moment(row.startDate).format("MMM DD, YYYY")}
-                </TableCell>
-                <TableCell
-                  sx={{ ...FS, fontSize: 13, color: COLORS.TEXT_SECONDARY }}
+                  {row.startDate
+                    ? moment(row.startDate).format("MMM DD, YYYY")
+                    : "--"}
+                </Typography>
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  py: 1.75,
+                  px: 2.5,
+                  borderBottom: `1px solid ${COLORS.INPUT_BG}`,
+                }}
+              >
+                <Typography
+                  sx={{
+                    ...TYPOGRAPHY.TABLE_CELL_SECONDARY,
+                  }}
                 >
-                  {moment(row.endDate).format("MMM DD, YYYY")}
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={row.category}
-                    size="small"
-                    sx={{
-                      ...FS,
-                      fontWeight: 700,
-                      fontSize: 10,
-                      height: 24,
-                      bgcolor: alpha(COLORS.PRIMARY_NAVY, 0.08),
+                  {row.endDate
+                    ? moment(row.endDate).format("MMM DD, YYYY")
+                    : "--"}
+                </Typography>
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  py: 1.75,
+                  px: 2.5,
+                  borderBottom: `1px solid ${COLORS.INPUT_BG}`,
+                }}
+              >
+                <Typography
+                  sx={{
+                    ...TYPOGRAPHY.TABLE_CELL_SECONDARY,
+                    color: COLORS.TEXT_PRIMARY,
+                    textTransform: "capitalize",
+                  }}
+                >
+                  {row.category
+                    ? row.category.toLowerCase().replace(/_/g, " ")
+                    : "--"}
+                </Typography>
+              </TableCell>
+
+              <TableCell
+                sx={{
+                  py: 1.75,
+                  px: 2.5,
+                  borderBottom: `1px solid ${COLORS.INPUT_BG}`,
+                }}
+              >
+                <BatchStatusChip status={row.status} />
+              </TableCell>
+
+              <TableCell
+                align="right"
+                sx={{
+                  py: 1.75,
+                  px: 2.5,
+                  borderBottom: `1px solid ${COLORS.INPUT_BG}`,
+                }}
+              >
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMenuOpen(e, row);
+                  }}
+                  sx={{
+                    color: COLORS.TEXT_SECONDARY,
+                    "&:hover": {
                       color: COLORS.PRIMARY_NAVY,
-                      borderRadius: "6px",
-                    }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <BatchStatusChip status={row.status} />
-                </TableCell>
-                <TableCell align="right" sx={{ pr: 4 }}>
-                  <IconButton
-                    onClick={(e) => onMenuOpen(e, row)}
-                    sx={{
-                      bgcolor: "rgba(0,0,0,0.03)",
-                      "&:hover": { bgcolor: "rgba(0,0,0,0.08)" },
-                    }}
-                  >
-                    <MoreVert sx={{ color: COLORS.PRIMARY_NAVY }} />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+                      bgcolor: COLORS.HOVER_BG,
+                    },
+                  }}
+                >
+                  <MoreVert sx={{ fontSize: 20 }} />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          ))
+        )}
+      </TableBody>
+    </Table>
 
     <TablePagination
       component="div"
@@ -275,9 +295,17 @@ const BatchesTable = ({
         onRowsPerPageChange(parseInt(e.target.value, 10))
       }
       rowsPerPageOptions={[5, 10, 25]}
-      sx={{ borderTop: "1px solid rgba(0,0,0,0.05)" }}
+      sx={{
+        borderTop: `1px solid ${COLORS.BORDER_GRAY}`,
+        fontFamily: poppins.style.fontFamily,
+        "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows, & .MuiTablePagination-select":
+          {
+            fontFamily: poppins.style.fontFamily,
+            fontSize: "13px",
+          },
+      }}
     />
-  </Card>
+  </TableContainer>
 );
 
 export default BatchesTable;

@@ -1,3 +1,5 @@
+import { poppins } from "./fonts";
+
 export enum COLORS {
   WHITE = "#ffffff",
   BLACK = "#000000",
@@ -13,20 +15,128 @@ export enum COLORS {
   BG_LIGHT = "#FAFAFA",
   BG_GRADIENT_END = "#E4E4E7",
   SUCCESS = "#10B981",
+  SUCCESS_DARK = "#059669",
   ERROR = "#EF4444",
+  ERROR_DARK = "#DC2626",
   WARNING = "#F59E0B",
+  WARNING_DARK = "#D97706",
   INFO = "#3B82F6",
+  INFO_DARK = "#2563EB",
+  INDIGO = "#4F46E5",
   SECONDARY_NAVY = "#27272A",
+  PURPLE = "#7C3AED",
+  TEAL = "#0D9488",
+  BORDER_GRAY = "#E4E4E7",
+  BORDER_LIGHT = "#D4D4D8",
   TRANSPARENT = "transparent",
+
+  // Status Badge Colors
+  STATUS_SUCCESS_BG = "rgba(16, 185, 129, 0.12)",
+  STATUS_SUCCESS_TEXT = "#059669",
+  STATUS_SUCCESS_BORDER = "rgba(16, 185, 129, 0.25)",
+
+  STATUS_INFO_BG = "rgba(59, 130, 246, 0.12)",
+  STATUS_INFO_TEXT = "#2563EB",
+  STATUS_INFO_BORDER = "rgba(59, 130, 246, 0.25)",
+
+  STATUS_PURPLE_BG = "rgba(124, 58, 237, 0.12)",
+  STATUS_PURPLE_TEXT = "#7C3AED",
+  STATUS_PURPLE_BORDER = "rgba(124, 58, 237, 0.25)",
+
+  STATUS_ERROR_BG = "rgba(239, 68, 68, 0.12)",
+  STATUS_ERROR_TEXT = "#DC2626",
+  STATUS_ERROR_BORDER = "rgba(239, 68, 68, 0.25)",
+
+  STATUS_WARNING_BG = "rgba(245, 158, 11, 0.12)",
+  STATUS_WARNING_TEXT = "#D97706",
+  STATUS_WARNING_BORDER = "rgba(245, 158, 11, 0.25)",
+
+  STATUS_TEAL_BG = "rgba(13, 148, 136, 0.12)",
+  STATUS_TEAL_TEXT = "#0D9488",
+  STATUS_TEAL_BORDER = "rgba(13, 148, 136, 0.25)",
+
+  STATUS_INDIGO_BG = "rgba(79, 70, 229, 0.12)",
+  STATUS_INDIGO_TEXT = "#4F46E5",
+  STATUS_INDIGO_BORDER = "rgba(79, 70, 229, 0.25)",
+
+  // Translucent / Overlay Colors
+  WHITE_ALPHA_20 = "rgba(255, 255, 255, 0.2)",
+  WHITE_ALPHA_15 = "rgba(255, 255, 255, 0.15)",
+  WHITE_ALPHA_75 = "rgba(255, 255, 255, 0.75)",
+  WHITE_ALPHA_12 = "rgba(255, 255, 255, 0.12)",
+  ERROR_LIGHT_BG = "rgba(239, 68, 68, 0.05)",
+  ERROR_LIGHT_BORDER = "rgba(239, 68, 68, 0.15)",
+  HOVER_BG = "rgba(0, 0, 0, 0.04)",
+  HOVER_BG_LIGHT = "rgba(0, 0, 0, 0.015)",
+}
+
+export enum FONT_WEIGHT {
+  LIGHT = 300,
+  REGULAR = 400,
+  MEDIUM = 500,
+  SEMI_BOLD = 600,
+  BOLD = 700,
 }
 
 export enum FONT_SIZE {
+  PAGE_TITLE = "34px",
+  SECTION_TITLE = "18px",
+  SUB_HEADING = "16px",
+  BODY = "14px",
+  TABLE_HEADER = "13.5px",
+  TABLE_CELL = "13.5px",
+  TABLE_CELL_SECONDARY = "13px",
+  CAPTION = "12px",
+  BADGE = "11px",
+  // Legacy mappings
   FS28 = "28px",
   FS18 = "18px",
   FS16 = "16px",
   FS14 = "14px",
   FS12 = "12px",
 }
+
+export const TYPOGRAPHY = {
+  PAGE_TITLE: {
+    fontFamily: poppins.style.fontFamily,
+    fontSize: FONT_SIZE.PAGE_TITLE,
+    fontWeight: FONT_WEIGHT.BOLD,
+    color: COLORS.PRIMARY_NAVY,
+    letterSpacing: "-0.5px",
+  },
+  SECTION_TITLE: {
+    fontFamily: poppins.style.fontFamily,
+    fontSize: FONT_SIZE.SECTION_TITLE,
+    fontWeight: FONT_WEIGHT.BOLD,
+    color: COLORS.PRIMARY_NAVY,
+  },
+  TABLE_HEADER: {
+    fontFamily: poppins.style.fontFamily,
+    fontSize: FONT_SIZE.TABLE_HEADER,
+    fontWeight: FONT_WEIGHT.BOLD,
+    color: COLORS.PRIMARY_NAVY,
+    letterSpacing: "0.2px",
+  },
+  
+  TABLE_CELL_PRIMARY: {
+    fontFamily: poppins.style.fontFamily,
+    fontSize: FONT_SIZE.TABLE_CELL,
+    fontWeight: FONT_WEIGHT.SEMI_BOLD,
+    color: COLORS.PRIMARY_NAVY,
+  },
+  TABLE_CELL_SECONDARY: {
+    fontFamily: poppins.style.fontFamily,
+    fontSize: FONT_SIZE.TABLE_CELL_SECONDARY,
+    fontWeight: FONT_WEIGHT.MEDIUM,
+    color: COLORS.TEXT_SECONDARY,
+  },
+
+  BADGE: {
+    fontFamily: poppins.style.fontFamily,
+    fontSize: FONT_SIZE.CAPTION,
+    fontWeight: FONT_WEIGHT.SEMI_BOLD,
+  },
+};
 
 export enum USER_ROLES {
   SUPER_ADMIN = "SUPER_ADMIN",

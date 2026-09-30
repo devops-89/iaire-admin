@@ -74,10 +74,13 @@ const SupportTicketsLayout = () => {
         }}
       >
         <Typography
+          variant="h4"
           sx={{
             fontFamily: poppins.style.fontFamily,
-            fontSize: 20,
+            fontSize: "34px",
             fontWeight: 700,
+            color: COLORS.PRIMARY_NAVY,
+            letterSpacing: -0.5,
           }}
         >
           Support Tickets

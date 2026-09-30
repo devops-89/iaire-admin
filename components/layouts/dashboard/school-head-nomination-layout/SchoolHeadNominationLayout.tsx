@@ -5,7 +5,7 @@ import {
   SCHOOL_HEAD_NOMINATION_STATUS_DATA,
   SCHOOL_HEAD_NOMINATION_TABLE_HEADER_DATA,
 } from "@/utils/constant";
-import { HEAD_NOMINATION_STATUS } from "@/utils/enum";
+import { COLORS, HEAD_NOMINATION_STATUS } from "@/utils/enum";
 import { useModal } from "@/store/useModal";
 import RejectHeadNomination from "@/modals/RejectHeadNomination";
 import { poppins } from "@/utils/fonts";
@@ -69,10 +69,13 @@ const SchoolHeadNominationLayout = () => {
           }}
         >
           <Typography
+            variant="h4"
             sx={{
-              fontSize: 20,
+              fontSize: "34px",
               fontFamily: poppins.style.fontFamily,
-              fontWeight: 600,
+              fontWeight: 700,
+              color: COLORS.PRIMARY_NAVY,
+              letterSpacing: -0.5,
             }}
           >
             School Head Boy/Girl Nomination List

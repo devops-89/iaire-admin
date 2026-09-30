@@ -1,10 +1,20 @@
 import { trainingApi } from "./config";
 
 export const TrainingControllers = {
-  getTrainingTeachers: async (page = 1, limit = 10, status?: string) => {
+  getTrainingTeachers: async (
+    page = 1,
+    limit = 10,
+    status?: string,
+    search?: string,
+  ) => {
     try {
       const response = await trainingApi.get(`/teachers/all`, {
-        params: { page, limit, status },
+        params: {
+          page,
+          limit,
+          ...(status && status !== "ALL" && { status }),
+          ...(search && { search }),
+        },
       });
       return response;
     } catch (error) {

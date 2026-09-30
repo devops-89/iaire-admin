@@ -14,9 +14,40 @@ import {
 import { ArrowBack } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useInnovationDetails } from "@/hooks/common/useInnovations";
-import { roboto, montserrat } from "@/utils/fonts";
+import { poppins, roboto, montserrat } from "@/utils/fonts";
 import { COLORS } from "@/utils/enum";
+import { INNOVATION_STATUS_DATA } from "@/utils/constant";
 import moment from "moment";
+
+const formatSnakeCase = (str?: string | null) => {
+  if (!str) return "N/A";
+  return str
+    .toLowerCase()
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+};
+
+const formatRole = (role?: string | null) => {
+  if (!role) return "N/A";
+  const roleMap: Record<string, string> = {
+    SCHOOL_ADMIN: "School Admin",
+    SUPER_ADMIN: "Super Admin",
+    TEACHER: "Mentor",
+    STUDENT: "Student",
+    ATTORNEY: "Attorney",
+    ADMIN: "Admin",
+  };
+  return roleMap[role.toUpperCase()] || formatSnakeCase(role);
+};
+
+const formatInnovationStatus = (status?: string | null) => {
+  if (!status) return "N/A";
+  const matched = INNOVATION_STATUS_DATA.find(
+    (item) => item.value.toUpperCase() === status.toUpperCase(),
+  );
+  return matched ? matched.label : formatSnakeCase(status);
+};
 
 const InnovationDetails = ({ id }: { id: string | number }) => {
   const router = useRouter();
@@ -46,26 +77,65 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
 
   const data = innovationDetails;
 
-  const renderStatus = (status: string) => {
-    let color = "default";
+  const renderStatus = (status?: string) => {
+    if (!status) return null;
+    const label = formatInnovationStatus(status);
+    const s = status.toUpperCase();
+
+    let style = {
+      bgcolor: COLORS.INPUT_BG,
+      color: COLORS.TEXT_SECONDARY,
+      border: `1px solid ${COLORS.BORDER_GRAY}`,
+    };
+
     if (
-      status?.toUpperCase().includes("APPROVED") ||
-      status?.toUpperCase() === "GRANTED"
+      s.includes("APPROVED") ||
+      s === "GRANTED" ||
+      s.includes("PATENT_GRANTED")
     ) {
-      color = "success";
-    } else if (status?.toUpperCase().includes("REJECTED")) {
-      color = "error";
+      style = {
+        bgcolor: COLORS.STATUS_SUCCESS_BG,
+        color: COLORS.STATUS_SUCCESS_TEXT,
+        border: `1px solid ${COLORS.STATUS_SUCCESS_BORDER}`,
+      };
+    } else if (s.includes("REJECTED")) {
+      style = {
+        bgcolor: COLORS.STATUS_ERROR_BG,
+        color: COLORS.STATUS_ERROR_TEXT,
+        border: `1px solid ${COLORS.STATUS_ERROR_BORDER}`,
+      };
     } else if (
-      status?.toUpperCase() === "PENDING" ||
-      status?.toUpperCase().includes("UNDER_REVIEW")
+      s.includes("PENDING") ||
+      s.includes("UNDER_REVIEW") ||
+      s.includes("PROSECUTION")
     ) {
-      color = "warning";
+      style = {
+        bgcolor: COLORS.STATUS_WARNING_BG,
+        color: COLORS.STATUS_WARNING_TEXT,
+        border: `1px solid ${COLORS.STATUS_WARNING_BORDER}`,
+      };
+    } else if (s.includes("FILED")) {
+      style = {
+        bgcolor: COLORS.STATUS_INFO_BG,
+        color: COLORS.STATUS_INFO_TEXT,
+        border: `1px solid ${COLORS.STATUS_INFO_BORDER}`,
+      };
     }
+
     return (
       <Chip
-        label={status || "N/A"}
-        color={color as any}
-        sx={{ fontWeight: 600, textTransform: "capitalize" }}
+        label={label}
+        size="small"
+        sx={{
+          fontFamily: poppins.style.fontFamily,
+          fontSize: "12px",
+          fontWeight: 600,
+          borderRadius: "8px",
+          px: 1,
+          py: 0.5,
+          height: "28px",
+          ...style,
+        }}
       />
     );
   };
@@ -82,6 +152,9 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
             display: "block",
             mb: 0.5,
             textTransform: "uppercase",
+            fontFamily: poppins.style.fontFamily,
+            fontSize: "11px",
+            letterSpacing: "0.5px",
           }}
         >
           {label}
@@ -89,10 +162,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
         <Typography
           variant="body2"
           sx={{
-            fontFamily: montserrat.style.fontFamily,
+            fontFamily: poppins.style.fontFamily,
             fontWeight: 600,
             color: COLORS.TEXT_PRIMARY,
             wordBreak: "break-word",
+            fontSize: "13.5px",
           }}
         >
           {String(value)}
@@ -109,9 +183,10 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
         sx={{
           textTransform: "none",
           color: COLORS.TEXT_PRIMARY,
-          fontFamily: montserrat.style.fontFamily,
+          fontFamily: poppins.style.fontFamily,
           fontWeight: 600,
           mb: 3,
+          fontSize: "13.5px",
         }}
       >
         Back to Innovations
@@ -133,15 +208,18 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                 justifyContent: "space-between",
                 alignItems: "flex-start",
                 mb: 4,
+                flexWrap: "wrap",
+                gap: 2,
               }}
             >
               <Typography
                 variant="h4"
                 sx={{
-                  fontFamily: roboto.style.fontFamily,
-                  fontWeight: 800,
+                  fontFamily: poppins.style.fontFamily,
+                  fontWeight: 700,
                   color: COLORS.PRIMARY_NAVY,
-                  textTransform: "capitalize",
+                  letterSpacing: -0.5,
+                  fontSize: { xs: "24px", sm: "30px" },
                 }}
               >
                 {data.title || "Untitled Innovation"}
@@ -153,10 +231,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
               <Typography
                 variant="h6"
                 sx={{
-                  fontFamily: roboto.style.fontFamily,
+                  fontFamily: poppins.style.fontFamily,
                   fontWeight: 700,
                   mb: 1,
                   color: COLORS.PRIMARY_NAVY,
+                  fontSize: "16px",
                 }}
               >
                 Problem Description
@@ -164,10 +243,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
               <Typography
                 variant="body1"
                 sx={{
-                  fontFamily: montserrat.style.fontFamily,
+                  fontFamily: poppins.style.fontFamily,
                   color: COLORS.TEXT_SECONDARY,
                   whiteSpace: "pre-wrap",
                   lineHeight: 1.6,
+                  fontSize: "14px",
                 }}
               >
                 {data.problemDescription || "No problem description provided."}
@@ -180,10 +260,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
               <Typography
                 variant="h6"
                 sx={{
-                  fontFamily: roboto.style.fontFamily,
+                  fontFamily: poppins.style.fontFamily,
                   fontWeight: 700,
                   mb: 1,
                   color: COLORS.PRIMARY_NAVY,
+                  fontSize: "16px",
                 }}
               >
                 Proposed Solution
@@ -191,10 +272,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
               <Typography
                 variant="body1"
                 sx={{
-                  fontFamily: montserrat.style.fontFamily,
+                  fontFamily: poppins.style.fontFamily,
                   color: COLORS.TEXT_SECONDARY,
                   whiteSpace: "pre-wrap",
                   lineHeight: 1.6,
+                  fontSize: "14px",
                 }}
               >
                 {data.solution || "No solution provided."}
@@ -214,7 +296,7 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                 <Typography
                   variant="subtitle2"
                   sx={{
-                    fontFamily: roboto.style.fontFamily,
+                    fontFamily: poppins.style.fontFamily,
                     fontWeight: 700,
                     color: "#D97706",
                     mb: 1,
@@ -225,8 +307,9 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                 <Typography
                   variant="body2"
                   sx={{
-                    fontFamily: montserrat.style.fontFamily,
+                    fontFamily: poppins.style.fontFamily,
                     color: COLORS.TEXT_PRIMARY,
+                    fontSize: "13.5px",
                   }}
                 >
                   {data.reviewComments}
@@ -248,10 +331,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
               <Typography
                 variant="h6"
                 sx={{
-                  fontFamily: roboto.style.fontFamily,
+                  fontFamily: poppins.style.fontFamily,
                   fontWeight: 700,
                   mb: 3,
                   color: COLORS.PRIMARY_NAVY,
+                  fontSize: "17px",
                 }}
               >
                 Team Details
@@ -260,7 +344,7 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <DetailRow label="Team Name" value={data.team.title} />
                   <DetailRow label="Team Code" value={data.team.teamCode} />
-                  <DetailRow label="Type" value={data.team.type} />
+                  <DetailRow label="Type" value={formatSnakeCase(data.team.type)} />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <DetailRow
@@ -295,6 +379,9 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                       display: "block",
                       mb: 1,
                       textTransform: "uppercase",
+                      fontFamily: poppins.style.fontFamily,
+                      fontSize: "11px",
+                      letterSpacing: "0.5px",
                     }}
                   >
                     Members
@@ -313,7 +400,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                             m.student.lastName || ""
                           }`.trim()}
                           size="small"
-                          sx={{ mb: 1 }}
+                          sx={{
+                            mb: 1,
+                            fontFamily: poppins.style.fontFamily,
+                            fontSize: "12px",
+                          }}
                         />
                       ) : null,
                     )}
@@ -336,10 +427,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
               <Typography
                 variant="h6"
                 sx={{
-                  fontFamily: roboto.style.fontFamily,
+                  fontFamily: poppins.style.fontFamily,
                   fontWeight: 700,
                   mb: 3,
                   color: COLORS.PRIMARY_NAVY,
+                  fontSize: "17px",
                 }}
               >
                 School Details
@@ -401,10 +493,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
               <Typography
                 variant="h6"
                 sx={{
-                  fontFamily: roboto.style.fontFamily,
+                  fontFamily: poppins.style.fontFamily,
                   fontWeight: 700,
                   mb: 3,
                   color: COLORS.PRIMARY_NAVY,
+                  fontSize: "17px",
                 }}
               >
                 Submission Details
@@ -419,6 +512,9 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                       fontWeight: 600,
                       display: "block",
                       mb: 0.5,
+                      fontFamily: poppins.style.fontFamily,
+                      fontSize: "11px",
+                      letterSpacing: "0.5px",
                     }}
                   >
                     SUBMITTED BY
@@ -426,9 +522,10 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                   <Typography
                     variant="body2"
                     sx={{
-                      fontFamily: montserrat.style.fontFamily,
+                      fontFamily: poppins.style.fontFamily,
                       fontWeight: 600,
                       color: COLORS.TEXT_PRIMARY,
+                      fontSize: "13.5px",
                     }}
                   >
                     {data.teamId
@@ -446,6 +543,9 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                       fontWeight: 600,
                       display: "block",
                       mb: 0.5,
+                      fontFamily: poppins.style.fontFamily,
+                      fontSize: "11px",
+                      letterSpacing: "0.5px",
                     }}
                   >
                     SCHOOL
@@ -453,10 +553,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                   <Typography
                     variant="body2"
                     sx={{
-                      fontFamily: montserrat.style.fontFamily,
+                      fontFamily: poppins.style.fontFamily,
                       fontWeight: 600,
                       color: COLORS.TEXT_PRIMARY,
                       textTransform: "capitalize",
+                      fontSize: "13.5px",
                     }}
                   >
                     {data.school?.name || "N/A"}
@@ -470,6 +571,9 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                       fontWeight: 600,
                       display: "block",
                       mb: 0.5,
+                      fontFamily: poppins.style.fontFamily,
+                      fontSize: "11px",
+                      letterSpacing: "0.5px",
                     }}
                   >
                     DATE ADDED
@@ -477,9 +581,10 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                   <Typography
                     variant="body2"
                     sx={{
-                      fontFamily: montserrat.style.fontFamily,
+                      fontFamily: poppins.style.fontFamily,
                       fontWeight: 600,
                       color: COLORS.TEXT_PRIMARY,
+                      fontSize: "13.5px",
                     }}
                   >
                     {data.createdAt
@@ -502,10 +607,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                 <Typography
                   variant="h6"
                   sx={{
-                    fontFamily: roboto.style.fontFamily,
+                    fontFamily: poppins.style.fontFamily,
                     fontWeight: 700,
                     mb: 3,
                     color: COLORS.PRIMARY_NAVY,
+                    fontSize: "17px",
                   }}
                 >
                   Creator Details
@@ -523,10 +629,10 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                   />
                   <DetailRow label="Email" value={data.creator.email} />
                   <DetailRow label="Phone" value={data.creator.phone} />
-                  <DetailRow label="Role" value={data.creator.role} />
+                  <DetailRow label="Role" value={formatRole(data.creator.role)} />
                   <DetailRow
                     label="Membership Tier"
-                    value={data.creator.membershipTier}
+                    value={formatSnakeCase(data.creator.membershipTier)}
                   />
                   <DetailRow
                     label="Membership Code"
@@ -547,10 +653,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
               <Typography
                 variant="h6"
                 sx={{
-                  fontFamily: roboto.style.fontFamily,
+                  fontFamily: poppins.style.fontFamily,
                   fontWeight: 700,
                   mb: 3,
                   color: COLORS.PRIMARY_NAVY,
+                  fontSize: "17px",
                 }}
               >
                 Additional Information
@@ -604,10 +711,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                 <Typography
                   variant="h6"
                   sx={{
-                    fontFamily: roboto.style.fontFamily,
+                    fontFamily: poppins.style.fontFamily,
                     fontWeight: 700,
                     mb: 2,
                     color: COLORS.PRIMARY_NAVY,
+                    fontSize: "17px",
                   }}
                 >
                   Attorney Template
@@ -625,9 +733,10 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                   <Typography
                     variant="body2"
                     sx={{
-                      fontFamily: montserrat.style.fontFamily,
+                      fontFamily: poppins.style.fontFamily,
                       color: COLORS.INFO,
                       fontWeight: 600,
+                      fontSize: "13.5px",
                       "&:hover": {
                         textDecoration: "underline",
                         cursor: "pointer",
@@ -655,10 +764,11 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                 <Typography
                   variant="h6"
                   sx={{
-                    fontFamily: roboto.style.fontFamily,
+                    fontFamily: poppins.style.fontFamily,
                     fontWeight: 700,
                     mb: 2,
                     color: COLORS.PRIMARY_NAVY,
+                    fontSize: "17px",
                   }}
                 >
                   Attachments
@@ -679,9 +789,10 @@ const InnovationDetails = ({ id }: { id: string | number }) => {
                       <Typography
                         variant="body2"
                         sx={{
-                          fontFamily: montserrat.style.fontFamily,
+                          fontFamily: poppins.style.fontFamily,
                           color: COLORS.INFO,
                           fontWeight: 600,
+                          fontSize: "13.5px",
                           "&:hover": {
                             textDecoration: "underline",
                             cursor: "pointer",

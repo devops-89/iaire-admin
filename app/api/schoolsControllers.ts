@@ -10,11 +10,18 @@ export const SchoolsControllers = {
   getBoardWiseAnalytics: async (
     page: number | string = 1,
     limit: number | string = 10,
+    search?: string,
+    status?: string,
   ) => {
     try {
-      const response = await boardsApi.get(
-        `/admin/dashboard/analytics?page=${page}&limit=${limit}`,
-      );
+      let url = `/admin/dashboard/analytics?page=${page}&limit=${limit}`;
+      if (search && search.trim()) {
+        url += `&search=${encodeURIComponent(search.trim())}`;
+      }
+      if (status && status !== "ALL") {
+        url += `&status=${encodeURIComponent(status)}`;
+      }
+      const response = await boardsApi.get(url);
       return response;
     } catch (error) {
       throw error;
@@ -33,11 +40,18 @@ export const SchoolsControllers = {
     id: string,
     page: number | string,
     limit: number | string,
+    search?: string,
+    status?: string,
   ) => {
     try {
-      let result = await boardsApi.get(
-        `${id}/schools?page=${page}&limit=${limit}`,
-      );
+      let url = `${id}/schools?page=${page}&limit=${limit}`;
+      if (search && search.trim()) {
+        url += `&search=${encodeURIComponent(search.trim())}`;
+      }
+      if (status && status !== "ALL") {
+        url += `&status=${encodeURIComponent(status)}`;
+      }
+      let result = await boardsApi.get(url);
       return result;
     } catch (error) {
       throw error;

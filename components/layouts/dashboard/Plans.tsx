@@ -150,7 +150,8 @@ const PlansManagement = () => {
             variant="h4"
             sx={{
               fontFamily: poppins.style.fontFamily,
-              fontWeight: 800,
+              fontSize: "34px",
+              fontWeight: 700,
               color: COLORS.TEXT_PRIMARY,
               letterSpacing: -0.5,
             }}

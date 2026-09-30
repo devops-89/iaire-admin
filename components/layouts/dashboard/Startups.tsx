@@ -81,7 +81,7 @@ const StartupsManagement = () => {
     <Box>
       <Box sx={{ mb: 4, display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
         <Box>
-          <Typography variant="h4" sx={{ fontFamily: poppins.style.fontFamily, fontWeight: 700, color: COLORS.BLACK }}>
+          <Typography variant="h4" sx={{ fontFamily: poppins.style.fontFamily, fontSize: "34px", fontWeight: 700, color: COLORS.PRIMARY_NAVY, letterSpacing: -0.5 }}>
             Startup Management
           </Typography>
           <Typography sx={{ color: COLORS.TEXT_SECONDARY, fontSize: 14, mt: 1 }}>

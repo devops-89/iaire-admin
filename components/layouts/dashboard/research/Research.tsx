@@ -94,10 +94,13 @@ const ResearchManagement = () => {
     <div>
       <Card sx={{ p: 2 }}>
         <Typography
+          variant="h4"
           sx={{
-            fontSize: 25,
-            fontFamily: roboto.style.fontFamily,
-            fontWeight: 600,
+            fontSize: "34px",
+            fontFamily: poppins.style.fontFamily,
+            fontWeight: 700,
+            color: "#09090B",
+            letterSpacing: -0.5,
           }}
         >
           Research Management

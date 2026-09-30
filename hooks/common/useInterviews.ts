@@ -22,33 +22,18 @@ export const useInterviews = () => {
     page: number,
     limit: number,
     status?: string,
+    search?: string,
   ) => {
-    // setLoading(true);
+    setLoading(true);
     try {
       const currentStatus = status === "ALL" ? undefined : status;
       const response: any = await TrainingControllers.getTrainingTeachers(
         page,
         limit,
         currentStatus,
+        search,
       );
 
-      console.log("response", response);
-      // if (response.data.success || response.data.statusCode === 200) {
-      //   Robust array extraction
-      //   const dataArray = Array.isArray(response.data?.data?.data)
-      //     ? response.data.data.data
-      //     : Array.isArray(response.data?.data)
-      //       ? response.data.data
-      //       : Array.isArray(response.data)
-      //         ? response.data
-      //         : [];
-      //   const sortedTeachers = dataArray.sort((a: any, b: any) => {
-      //     if (a.interviewScheduledAt && !b.interviewScheduledAt) return -1;
-      //     if (!a.interviewScheduledAt && b.interviewScheduledAt) return 1;
-      //     return 0;
-      //   });
-      //   setTeachers(sortedTeachers);
-      // }
       setTeachers(response?.data);
     } catch (error: any) {
       setSnackbar(

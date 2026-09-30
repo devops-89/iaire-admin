@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import { useBatches } from "@/hooks/common/useBatches";
-import { useDebounceCallback } from "@/hooks/common/useDebounce";
 import { useModal } from "@/store/useModal";
 import AddBatches from "@/modals/AddBatches";
 import { Batch } from "@/utils/type";
@@ -13,66 +12,92 @@ import BatchesSearch from "./BatchesSearch";
 import BatchesTable from "./BatchesTable";
 import BatchActionsMenu from "./BatchActionsMenu";
 import BatchDetailsDialog from "./BatchDetailsDialog";
-import { CATEGORY } from "@/utils/enum";
 
 const BatchesManagement = () => {
   const { fetchBatches, batches, loading } = useBatches();
 
-  const [tabValue, setTabValue] = useState("ALL");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [category, setCategory] = useState<string>("ALL");
+  const [role, setRole] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeRecord, setActiveRecord] = useState<Batch | null>(null);
   const [openDetailsModal, setOpenDetailsModal] = useState(false);
-  const [role, setRole] = useState("");
   const { showModal } = useModal();
 
-  const apiPayload = {
-    page: page === 0 ? 1 : page,
-    limit: rowsPerPage,
+  // Initial load
+  useEffect(() => {
+    fetchBatches({
+      page: 1,
+      limit: rowsPerPage,
+      search: searchTerm.trim() || undefined,
+      role: role || undefined,
+      category: category !== "ALL" ? category : undefined,
+    });
+  }, [page, rowsPerPage]);
+
+  // Debounced search handling
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setPage(0);
+      fetchBatches({
+        page: 1,
+        limit: rowsPerPage,
+        search: searchTerm.trim() || undefined,
+        role: role || undefined,
+        category: category !== "ALL" ? category : undefined,
+      });
+    }, 400);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  const handleCategoryChange = (newCategory: string) => {
+    setCategory(newCategory);
+    setPage(0);
+    fetchBatches({
+      page: 1,
+      limit: rowsPerPage,
+      search: searchTerm.trim() || undefined,
+      role: role || undefined,
+      category: newCategory !== "ALL" ? newCategory : undefined,
+    });
   };
 
-  const handleChangePage = (page: number) => {
-    setPage(page);
-    fetchBatches({ page: page + 1, limit: rowsPerPage });
+  const handleRoleChange = (newRole: string) => {
+    setRole(newRole);
+    setPage(0);
+    fetchBatches({
+      page: 1,
+      limit: rowsPerPage,
+      search: searchTerm.trim() || undefined,
+      role: newRole || undefined,
+      category: category !== "ALL" ? category : undefined,
+    });
+  };
+
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+    fetchBatches({
+      page: newPage + 1,
+      limit: rowsPerPage,
+      search: searchTerm.trim() || undefined,
+      role: role || undefined,
+      category: category !== "ALL" ? category : undefined,
+    });
   };
 
   const handleRowsPerChange = (limit: number) => {
     setRowsPerPage(limit);
-    fetchBatches({ page: page, limit: limit });
-  };
-
-  useEffect(() => {
-    fetchBatches(apiPayload);
-  }, [page, rowsPerPage]);
-
-  const handleTabChange = (_: React.SyntheticEvent, value: string) => {
-    setTabValue(value);
-    if (value === "ALL") {
-      fetchBatches(apiPayload);
-    } else {
-      fetchBatches({ ...apiPayload, category: value });
-    }
-  };
-
-  const debouncedFetchBatches = useDebounceCallback((value: string) => {
+    setPage(0);
     fetchBatches({
-      ...apiPayload,
-      search: value,
-      role: role,
-      ...(tabValue !== "ALL" && { category: tabValue }),
+      page: 1,
+      limit: limit,
+      search: searchTerm.trim() || undefined,
+      role: role || undefined,
+      category: category !== "ALL" ? category : undefined,
     });
-  }, 500);
-
-  const handleSearchChange = (value: string) => {
-    setSearchTerm(value);
-    debouncedFetchBatches(value);
-  };
-
-  const handleSelectRole = (newValue: string) => {
-    setRole(newValue);
-    fetchBatches({ page: page + 1, limit: rowsPerPage, role: newValue });
   };
 
   const handleMenuOpen = (
@@ -95,34 +120,44 @@ const BatchesManagement = () => {
     }
   };
 
+  const handleRowClick = (record: Batch) => {
+    setActiveRecord(record);
+    setOpenDetailsModal(true);
+  };
+
   const handleCloseDetails = () => {
     setOpenDetailsModal(false);
     setActiveRecord(null);
   };
 
   return (
-    <Box
-      sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 4 }}
-    >
-      <BatchesHeader onCreateBatch={() => showModal(<AddBatches />)} />
-
-      <BatchesSearch
-        value={searchTerm}
-        onChange={handleSearchChange}
-        onRoleSelection={handleSelectRole}
+    <Box sx={{ width: "100%", pb: 4 }}>
+      <BatchesHeader
+        onCreateBatch={() => showModal(<AddBatches />)}
+        totalCount={batches?.pagination?.total}
       />
+
+      <Box sx={{ my: 3 }}>
+        <BatchesSearch
+          value={searchTerm}
+          onChange={setSearchTerm}
+          categoryValue={category}
+          onCategoryChange={handleCategoryChange}
+          roleValue={role}
+          onRoleChange={handleRoleChange}
+        />
+      </Box>
 
       <BatchesTable
         loading={loading}
         batches={batches?.data}
         totalCount={batches?.pagination?.total || 0}
-        tabValue={tabValue}
         page={page}
-        rowsPerPage={batches?.pagination?.limit || 0}
-        onTabChange={handleTabChange}
+        rowsPerPage={rowsPerPage}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleRowsPerChange}
         onMenuOpen={handleMenuOpen}
+        onRowClick={handleRowClick}
       />
 
       <BatchActionsMenu

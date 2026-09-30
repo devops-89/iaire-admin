@@ -12,12 +12,16 @@ export const useSchools = () => {
   const fetchBoardAnalytics = async (
     page: number | string = 1,
     limit: number | string = 10,
+    search?: string,
+    status?: string,
   ) => {
     setLoading(true);
     try {
       const response: any = await SchoolsControllers.getBoardWiseAnalytics(
         page,
         limit,
+        search,
+        status,
       );
       if (response.data.success) {
         setBoardAnalytics(response.data.data);
@@ -43,7 +47,7 @@ export const useSchools = () => {
   };
 };
 
-export const getSchoolByBoardId = () => {
+export const useSchoolByBoardId = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [pagination, setPagination] = useState<any>(null);
@@ -52,6 +56,8 @@ export const getSchoolByBoardId = () => {
     id: string,
     page: number | string = 1,
     limit: number | string = 10,
+    search?: string,
+    status?: string,
   ) {
     try {
       setLoading(true);
@@ -59,6 +65,8 @@ export const getSchoolByBoardId = () => {
         id,
         page,
         limit,
+        search,
+        status,
       );
       if (response.data && response.data.data) {
         setData(response.data.data);
@@ -78,6 +86,8 @@ export const getSchoolByBoardId = () => {
     fetchSchoolByBoardId,
   };
 };
+
+export const getSchoolByBoardId = useSchoolByBoardId;
 
 export const useSchoolDetails = () => {
   const [loading, setLoading] = useState(false);
