@@ -17,4 +17,5 @@ export const serverConstants = {
   platform: `${baseURL}/platform`,
   school: `${baseURL}/schools`,
   needAssistance: `${baseURL}/need-assistance`,
+  honorariums: `${baseURL}/honorariums`,
 };

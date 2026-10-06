@@ -374,6 +374,7 @@ const InterviewDetails: React.FC<InterviewDetailsProps> = ({ teacherId }) => {
                   fontSize: 22,
                   fontWeight: 700,
                   color: COLORS.WHITE,
+                  textTransform: "capitalize",
                 }}
               >
                 {fullName}

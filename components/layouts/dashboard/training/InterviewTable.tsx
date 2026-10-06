@@ -314,6 +314,7 @@ const InterviewTable = ({
                         fontSize: "13.5px",
                         fontWeight: 600,
                         color: COLORS.PRIMARY_NAVY,
+                        textTransform: "capitalize",
                       }}
                     >
                       {val?.teacher?.fullName ||

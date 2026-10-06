@@ -64,7 +64,7 @@ const ScheduleInterview: React.FC<ScheduleInterviewProps> = ({ selectedTeacher, 
           ? `You are rescheduling the interview for `
           : `Select a date and time for the interview with `
         }
-        <strong style={{ color: COLORS.BLACK }}>
+        <strong style={{ color: COLORS.BLACK, textTransform: "capitalize" }}>
           {selectedTeacher?.teacher?.fullName || `${selectedTeacher?.teacher?.firstName || ""} ${selectedTeacher?.teacher?.lastName || ""}`.trim()}
         </strong>.
       </Typography>

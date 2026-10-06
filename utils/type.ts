@@ -811,3 +811,143 @@ export interface API_REQUEST {
   limit?: string | number;
   search?: string;
 }
+
+// Honorarium Management Types
+
+export interface HonorariumTeamMember {
+  id: number;
+  teamId: number;
+  studentId: number;
+  createdAt: string;
+  student?: {
+    id: number;
+    fullName?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+  };
+}
+
+export interface HonorariumTeam {
+  id: number;
+  title: string;
+  type: string;
+  teamCode: string;
+  mentorId: number;
+  assistantMentorId?: number | null;
+  createdBy: number;
+  schoolId: number;
+  boardId: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+  members?: HonorariumTeamMember[];
+}
+
+export interface HonorariumSchool {
+  id: number;
+  name: string;
+  code: string;
+  address?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  logo?: string;
+  affiliationCertificate?: string;
+  affiliationNumber?: string;
+  website?: string;
+  registrationYear?: number;
+  contactPersonName?: string | null;
+  contactPersonEmail?: string | null;
+  contactPersonPhone?: string | null;
+  isActive?: boolean;
+  boardId?: number;
+  countryId?: number;
+}
+
+export interface HonorariumCreator {
+  id: number;
+  email: string;
+  username?: string;
+  phone?: string;
+  countryCode?: string;
+  isdCode?: string | null;
+  isEmailVerified?: boolean;
+  isPhoneVerified?: boolean;
+  fullName: string;
+  firstName?: string;
+  lastName?: string;
+  bio?: string | null;
+  profileImage?: string;
+  role?: string;
+  status?: string;
+  schoolId?: number;
+  category?: string;
+  gender?: string;
+  primarySubjects?: string[];
+  experienceYears?: number;
+}
+
+export interface HonorariumItem {
+  id: number;
+  teamId: number;
+  team?: HonorariumTeam;
+  type: string;
+  achievementType?: string;
+  achievement?: any;
+  amount?: number | null;
+  description?: string;
+  accountHolderName: string;
+  bankName: string;
+  accountNumber: string;
+  ifscCode: string;
+  branchName: string;
+  status: string;
+  schoolId: number;
+  school?: HonorariumSchool;
+  createdBy: number;
+  creator?: HonorariumCreator;
+  verifiedBy?: any;
+  verifiedAt?: string | null;
+  archivedAt?: string | null;
+  archivedBy?: any;
+  archiveReason?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HONORARIUMS_RESPONSE {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data:
+    | HonorariumItem[]
+    | {
+        message?: string;
+        data: HonorariumItem[];
+        pagination?: Pagination;
+      };
+  pagination?: Pagination;
+}
+
+export interface HONORARIUM_DETAILS_RESPONSE {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data:
+    | HonorariumItem
+    | {
+        message?: string;
+        data: HonorariumItem;
+      };
+}
+
+export interface UPDATE_HONORARIUM_STATUS_REQUEST {
+  status: string;
+  amount?: number | null;
+  remarks?: string;
+  [key: string]: any;
+}
+

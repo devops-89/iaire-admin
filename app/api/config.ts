@@ -32,6 +32,7 @@ const startupsApi = createSecuredUrl(serverConstants.startups);
 const platformAPI = createSecuredUrl(serverConstants.platform);
 const schoolSecuredAPI = createSecuredUrl(serverConstants.school);
 const needAssistance = createSecuredUrl(serverConstants.needAssistance);
+const honorariumsApi = createSecuredUrl(serverConstants.honorariums);
 export {
   userPublicApi,
   userSecuredApi,
@@ -51,4 +52,5 @@ export {
   platformAPI,
   schoolSecuredAPI,
   needAssistance,
+  honorariumsApi,
 };

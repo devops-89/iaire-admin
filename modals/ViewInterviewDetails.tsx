@@ -268,7 +268,7 @@ const ViewInterviewDetails: React.FC<ViewInterviewDetailsProps> = ({
           </Avatar>
 
           <Box sx={{ textAlign: { xs: "center", sm: "left" }, flex: 1 }}>
-            <Typography sx={{ ...FS, fontSize: 20, fontWeight: 700, color: COLORS.WHITE }}>
+            <Typography sx={{ ...FS, fontSize: 20, fontWeight: 700, color: COLORS.WHITE, textTransform: "capitalize" }}>
               {fullName}
             </Typography>
 

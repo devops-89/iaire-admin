@@ -18,6 +18,7 @@ import {
   Person,
   MenuOpen,
   Menu as MenuIcon,
+  Paid,
 } from "@mui/icons-material";
 import {
   Avatar,
@@ -98,6 +99,11 @@ const MENU_ITEMS: MenuFlatItem[] = [
     text: "School Head Boy/Girl Nomination",
     icon: <Person />,
     path: "/dashboard/school-head-nomination",
+  },
+  {
+    text: "Honorarium Management",
+    icon: <Paid />,
+    path: "/dashboard/honorarium",
   },
 ];
 
